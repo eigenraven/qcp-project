@@ -1,6 +1,14 @@
 cmake_minimum_required (VERSION 3.10)
 project(QCP_SIMULATOR)
-  
+
+add_subdirectory(external/googletest-release-1.10.0 EXCLUDE_FROM_ALL)
+
+include(GoogleTest)
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+enable_testing()
+
 if ( CMAKE_VERSION VERSION_GREATER "3.5" )
   set(ENABLE_CLANG_TIDY OFF CACHE BOOL "Add clang-tidy automatically to builds")
   if (ENABLE_CLANG_TIDY)
@@ -18,6 +26,18 @@ if ( CMAKE_VERSION VERSION_GREATER "3.5" )
 endif()
 
 file(GLOB_RECURSE source_files CONFIGURE_DEPENDS LIST_DIRECTORIES false src/*.cpp)
+file(GLOB_RECURSE driver_cmd_files CONFIGURE_DEPENDS LIST_DIRECTORIES false drivers/cmd/*.cpp)
+file(GLOB_RECURSE test_files CONFIGURE_DEPENDS LIST_DIRECTORIES false tests/*.cpp)
 
-add_executable(qcsim ${source_files})
-target_compile_features(qcsim PUBLIC cxx_std_17)
+add_library(qcsim_common ${source_files})
+target_include_directories(qcsim_common PUBLIC src/)
+target_compile_features(qcsim_common PUBLIC cxx_std_17)
+
+add_executable(test_qcsim ${test_files})
+target_link_libraries(test_qcsim qcsim_common gtest gmock gtest_main)
+gtest_discover_tests(test_qcsim
+  WORKING_DIRECTORY ${PROJECT_DIR}
+  PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_DIR}")
+
+add_executable(qcsim ${driver_cmd_files})
+target_link_libraries(qcsim qcsim_common)

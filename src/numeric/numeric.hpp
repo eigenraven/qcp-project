@@ -8,9 +8,13 @@
 #include <cassert>
 #include <cmath>
 #include <complex>
+#include <exception>
 #include <vector>
+#include <climits>
 
-namespace qcsim {
+using namespace std::complex_literals;
+
+namespace qc {
 
 /** @{
  * The basic data types for numbers used in the simulator
@@ -18,6 +22,12 @@ namespace qcsim {
 using real = double;
 using complex = std::complex<real>;
 /// @}
+
+inline void verify_in_bounds(int val, int min, int max_m1) {
+  if (val < min || val >= max_m1) {
+    throw std::out_of_range("Out of range access");
+  }
+}
 
 /// A dense complex matrix type (stores fields in a contiguous row-major array)
 struct dmatrix {
@@ -28,12 +38,19 @@ struct dmatrix {
 
   /// Default constructs a zero-filled matrix
   inline explicit dmatrix(int rows, int cols)
-      : rows(rows), cols(cols), data(rows * cols) {}
+      : rows(rows), cols(cols), data(rows * cols) {
+    verify_in_bounds(rows, 0, INT_MAX);
+    verify_in_bounds(cols, 0, INT_MAX);
+  }
   /// Constructs a matrix with given elements (given in a row-major order)
   template <int N>
-  inline explicit dmatrix(int rows, int cols, complex (&cdata)[N])
+  inline explicit dmatrix(int rows, int cols, const complex (&cdata)[N])
       : rows(rows), cols(cols), data(rows * cols) {
-    assert(rows * cols == N);
+    if (rows * cols != N) {
+      throw std::invalid_argument("dmatrix rows*cols != length(data)");
+    }
+    verify_in_bounds(rows, 0, INT_MAX);
+    verify_in_bounds(cols, 0, INT_MAX);
     std::copy_n(cdata, N, data.begin());
   }
 
@@ -45,9 +62,10 @@ struct dmatrix {
     for (int i = 0; i < rows && i < cols; i++) {
       m(i, i) = 1.0;
     }
+    return m;
   }
   /// Creates a column vector matrix
-  template <int Dim> static inline dmatrix vector(complex (&cdata)[Dim]) {
+  template <int Dim> static inline dmatrix vector(const complex (&cdata)[Dim]) {
     return dmatrix(Dim, 1, cdata);
   }
 
@@ -58,11 +76,13 @@ struct dmatrix {
 
   /// Provides access to the matrix elements
   inline complex &operator()(int row, int col) {
-    assert(row < rows && col < cols);
+    verify_in_bounds(row, 0, rows);
+    verify_in_bounds(col, 0, cols);
     return data[element_offset(row, col)];
   }
   inline const complex &operator()(int row, int col) const {
-    assert(row < rows && col < cols);
+    verify_in_bounds(row, 0, rows);
+    verify_in_bounds(col, 0, cols);
     return data[element_offset(row, col)];
   }
 
@@ -91,4 +111,4 @@ struct dmatrix {
 /// Type alias for vectors for clarity
 using dvector = dmatrix;
 
-} // namespace qcsim
+} // namespace qc
