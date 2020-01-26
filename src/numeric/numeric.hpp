@@ -20,7 +20,7 @@ namespace qc {
 using real = double;
 using complex = std::complex<real>;
 
-complex operator""_i(long double val) { return complex{0, val}; }
+complex operator""_i(long double val) { return complex{0, static_cast<real>(val)}; }
     /// @}
 
 inline void verify_in_bounds(int val, int min, int max_m1) {
@@ -45,6 +45,16 @@ struct dmatrix {
   /// Constructs a matrix with given elements (given in a row-major order)
   template <int N>
   inline explicit dmatrix(int rows, int cols, const complex (&cdata)[N])
+      : rows(rows), cols(cols), data(rows * cols) {
+    if (rows * cols != N) {
+      throw std::invalid_argument("dmatrix rows*cols != length(data)");
+    }
+    verify_in_bounds(rows, 0, INT_MAX);
+    verify_in_bounds(cols, 0, INT_MAX);
+    std::copy_n(cdata, N, data.begin());
+  }
+  template <int N>
+  inline explicit dmatrix(int rows, int cols, const real (&cdata)[N])
       : rows(rows), cols(cols), data(rows * cols) {
     if (rows * cols != N) {
       throw std::invalid_argument("dmatrix rows*cols != length(data)");
