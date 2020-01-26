@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <cassert>
+#include <climits>
 #include <cmath>
 #include <complex>
 #include <exception>
 #include <vector>
-#include <climits>
 
 namespace qc {
 
@@ -20,8 +20,10 @@ namespace qc {
 using real = double;
 using complex = std::complex<real>;
 
-complex operator""_i(long double val) { return complex{0, static_cast<real>(val)}; }
-    /// @}
+complex operator""_i(long double val) {
+  return complex{0, static_cast<real>(val)};
+}
+/// @}
 
 inline void verify_in_bounds(int val, int min, int max_m1) {
   if (val < min || val >= max_m1) {
@@ -117,6 +119,53 @@ struct dmatrix {
     return m;
   }
 };
+
+inline bool operator==(const dmatrix &a, const dmatrix &b) {
+  return a.rows == b.rows && a.cols == b.cols && a.data == b.data;
+}
+
+inline bool operator!=(const dmatrix &a, const dmatrix &b) { return !(a == b); }
+
+inline dmatrix operator+(const dmatrix &a, const dmatrix &b) {
+  if (a.cols != b.cols || a.rows != b.rows) {
+    throw std::invalid_argument("Trying to add matrices of different sizes");
+  }
+  dmatrix r{a.rows, a.cols};
+  std::transform(a.data.cbegin(), a.data.cend(), b.data.cbegin(),
+                 r.data.begin(), [](complex x, complex y) { return x + y; });
+  return r;
+}
+
+inline dmatrix operator-(const dmatrix &a, const dmatrix &b) {
+  if (a.cols != b.cols || a.rows != b.rows) {
+    throw std::invalid_argument(
+        "Trying to subtract matrices of different sizes");
+  }
+  dmatrix r{a.rows, a.cols};
+  std::transform(a.data.cbegin(), a.data.cend(), b.data.cbegin(),
+                 r.data.begin(), [](complex x, complex y) { return x - y; });
+  return r;
+}
+
+inline dmatrix operator-(const dmatrix &a) {
+  dmatrix r{a.rows, a.cols};
+  std::transform(a.data.cbegin(), a.data.cend(), r.data.begin(),
+                 [](complex x) { return -x; });
+  return r;
+}
+
+inline dmatrix operator*(const dmatrix &a, complex b) {
+  dmatrix r{a.rows, a.cols};
+  std::transform(a.data.cbegin(), a.data.cend(), r.data.begin(),
+                 [b](complex x) { return x * b; });
+  return r;
+}
+
+inline dmatrix operator*(const dmatrix &a, real b) { return a * complex(b); }
+
+inline dmatrix operator*(complex a, const dmatrix &b) { return b * a; }
+
+inline dmatrix operator*(real a, const dmatrix &b) { return b * complex(a); }
 
 /// Type alias for vectors for clarity
 using dvector = dmatrix;

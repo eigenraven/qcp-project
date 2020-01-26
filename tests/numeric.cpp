@@ -48,3 +48,54 @@ TEST(numeric, dmatrix_transposes) {
   EXPECT_THAT(h.data,
               ElementsAre(1.0 - 1.0_i, 3.0 - 3.0_i, 2.0 - 2.0_i, 4.0 - 4.0_i));
 }
+
+TEST(numeric, dmatrix_equality) {
+  dmatrix m1{2, 2, {1.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 4.0 + 4.0_i}};
+  dmatrix m2{2, 2, {1.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 4.0 + 4.0_i}};
+  dmatrix id2 = dmatrix::identity(2, 2);
+  dmatrix id3 = dmatrix::identity(3, 3);
+  EXPECT_EQ(m1, m1);
+  EXPECT_EQ(m2, m2);
+  EXPECT_EQ(m1, m2);
+  EXPECT_EQ(m2, m1);
+  EXPECT_EQ(id2, id2);
+  EXPECT_EQ(id3, id3);
+  EXPECT_NE(m1, id2);
+  EXPECT_NE(m1, id3);
+  EXPECT_NE(id2, id3);
+}
+
+TEST(numeric, dmatrix_add) {
+  dmatrix m{2, 2, {1.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 4.0 + 4.0_i}};
+  dmatrix id = dmatrix::identity(2, 2);
+  dmatrix m_plus_id = m + id;
+  EXPECT_THAT(m_plus_id.data,
+              ElementsAre(2.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 5.0 + 4.0_i));
+  EXPECT_ANY_THROW(m + dmatrix::zero(3, 3));
+}
+
+TEST(numeric, dmatrix_sub) {
+  dmatrix m{2, 2, {1.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 4.0 + 4.0_i}};
+  dmatrix id = dmatrix::identity(2, 2);
+  dmatrix m_sub_id = m - id;
+  EXPECT_THAT(m_sub_id.data,
+              ElementsAre(0.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 3.0 + 4.0_i));
+  EXPECT_ANY_THROW(m - dmatrix::zero(3, 3));
+}
+
+TEST(numeric, dmatrix_neg) {
+  dmatrix m{2, 2, {1.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 4.0 + 4.0_i}};
+  dmatrix m_neg = -m;
+  EXPECT_THAT(m_neg.data, ElementsAre(-1.0 - 1.0_i, -2.0 - 2.0_i, -3.0 - 3.0_i,
+                                      -4.0 - 4.0_i));
+}
+
+TEST(numeric, dmatrix_mulconst) {
+  dmatrix m{2, 2, {1.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 4.0 + 4.0_i}};
+  dmatrix m_neg = m * (-1.0 + 0.0_i);
+  EXPECT_THAT(m_neg.data, ElementsAre(-1.0 - 1.0_i, -2.0 - 2.0_i, -3.0 - 3.0_i,
+                                      -4.0 - 4.0_i));
+  EXPECT_EQ(m, m * 1.0);
+  EXPECT_EQ(m, 1.0 * m);
+  EXPECT_EQ(m * -1.0, m * (-1.0 + 0.0_i));
+}
