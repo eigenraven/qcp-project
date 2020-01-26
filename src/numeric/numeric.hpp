@@ -12,8 +12,6 @@
 #include <vector>
 #include <climits>
 
-using namespace std::complex_literals;
-
 namespace qc {
 
 /** @{
@@ -21,7 +19,9 @@ namespace qc {
  */
 using real = double;
 using complex = std::complex<real>;
-/// @}
+
+complex operator""_i(long double val) { return complex{0, val}; }
+    /// @}
 
 inline void verify_in_bounds(int val, int min, int max_m1) {
   if (val < min || val >= max_m1) {

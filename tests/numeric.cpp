@@ -40,11 +40,11 @@ TEST(numeric, dmatrix_construction) {
 }
 
 TEST(numeric, dmatrix_transposes) {
-  dmatrix m{2, 2, {1.0 + 1.0i, 2.0 + 2.0i, 3.0 + 3.0i, 4.0 + 4.0i}};
+  dmatrix m{2, 2, {1.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 4.0 + 4.0_i}};
   dmatrix t{m.T()};
   dmatrix h{m.H()};
   EXPECT_THAT(t.data,
-              ElementsAre(1.0 + 1.0i, 3.0 + 3.0i, 2.0 + 2.0i, 4.0 + 4.0i));
+              ElementsAre(1.0 + 1.0_i, 3.0 + 3.0_i, 2.0 + 2.0_i, 4.0 + 4.0_i));
   EXPECT_THAT(h.data,
-              ElementsAre(1.0 - 1.0i, 3.0 - 3.0i, 2.0 - 2.0i, 4.0 - 4.0i));
+              ElementsAre(1.0 - 1.0_i, 3.0 - 3.0_i, 2.0 - 2.0_i, 4.0 - 4.0_i));
 }
