@@ -1,0 +1,35 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  text-align: center;
+}
+.content, .header-anchor {
+  text-align: initial;
+  display: inline-block;
+  height: 100%;
+  width: 90%;
+  margin: 0 auto;
+  max-width: 1000px;
+}
+header, .header-anchor {
+  height: 100px;
+}
+header {
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+  position: fixed;
+  background: silver;
+}
+.title {
+  font-size: 32px;
+  font-style: italic;
+}
+nav {
+  display: inline;
+  right: 0;
+}
+nav li {
+  display: flex;
+}
