@@ -118,6 +118,12 @@ struct dmatrix {
     }
     return m;
   }
+
+  inline bool is_vector() const {
+    return cols == 1;
+  }
+
+  inline bool is_covector() const { return rows == 1; }
 };
 
 inline bool operator==(const dmatrix &a, const dmatrix &b) {
@@ -169,5 +175,24 @@ inline dmatrix operator*(real a, const dmatrix &b) { return b * complex(a); }
 
 /// Type alias for vectors for clarity
 using dvector = dmatrix;
+
+/// Matrix-matrix multiplication
+inline dmatrix operator*(const dmatrix &a, const dmatrix &b) { assert(0); }
+
+/// Dot product of two vectors (Nx1 matrices) = a^H * b
+inline complex dot(const dvector &a, const dvector &b) { assert(0); }
+
+/// Outer product of two vectors (Nx1 matrices) = a * b^H
+inline dmatrix outer(const dvector &a, const dvector &b) { assert(0); }
+
+inline dmatrix kronecker_dense(const dmatrix matrices[], size_t matrices_count) {
+  assert(0);
+}
+
+/// Kronecker product producing a dense matrix
+/// Usage: kronecker_dense({mat1, mat2, mat3});
+template<size_t N> inline dmatrix kronecker_dense(const dmatrix(&mats)[N]) {
+  return kronecker_dense(mats, N);
+}
 
 } // namespace qc
