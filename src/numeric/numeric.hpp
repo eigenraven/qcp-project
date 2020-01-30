@@ -101,7 +101,7 @@ struct dmatrix {
     return data[element_offset(row, col)];
   }
 
-  inline complex& unchecked_at(int row, int col) {
+  inline complex &unchecked_at(int row, int col) {
     return data[element_offset(row, col)];
   }
   inline const complex &unchecked_at(int row, int col) const {
@@ -193,7 +193,7 @@ inline dmatrix operator*(real a, const dmatrix &b) { return b * complex(a); }
 using dvector = dmatrix;
 
 /// Shorthand to make column vector matrices
-template<int N> inline dmatrix make_dvector(complex(&cdata)[N]) {
+template <int N> inline dmatrix make_dvector(complex (&cdata)[N]) {
   return dmatrix{N, 1, cdata};
 }
 
