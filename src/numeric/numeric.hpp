@@ -10,6 +10,8 @@
 #include <cmath>
 #include <complex>
 #include <exception>
+#include <functional>
+#include <numeric>
 #include <optional>
 #include <vector>
 
@@ -99,6 +101,13 @@ struct dmatrix {
     return data[element_offset(row, col)];
   }
 
+  inline complex& unchecked_at(int row, int col) {
+    return data[element_offset(row, col)];
+  }
+  inline const complex &unchecked_at(int row, int col) const {
+    return data[element_offset(row, col)];
+  }
+
   /// Creates the transpose of the matrix
   inline dmatrix T() const {
     dmatrix m{cols, rows};
@@ -183,14 +192,64 @@ inline dmatrix operator*(real a, const dmatrix &b) { return b * complex(a); }
 /// Type alias for vectors for clarity
 using dvector = dmatrix;
 
+/// Shorthand to make column vector matrices
+template<int N> inline dmatrix make_dvector(complex(&cdata)[N]) {
+  return dmatrix{N, 1, cdata};
+}
+
+/// Shorthand to make row vector matrices
+template <int N> inline dmatrix make_dcovector(complex (&cdata)[N]) {
+  return dmatrix{1, N, cdata};
+}
+
 /// Matrix-matrix multiplication
-inline dmatrix operator*(const dmatrix &a, const dmatrix &b) { assert(0); }
+inline dmatrix operator*(const dmatrix &a, const dmatrix &b) {
+  if (a.cols != b.rows) {
+    throw std::invalid_argument(
+        "Mismatched dimensions for matrix multiplication");
+  }
+  dmatrix r{a.rows, b.cols};
+  for (int row = 0; row < r.rows; row++) {
+    for (int col = 0; col < r.cols; col++) {
+      for (int elem = 0; elem < a.cols; elem++) {
+        r.unchecked_at(row, col) +=
+            a.unchecked_at(row, elem) * b.unchecked_at(elem, col);
+      }
+    }
+  }
+}
 
 /// Dot product of two vectors (Nx1 matrices) = a^H * b
-inline complex dot(const dvector &a, const dvector &b) { assert(0); }
+inline complex dot(const dvector &a, const dvector &b) {
+  if (!a.is_vector() || !b.is_vector()) {
+    throw std::invalid_argument(
+        "Trying to calculate dot product of non-vector matrices");
+  }
+  if (a.rows != b.rows) {
+    throw std::invalid_argument(
+        "Trying to calculate dot product of vectors of different dimensions");
+  }
+  return std::transform_reduce(
+      a.data.cbegin(), a.data.cend(), b.data.cbegin(), complex{0, 0},
+      std::plus<>(),
+      [](const complex &a, const complex &b) { return std::conj(a) * b; });
+}
 
 /// Outer product of two vectors (Nx1 matrices) = a * b^H
-inline dmatrix outer(const dvector &a, const dvector &b) { assert(0); }
+inline dmatrix outer(const dvector &a, const dvector &b) {
+  if (!a.is_vector() || !b.is_vector()) {
+    throw std::invalid_argument(
+        "Trying to calculate outer product of non-vector matrices");
+  }
+  dmatrix r{a.rows, b.rows};
+  auto it = r.data.begin();
+  for (int row = 0; row < a.rows; row++, it += a.rows) {
+    complex e = a.data[row];
+    std::transform(b.data.cbegin(), b.data.cend(), it,
+                   [e](complex v) { return e * v; });
+  }
+  return r;
+}
 
 inline dmatrix kronecker_dense(const dmatrix matrices[],
                                size_t matrices_count) {
