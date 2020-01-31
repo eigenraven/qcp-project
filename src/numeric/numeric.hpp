@@ -11,6 +11,7 @@
 #include <complex>
 #include <exception>
 #include <functional>
+#include <gsl/gsl>
 #include <numeric>
 #include <optional>
 #include <vector>
@@ -127,6 +128,48 @@ struct dmatrix {
       }
     }
     return m;
+  }
+
+  /// Create a matrix clone of this with a removed row
+  inline dmatrix removed_row(int deleted_row) const {
+    verify_in_bounds(deleted_row, 0, rows);
+    dmatrix r{rows - 1, cols};
+    for (int row = 0; row < rows - 1; row++) {
+      for (int col = 0; col < cols; col++) {
+        r.unchecked_at(row, col) =
+            this->unchecked_at(row >= deleted_row ? row + 1 : row, col);
+      }
+    }
+    return r;
+  }
+
+  /// Create a matrix clone of this with a removed column
+  inline dmatrix removed_column(int deleted_col) const {
+    verify_in_bounds(deleted_col, 0, cols);
+    dmatrix r{rows, cols - 1};
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols - 1; col++) {
+        r.unchecked_at(row, col) =
+            this->unchecked_at(row, col >= deleted_col ? col + 1 : col);
+      }
+    }
+    return r;
+  }
+
+  /// Create a matrix clone of this with a removed row and column
+  inline dmatrix removed_row_and_column(int deleted_row,
+                                        int deleted_col) const {
+    verify_in_bounds(deleted_row, 0, rows);
+    verify_in_bounds(deleted_col, 0, cols);
+    dmatrix r{rows - 1, cols - 1};
+    for (int row = 0; row < rows - 1; row++) {
+      for (int col = 0; col < cols - 1; col++) {
+        r.unchecked_at(row, col) =
+            this->unchecked_at(row >= deleted_row ? row + 1 : row,
+                               col >= deleted_col ? col + 1 : col);
+      }
+    }
+    return r;
   }
 
   inline bool is_vector() const { return cols == 1; }
@@ -251,15 +294,52 @@ inline dmatrix outer(const dvector &a, const dvector &b) {
   return r;
 }
 
-inline dmatrix kronecker_dense(const dmatrix matrices[],
-                               size_t matrices_count) {
-  assert(0);
+template <size_t N> inline dmatrix kronecker_dense(gsl::span<dmatrix, N> mats) {
+  std::vector row_idx{mats.size()}, col_idx{mats.size()};
+  int total_rows =
+      std::accumulate(mats.cbegin(), mats.cend(), 1,
+                      [](int acc, const dmatrix &m) { return acc * m.rows; });
+  int total_cols =
+      std::accumulate(mats.cbegin(), mats.cend(), 1,
+                      [](int acc, const dmatrix &m) { return acc * m.cols; });
+  dmatrix kp{total_rows, total_cols};
+  for (int r = 0; r < total_rows; r++) {
+    for (int c = 0; c < total_cols; c++) {
+      // calculate product for the element
+      complex P = 1.0;
+      for (int mi = 0; P != 0.0 && mi < mats.size(); mi++) {
+        P *= mats[mi](row_idx[mi], col_idx[mi]);
+      }
+      kp(r, c) = P;
+      // increase column index
+      for (int p = col_idx.size() - 1; p >= 0; p--) {
+        col_idx[p]++;
+        if (col_idx[p] >= mats[p].cols) {
+          col_idx[p] = 0;
+        } else {
+          break;
+        }
+      }
+    }
+    // reset row indices before next iteration
+    std::fill(col_idx.begin(), col_idx.end(), 0);
+    // increase row index
+    for (int p = row_idx.size() - 1; p >= 0; p--) {
+      row_idx[p]++;
+      if (row_idx[p] >= mats[p].rows) {
+        row_idx[p] = 0;
+      } else {
+        break;
+      }
+    }
+  }
+  return kp;
 }
 
 /// Kronecker product producing a dense matrix
 /// Usage: kronecker_dense({mat1, mat2, mat3});
 template <size_t N> inline dmatrix kronecker_dense(const dmatrix (&mats)[N]) {
-  return kronecker_dense(mats, N);
+  return kronecker_dense(gsl::make_span(mats));
 }
 
 } // namespace qc
