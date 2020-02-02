@@ -49,25 +49,14 @@ struct dmatrix {
     verify_in_bounds(cols, 0, INT_MAX);
   }
   /// Constructs a matrix with given elements (given in a row-major order)
-  template <int N>
-  inline explicit dmatrix(int rows, int cols, const complex (&cdata)[N])
-      : rows(rows), cols(cols), data(rows * cols) {
-    if (rows * cols != N) {
+  inline explicit dmatrix(int rows, int cols,
+                          std::initializer_list<complex> cdata)
+      : rows(rows), cols(cols), data(cdata) {
+    if (rows * cols != cdata.size()) {
       throw std::invalid_argument("dmatrix rows*cols != length(data)");
     }
     verify_in_bounds(rows, 0, INT_MAX);
     verify_in_bounds(cols, 0, INT_MAX);
-    std::copy_n(cdata, N, data.begin());
-  }
-  template <int N>
-  inline explicit dmatrix(int rows, int cols, const real (&cdata)[N])
-      : rows(rows), cols(cols), data(rows * cols) {
-    if (rows * cols != N) {
-      throw std::invalid_argument("dmatrix rows*cols != length(data)");
-    }
-    verify_in_bounds(rows, 0, INT_MAX);
-    verify_in_bounds(cols, 0, INT_MAX);
-    std::copy_n(cdata, N, data.begin());
   }
 
   /// Creates a new zero matrix
@@ -236,13 +225,13 @@ inline dmatrix operator*(real a, const dmatrix &b) { return b * complex(a); }
 using dvector = dmatrix;
 
 /// Shorthand to make column vector matrices
-template <int N> inline dmatrix make_dvector(complex (&cdata)[N]) {
-  return dmatrix{N, 1, cdata};
+inline dmatrix make_dvector(std::initializer_list<complex> cdata) {
+  return dmatrix{static_cast<int>(cdata.size()), 1, cdata};
 }
 
 /// Shorthand to make row vector matrices
-template <int N> inline dmatrix make_dcovector(complex (&cdata)[N]) {
-  return dmatrix{1, N, cdata};
+inline dmatrix make_dcovector(std::initializer_list<complex> cdata) {
+  return dmatrix{1, static_cast<int>(cdata.size()), cdata};
 }
 
 /// Matrix-matrix multiplication
@@ -260,6 +249,7 @@ inline dmatrix operator*(const dmatrix &a, const dmatrix &b) {
       }
     }
   }
+  return r;
 }
 
 /// Dot product of two vectors (Nx1 matrices) = a^H * b
@@ -294,7 +284,9 @@ inline dmatrix outer(const dvector &a, const dvector &b) {
   return r;
 }
 
-template <size_t N> inline dmatrix kronecker_dense(gsl::span<dmatrix, N> mats) {
+template <ptrdiff_t N>
+inline dmatrix kronecker_dense(
+    gsl::span<const std::reference_wrapper<const dmatrix>, N> mats) {
   std::vector row_idx{mats.size()}, col_idx{mats.size()};
   int total_rows =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
@@ -314,7 +306,7 @@ template <size_t N> inline dmatrix kronecker_dense(gsl::span<dmatrix, N> mats) {
       // increase column index
       for (int p = col_idx.size() - 1; p >= 0; p--) {
         col_idx[p]++;
-        if (col_idx[p] >= mats[p].cols) {
+        if (col_idx[p] >= mats[p].get().cols) {
           col_idx[p] = 0;
         } else {
           break;
@@ -326,7 +318,7 @@ template <size_t N> inline dmatrix kronecker_dense(gsl::span<dmatrix, N> mats) {
     // increase row index
     for (int p = row_idx.size() - 1; p >= 0; p--) {
       row_idx[p]++;
-      if (row_idx[p] >= mats[p].rows) {
+      if (row_idx[p] >= mats[p].get().rows) {
         row_idx[p] = 0;
       } else {
         break;
@@ -338,8 +330,9 @@ template <size_t N> inline dmatrix kronecker_dense(gsl::span<dmatrix, N> mats) {
 
 /// Kronecker product producing a dense matrix
 /// Usage: kronecker_dense({mat1, mat2, mat3});
-template <size_t N> inline dmatrix kronecker_dense(const dmatrix (&mats)[N]) {
-  return kronecker_dense(gsl::make_span(mats));
+inline dmatrix kronecker_dense(
+    std::initializer_list<std::reference_wrapper<const dmatrix>> mats) {
+  return kronecker_dense(gsl::make_span(mats.begin(), mats.end()));
 }
 
 } // namespace qc

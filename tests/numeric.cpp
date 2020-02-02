@@ -99,3 +99,30 @@ TEST(numeric, dmatrix_mulconst) {
   EXPECT_EQ(m, 1.0 * m);
   EXPECT_EQ(m * -1.0, m * (-1.0 + 0.0_i));
 }
+
+TEST(numeric, make_dvector) {
+  EXPECT_EQ((make_dvector({1.0, 2.0, 3.0})), (dmatrix{3, 1, {1.0, 2.0, 3.0}}));
+  EXPECT_EQ((make_dcovector({1.0, 2.0, 3.0})),
+            (dmatrix{1, 3, {1.0, 2.0, 3.0}}));
+}
+
+TEST(numeric, vector_products) {
+  dvector a = make_dvector({1.0, 1.0_i});
+  dvector b = make_dvector({0.0, 1.0});
+  EXPECT_EQ(dot(a, b), -1.0_i);
+  EXPECT_EQ(dot(b, a), 1.0_i);
+  EXPECT_EQ(outer(a, b), (dmatrix{2, 2, {0.0, 1.0, 0.0, 1.0_i}}));
+  EXPECT_EQ(outer(b, a), (dmatrix{2, 2, {0.0, 0.0, 1.0, 1.0_i}}));
+}
+
+TEST(numeric, matrix_multiply_square) {
+  dmatrix id = dmatrix::identity(2, 2);
+  dmatrix diag2{2, 2, {2.0, 0.0, 0.0, 2.0}};
+  dmatrix m{2, 2, {1.0, 1.0_i, 2.0, 3.0}};
+  EXPECT_EQ(id * diag2, diag2);
+  EXPECT_EQ(diag2 * id, diag2);
+  EXPECT_EQ(id * m, m);
+  EXPECT_EQ(m * id, m);
+  EXPECT_EQ(id * id, id);
+  EXPECT_EQ(m * m, (dmatrix{2, 2, {1.0 + 2.0_i, 4.0_i, 8.0, 9.0 + 2.0_i}}));
+}
