@@ -262,7 +262,7 @@ inline complex dot(const dvector &a, const dvector &b) {
     throw std::invalid_argument(
         "Trying to calculate dot product of vectors of different dimensions");
   }
-  return std::transform_reduce(
+  return std::inner_product(
       a.data.cbegin(), a.data.cend(), b.data.cbegin(), complex{0, 0},
       std::plus<>(),
       [](const complex &a, const complex &b) { return std::conj(a) * b; });
