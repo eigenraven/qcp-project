@@ -10,6 +10,10 @@
 #include <cmath>
 #include <complex>
 #include <exception>
+#include <functional>
+#include <gsl/gsl>
+#include <numeric>
+#include <optional>
 #include <vector>
 
 namespace qc {
@@ -45,25 +49,14 @@ struct dmatrix {
     verify_in_bounds(cols, 0, INT_MAX);
   }
   /// Constructs a matrix with given elements (given in a row-major order)
-  template <int N>
-  inline explicit dmatrix(int rows, int cols, const complex (&cdata)[N])
-      : rows(rows), cols(cols), data(rows * cols) {
-    if (rows * cols != N) {
+  inline explicit dmatrix(int rows, int cols,
+                          std::initializer_list<complex> cdata)
+      : rows(rows), cols(cols), data(cdata) {
+    if (rows * cols != cdata.size()) {
       throw std::invalid_argument("dmatrix rows*cols != length(data)");
     }
     verify_in_bounds(rows, 0, INT_MAX);
     verify_in_bounds(cols, 0, INT_MAX);
-    std::copy_n(cdata, N, data.begin());
-  }
-  template <int N>
-  inline explicit dmatrix(int rows, int cols, const real (&cdata)[N])
-      : rows(rows), cols(cols), data(rows * cols) {
-    if (rows * cols != N) {
-      throw std::invalid_argument("dmatrix rows*cols != length(data)");
-    }
-    verify_in_bounds(rows, 0, INT_MAX);
-    verify_in_bounds(cols, 0, INT_MAX);
-    std::copy_n(cdata, N, data.begin());
   }
 
   /// Creates a new zero matrix
@@ -98,6 +91,13 @@ struct dmatrix {
     return data[element_offset(row, col)];
   }
 
+  inline complex &unchecked_at(int row, int col) {
+    return data[element_offset(row, col)];
+  }
+  inline const complex &unchecked_at(int row, int col) const {
+    return data[element_offset(row, col)];
+  }
+
   /// Creates the transpose of the matrix
   inline dmatrix T() const {
     dmatrix m{cols, rows};
@@ -119,11 +119,59 @@ struct dmatrix {
     return m;
   }
 
-  inline bool is_vector() const {
-    return cols == 1;
+  /// Create a matrix clone of this with a removed row
+  inline dmatrix removed_row(int deleted_row) const {
+    verify_in_bounds(deleted_row, 0, rows);
+    dmatrix r{rows - 1, cols};
+    for (int row = 0; row < rows - 1; row++) {
+      for (int col = 0; col < cols; col++) {
+        r.unchecked_at(row, col) =
+            this->unchecked_at(row >= deleted_row ? row + 1 : row, col);
+      }
+    }
+    return r;
   }
 
+  /// Create a matrix clone of this with a removed column
+  inline dmatrix removed_column(int deleted_col) const {
+    verify_in_bounds(deleted_col, 0, cols);
+    dmatrix r{rows, cols - 1};
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols - 1; col++) {
+        r.unchecked_at(row, col) =
+            this->unchecked_at(row, col >= deleted_col ? col + 1 : col);
+      }
+    }
+    return r;
+  }
+
+  /// Create a matrix clone of this with a removed row and column
+  inline dmatrix removed_row_and_column(int deleted_row,
+                                        int deleted_col) const {
+    verify_in_bounds(deleted_row, 0, rows);
+    verify_in_bounds(deleted_col, 0, cols);
+    dmatrix r{rows - 1, cols - 1};
+    for (int row = 0; row < rows - 1; row++) {
+      for (int col = 0; col < cols - 1; col++) {
+        r.unchecked_at(row, col) =
+            this->unchecked_at(row >= deleted_row ? row + 1 : row,
+                               col >= deleted_col ? col + 1 : col);
+      }
+    }
+    return r;
+  }
+
+  inline bool is_vector() const { return cols == 1; }
+
   inline bool is_covector() const { return rows == 1; }
+
+  complex determinant() const;
+
+  std::optional<dmatrix> inverse() const;
+
+  /// Checks if this matrix is unitary
+  /// Warning: slow
+  bool is_unitary() const;
 };
 
 inline bool operator==(const dmatrix &a, const dmatrix &b) {
@@ -176,23 +224,116 @@ inline dmatrix operator*(real a, const dmatrix &b) { return b * complex(a); }
 /// Type alias for vectors for clarity
 using dvector = dmatrix;
 
+/// Shorthand to make column vector matrices
+inline dmatrix make_dvector(std::initializer_list<complex> cdata) {
+  return dmatrix{static_cast<int>(cdata.size()), 1, cdata};
+}
+
+/// Shorthand to make row vector matrices
+inline dmatrix make_dcovector(std::initializer_list<complex> cdata) {
+  return dmatrix{1, static_cast<int>(cdata.size()), cdata};
+}
+
 /// Matrix-matrix multiplication
-inline dmatrix operator*(const dmatrix &a, const dmatrix &b) { assert(0); }
+inline dmatrix operator*(const dmatrix &a, const dmatrix &b) {
+  if (a.cols != b.rows) {
+    throw std::invalid_argument(
+        "Mismatched dimensions for matrix multiplication");
+  }
+  dmatrix r{a.rows, b.cols};
+  for (int row = 0; row < r.rows; row++) {
+    for (int col = 0; col < r.cols; col++) {
+      for (int elem = 0; elem < a.cols; elem++) {
+        r.unchecked_at(row, col) +=
+            a.unchecked_at(row, elem) * b.unchecked_at(elem, col);
+      }
+    }
+  }
+  return r;
+}
 
 /// Dot product of two vectors (Nx1 matrices) = a^H * b
-inline complex dot(const dvector &a, const dvector &b) { assert(0); }
+inline complex dot(const dvector &a, const dvector &b) {
+  if (!a.is_vector() || !b.is_vector()) {
+    throw std::invalid_argument(
+        "Trying to calculate dot product of non-vector matrices");
+  }
+  if (a.rows != b.rows) {
+    throw std::invalid_argument(
+        "Trying to calculate dot product of vectors of different dimensions");
+  }
+  return std::inner_product(
+      a.data.cbegin(), a.data.cend(), b.data.cbegin(), complex{0, 0},
+      std::plus<>(),
+      [](const complex &a, const complex &b) { return std::conj(a) * b; });
+}
 
 /// Outer product of two vectors (Nx1 matrices) = a * b^H
-inline dmatrix outer(const dvector &a, const dvector &b) { assert(0); }
+inline dmatrix outer(const dvector &a, const dvector &b) {
+  if (!a.is_vector() || !b.is_vector()) {
+    throw std::invalid_argument(
+        "Trying to calculate outer product of non-vector matrices");
+  }
+  dmatrix r{a.rows, b.rows};
+  auto it = r.data.begin();
+  for (int row = 0; row < a.rows; row++, it += a.rows) {
+    complex e = a.data[row];
+    std::transform(b.data.cbegin(), b.data.cend(), it,
+                   [e](complex v) { return e * v; });
+  }
+  return r;
+}
 
-inline dmatrix kronecker_dense(const dmatrix matrices[], size_t matrices_count) {
-  assert(0);
+template <ptrdiff_t N>
+inline dmatrix kronecker_dense(
+    gsl::span<const std::reference_wrapper<const dmatrix>, N> mats) {
+  std::vector row_idx{mats.size()}, col_idx{mats.size()};
+  int total_rows =
+      std::accumulate(mats.cbegin(), mats.cend(), 1,
+                      [](int acc, const dmatrix &m) { return acc * m.rows; });
+  int total_cols =
+      std::accumulate(mats.cbegin(), mats.cend(), 1,
+                      [](int acc, const dmatrix &m) { return acc * m.cols; });
+  dmatrix kp{total_rows, total_cols};
+  for (int r = 0; r < total_rows; r++) {
+    for (int c = 0; c < total_cols; c++) {
+      // calculate product for the element
+      complex P = 1.0;
+      for (int mi = 0; P != 0.0 && mi < mats.size(); mi++) {
+        P *= mats[mi](row_idx[mi], col_idx[mi]);
+      }
+      kp(r, c) = P;
+      // increase column index
+      for (int p = col_idx.size() - 1; p >= 0; p--) {
+        col_idx[p]++;
+        if (col_idx[p] >= mats[p].get().cols) {
+          col_idx[p] = 0;
+        } else {
+          break;
+        }
+      }
+    }
+    // reset row indices before next iteration
+    std::fill(col_idx.begin(), col_idx.end(), 0);
+    // increase row index
+    for (int p = row_idx.size() - 1; p >= 0; p--) {
+      row_idx[p]++;
+      if (row_idx[p] >= mats[p].get().rows) {
+        row_idx[p] = 0;
+      } else {
+        break;
+      }
+    }
+  }
+  return kp;
 }
 
 /// Kronecker product producing a dense matrix
 /// Usage: kronecker_dense({mat1, mat2, mat3});
-template<size_t N> inline dmatrix kronecker_dense(const dmatrix(&mats)[N]) {
-  return kronecker_dense(mats, N);
+inline dmatrix kronecker_dense(
+    std::initializer_list<std::reference_wrapper<const dmatrix>> mats) {
+  return kronecker_dense(gsl::make_span(mats.begin(), mats.end()));
 }
 
 } // namespace qc
+

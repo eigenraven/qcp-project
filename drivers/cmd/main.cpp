@@ -1,9 +1,12 @@
-#include "numeric/numeric.hpp"
 #include <iostream>
+#include <qcsim.hpp>
+
+using namespace qc;
 
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
-  std::cout << "QCP code" << std::endl;
+  simulate(1);
+  std::cout << "Done" << std::endl;
   return 0;
 }
