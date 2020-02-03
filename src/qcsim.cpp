@@ -9,7 +9,7 @@ std::pair<int, int> linked_version() {
 }
 
 void simulate(int qbits) {
-	QRegister reg(2);
+	QRegister reg(3);
 	reg.applyOperator(hadamard,1);
 }
 

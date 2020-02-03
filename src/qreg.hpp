@@ -22,12 +22,11 @@ class QRegister {
 		std::vector<std::reference_wrapper<const dmatrix>> matrices;
 		for(int i = 0; i < nqbits; i++) {
 			if(i==qbit) {
-				matrices.push_back(std::ref(gate.matrix));
+				matrices.push_back(std::cref(gate.matrix));
 			} else {
-				const dmatrix a = dmatrix::identity(1<<nqbits,1<<nqbits);
-				matrices.push_back(std::ref(a));
+				matrices.push_back(std::cref(identity.matrix));
 			}
-		}		
+		}
 		gsl::span<const std::reference_wrapper<const dmatrix>> s = gsl::make_span(matrices);
 		dmatrix quantumGate = kronecker_dense(s);
 		state=quantumGate*state;
