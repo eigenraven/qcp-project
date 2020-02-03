@@ -15,4 +15,3 @@ std::optional<dmatrix> dmatrix::inverse() const {
 bool dmatrix::is_unitary() const { return this->H() == this->inverse(); }
 
 } // namespace qc
-

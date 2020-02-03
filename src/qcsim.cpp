@@ -9,8 +9,8 @@ std::pair<int, int> linked_version() {
 }
 
 void simulate(int qbits) {
-	qregister test(1);
-	std::cout<<test.nqbits<<"\n";
+	QRegister reg(2);
+	reg.applyOperator(hadamard,1);
 }
 
 } // namespace qc

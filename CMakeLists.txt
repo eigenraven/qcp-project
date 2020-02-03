@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 3.10)
 project(QCP_SIMULATOR)
 
 add_subdirectory(external/googletest-release-1.10.0 EXCLUDE_FROM_ALL)
+add_subdirectory(external/GSL-2.1.0 EXCLUDE_FROM_ALL)
 
 include(GoogleTest)
 
@@ -30,6 +31,7 @@ file(GLOB_RECURSE driver_cmd_files CONFIGURE_DEPENDS LIST_DIRECTORIES false driv
 file(GLOB_RECURSE test_files CONFIGURE_DEPENDS LIST_DIRECTORIES false tests/*.cpp)
 
 add_library(qcsim_common ${source_files})
+target_link_libraries(qcsim_common PUBLIC GSL)
 target_include_directories(qcsim_common PUBLIC src/)
 target_compile_features(qcsim_common PUBLIC cxx_std_17)
 

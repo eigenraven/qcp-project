@@ -1,16 +1,18 @@
 #pragma once
 
 #include "numeric/numeric.hpp"
+#include <gsl/gsl>
 
 namespace qc {
 
-class qgate {
-	dmatrix gate;
-	inline qgate(int qbits, const complex (&cdata)[int])
-	: gate(1<<qbits,1<<qbits,cdata) {
+class QGate {
+	public:
+	const dmatrix matrix;
+	inline QGate(int qbits, std::initializer_list<complex> cdata)
+	: matrix(1<<qbits,1<<qbits,cdata) {
 		//verify bounds
 	}
 };
 
-qgate hadamard(1,{1,1,1,-1});
+QGate hadamard(1,{1,1,1,-1});
 }
