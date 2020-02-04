@@ -6,6 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Qbuilder</title>
   <link rel="stylesheet" href="/static/style.css">
+  <script
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous"></script>
+  <script src="/static/circuit.js"></script>
 </head>
 <body>
 <div class='header-anchor'></div>
@@ -18,9 +23,15 @@
   <p>
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, nisi! Quaerat, obcaecati sapiente. Eius aperiam eaque aliquid, vel libero autem! Corrupti adipisci molestiae odio quibusdam dolore facilis, deleniti ipsam aperiam.
   </p>
-  <canvas>
-
-  </canvas>
+  <div class='builder'>
+    Qubits: <span id='qubit-count'>0</span>
+    <button id='qubit-more'>+</button>
+    <button id='qubit-less'>-</button>
+    <canvas class='circuit' id='circuit'>
+      Your browser doesn't appear to support HTML5. Please upgrade
+      to a modern browser.
+    </canvas>
+  </div>
 </div>
 </body>
 </html>

@@ -33,3 +33,8 @@ nav {
 nav li {
   display: flex;
 }
+
+.circuit {
+  background-color: honeydew; /* just while */
+  width: 100%;
+}
