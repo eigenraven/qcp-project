@@ -6,12 +6,12 @@ $(function(){
     })
   });
   $('#qubit-count').text(circuits.length)
-  
+
   var HTML_QUBIT = `
     <div class='qubit'>
-      <div class='info'>
-        %N
-      </div>
+      <p class='info'>
+        qubit %N
+      </p>
       <div class='dirac'>
         %KET0
       </div>
