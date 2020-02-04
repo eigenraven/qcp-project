@@ -2,6 +2,7 @@
 
 #include "numeric/numeric.hpp"
 #include <gsl/gsl>
+#include <math.h>
 
 namespace qc {
 
@@ -10,11 +11,14 @@ class QGate {
 	int qbits;
 	const dmatrix matrix;
 	inline QGate(int qbits, std::initializer_list<complex> cdata)
-	: qbits(qbits), matrix(1<<qbits,1<<qbits,cdata) {
-		//verify bounds
-	}
+	: qbits(qbits), matrix(1<<qbits,1<<qbits,cdata) {}
 };
 
-QGate identity(1,{1,0,0,1});
-QGate hadamard(1,{1,1,1,-1});
+extern QGate ID;
+extern QGate X;
+extern QGate Y;
+extern QGate Z;
+extern QGate H;
+extern QGate CNOT;
+extern QGate SWAP;
 }
