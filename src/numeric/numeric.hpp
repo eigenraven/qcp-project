@@ -24,9 +24,7 @@ namespace qc {
 using real = double;
 using complex = std::complex<real>;
 
-complex operator""_i(long double val) {
-  return complex{0, static_cast<real>(val)};
-}
+complex operator""_i(long double val);
 /// @}
 
 inline void verify_in_bounds(int val, int min, int max_m1) {
@@ -287,7 +285,7 @@ inline dmatrix outer(const dvector &a, const dvector &b) {
 template <ptrdiff_t N>
 inline dmatrix kronecker_dense(
     gsl::span<const std::reference_wrapper<const dmatrix>, N> mats) {
-  std::vector row_idx{mats.size()}, col_idx{mats.size()};
+  std::vector<int> row_idx(mats.size()), col_idx(mats.size());
   int total_rows =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
                       [](int acc, const dmatrix &m) { return acc * m.rows; });
@@ -336,3 +334,4 @@ inline dmatrix kronecker_dense(
 }
 
 } // namespace qc
+

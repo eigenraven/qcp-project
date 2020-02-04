@@ -2,6 +2,10 @@
 
 namespace qc {
 
+complex operator""_i(long double val) {
+  return complex{0, static_cast<real>(val)};
+}
+
 complex dmatrix::determinant() const {
   assert(0);
   return 0.0;
