@@ -6,3 +6,4 @@
 
 #include "common.hpp"
 #include "dense_matrix.hpp"
+#include "sparse_matrix.hpp"
