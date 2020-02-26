@@ -24,6 +24,7 @@ namespace qc {
 using real = double;
 using complex = std::complex<real>;
 
+complex operator""_i(unsigned long long val);
 complex operator""_i(long double val);
 /// @}
 
