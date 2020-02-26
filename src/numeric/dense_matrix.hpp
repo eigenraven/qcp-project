@@ -1,6 +1,7 @@
 /**
  * @file Dense (contiguous array) matrix representation implementation.
  */
+#pragma once
 #include "common.hpp"
 
 namespace qc {
