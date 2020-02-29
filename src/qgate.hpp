@@ -20,5 +20,8 @@ extern QGate Y;
 extern QGate Z;
 extern QGate H;
 extern QGate CNOT;
+extern QGate CY;
+extern QGate CZ;
 extern QGate SWAP;
+extern QGate CCNOT;
 }
