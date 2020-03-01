@@ -28,6 +28,19 @@
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, nisi! Quaerat, obcaecati sapiente. Eius aperiam eaque aliquid, vel libero autem! Corrupti adipisci molestiae odio quibusdam dolore facilis, deleniti ipsam aperiam.
   </p>
   <div class='builder'>
+    <div class='gates' id='gates'>
+      {% for op in ops.values() %}
+      {% if op.kind == "gate" %}
+        <div class='gate'>
+          <h2>{{op.qual_name}}</h2>
+          \(
+            {{op.mathjax.factor}}
+            \begin{pmatrix}{{op.mathjax.matrix}}\end{pmatrix}
+          \)
+        </div>
+      {% endif %}
+      {% endfor %}
+    </div>
     Qubits: <span id='qubit-count'>0</span>
     <button id='qubit-more'>+</button>
     <button id='qubit-less'>-</button>

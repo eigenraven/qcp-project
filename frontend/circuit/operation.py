@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict
 from dataclasses import dataclass
 
 import json
@@ -19,14 +19,16 @@ class Operation:
     kind: ["gate", "meta"]
     qual_name: str
     description: str
-    mathjax: List[str]
+    mathjax: Dict[str, str]
 
 OPERATIONS = {}  # op.name -> op
 
 with open(_GATES_PATH) as f:
     for name, data in json.load(f).items():
-        mathjax = "\\\\".join(data.get(
-            'mathjax', ['(not a gate)']))
+        mathjax = {
+            'matrix': '\\\\'.join(data.get('matrix', ['\\text{Not a gate}'])),
+            'factor': data.get('factor', '')
+        }
         op = Operation(
             name,
             data['arity'],
