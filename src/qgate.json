@@ -1,49 +1,51 @@
 {
-    "ID": {"qubits": 1, "mathjax": [
+    "runs": {"kind": "meta", "arity": "1"},
+    "qubits": {"kind": "meta", "arity": "1"},
+    "id": {"kind": "gate", "arity": 1, "mathjax": [
         "1 & 0",
         "0 & 1"
-    ], "name": "Identity."},
-    "X": {"qubits": 1, "mathjax": [
+    ],  "name": "Identity (no-op) gate"},
+    "x": {"kind": "gate", "arity": 1, "mathjax": [
         "0 & 1",
         "1 & 0"
-    ], "name": "Identity."},
-    "Y": {"qubits": 1, "mathjax": [
+    ],  "name": "X-rotation gate"},
+    "y": {"kind": "gate", "arity": 1, "mathjax": [
         "0  & -1i",
         "1i &  1"
-    ], "name": "Identity."},
-    "Z": {"qubits": 1, "mathjax": [
+    ],  "name": "Y-rotation gate"},
+    "z": {"kind": "gate", "arity": 1, "mathjax": [
         "1 &  0",
         "0 & -1"
-    ], "name": "Identity."},
-    "H": {"qubits": 1, "mathjax": [
+    ],  "name": "Z-rotation gate"},
+    "h": {"kind": "gate", "arity": 1, "mathjax": [
         "\frac{1}{sqrt(2)} &  \frac{1}{sqrt(2)}",
         "\frac{1}{sqrt(2)} & -\frac{1}{sqrt(2)}"
-    ], "name": "Identity."},
-    "CNOT": {"qubits": 2, "mathjax": [
+    ],  "name": "Hadamard gate"},
+    "cnot": {"kind": "gate", "arity": 2, "mathjax": [
         "1 &0 &0 &0",
         "0 &1 &0 &0",
         "0 &0 &0 &1",
         "0 &0 &1 &0"
-    ], "name": "Identity."},
-    "CY": {"qubits": 2, "mathjax": [
+    ],  "name": "CNOT gate"},
+    "cy": {"kind": "gate", "arity": 2, "mathjax": [
         " 1 & 0 & 0  & 0 ",
         " 0 & 1 & 0  & 0 ",
         " 0 & 0 & 0  &-1i",
         " 0 & 0 & 1i & 0 "
-    ]},
-    "CZ": {"qubits": 2, "mathjax": [
+    ],  "name": "CY gate"},
+    "cz": {"kind": "gate", "arity": 2, "mathjax": [
         "1 &0 &0 & 0",
         "0 &1 &0 & 0",
         "0 &0 &1 & 0",
         "0 &0 &0 &-1"
-    ]},
-    "SWAP": {"qubits": 2, "mathjax": [
+    ],  "name": "CZ gate"},
+    "swap": {"kind": "gate", "arity": 2, "mathjax": [
         "1 &0 &0 &0",
         "0 &0 &1 &0",
         "0 &1 &0 &0",
         "0 &0 &0 &1"
-    ]},
-    "CCNOT": {"qubits": 3, "mathjax": [
+    ],  "name": "Qubit-swap gate"},
+    "ccnot": {"kind": "gate", "arity": 3, "mathjax": [
         "1 &0 &0 &0 &0 &0 &0 &0",
         "0 &1 &0 &0 &0 &0 &0 &0",
         "0 &0 &1 &0 &0 &0 &0 &0",
@@ -52,5 +54,5 @@
         "0 &0 &0 &0 &0 &1 &0 &0",
         "0 &0 &0 &0 &0 &0 &0 &1",
         "0 &0 &0 &0 &0 &0 &1 &0"
-    ]}
+    ],  "name": "CCNot gate"}
 }
