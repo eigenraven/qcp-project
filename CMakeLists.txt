@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 3.10)
 project(QCP_SIMULATOR)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
 add_subdirectory(external/googletest-release-1.10.0 EXCLUDE_FROM_ALL)
 add_subdirectory(external/GSL-2.1.0 EXCLUDE_FROM_ALL)
 add_subdirectory(external/cpp-httplib-0.5.6 EXCLUDE_FROM_ALL)
@@ -47,4 +50,4 @@ add_executable(qcsim ${driver_cmd_files})
 target_link_libraries(qcsim qcsim_common)
 
 add_executable(http_qcsim ${driver_http_files})
-target_link_libraries(http_qcsim qcsim_common httplib)
+target_link_libraries(http_qcsim qcsim_common httplib Threads::Threads)
