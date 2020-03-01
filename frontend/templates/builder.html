@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Qbuilder</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script"
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script src="/static/circuit.js"></script>
+</head>
+<body>
+<div class='header-anchor'></div>
+<header>
+<div class='content'>
+  <div class="title">Quantum Builder</div>
+</div>
+</header>
+<div class='content'>
+  <p>
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, nisi! Quaerat, obcaecati sapiente. Eius aperiam eaque aliquid, vel libero autem! Corrupti adipisci molestiae odio quibusdam dolore facilis, deleniti ipsam aperiam.
+  </p>
+  <div class='builder'>
+    Qubits: <span id='qubit-count'>0</span>
+    <button id='qubit-more'>+</button>
+    <button id='qubit-less'>-</button>
+    <div class='circuit' id='circuit'>
+      <div class='qubits' id='qubits'>
+        <!-- TECHNICAL DEBT
+          -- The default qubits are manually placed
+          -- so typesetting can be done.
+          -- Adding more qubits will with 99.9% likelihood
+          -- be done by the user *after* typesetting,
+          -- so we then will be able to copy anything typeset.
+          -- This is an issue if we want to save or load
+          -- circuitry, and should be fixed with async behaviour.
+          -->
+        <div class='qubit'>
+          <p class='info'>qubit 0</div>
+          <div class='dirac'>\(\ket{0}\)</div>
+        </div>
+        <div class='qubit'>
+          <p class='info'>qubit 1</div>
+          <div class='dirac'>\(\ket{0}\)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
