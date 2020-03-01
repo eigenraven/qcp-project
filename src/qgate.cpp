@@ -1,5 +1,10 @@
 #include <qgate.hpp>
 
+/*
+ * These gates are identical to those in gates.json;
+ * don't modify one without the other.
+ */
+
 namespace qc {
 
 QGate ID(1,{1,0,
