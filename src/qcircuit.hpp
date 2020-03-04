@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include <qreg.hpp>
 #include <iostream>
@@ -9,53 +11,57 @@ class QCircuit {
 	std::vector<std::pair<int,QGate>> gates;
 
 	public:
-	QCircuit(int qbits)
-	: qreg(qbits) {}
+	QCircuit(int qubits)
+	: qreg(qubits) {}
 
-	void nop(int qbit) {
-		gates.push_back(std::make_pair(qbit,ID));
+	void nop(int qubit) {
+		singleGate(ID,qubit);
 	}
 
-	void h(int qbit) {
-		gates.push_back(std::make_pair(qbit,H));
+	void h(int qubit) {
+		singleGate(H,qubit);
 	}
 
-	void x(int qbit) {
-		gates.push_back(std::make_pair(qbit,X));
+	void x(int qubit) {
+		singleGate(X,qubit);
 	}
 
-	void y(int qbit) {
-		gates.push_back(std::make_pair(qbit,Y));
+	void y(int qubit) {
+		singleGate(Y,qubit);
 	}
 	
-	void z(int qbit) {
-		gates.push_back(std::make_pair(qbit,Z));
+	void z(int qubit) {
+		singleGate(Z,qubit);
 	}
 
-	void cnot(int qbit1, int qbit2) {
-		doubleGate(CNOT,qbit1,qbit2);
+	void cnot(int qubit1, int qubit2) {
+		doubleGate(CNOT,qubit1,qubit2);
 	}
 	
-	void swap(int qbit1, int qbit2) {
-		doubleGate(SWAP,qbit1,qbit2);
+	void swap(int qubit1, int qubit2) {
+		doubleGate(SWAP,qubit1,qubit2);
 	}
 
-	void ccnot(int qbit1, int qbit2, int qbit3) {
-		multipleGate(CCNOT,{qbit1,qbit2,qbit3});
+	void ccnot(int qubit1, int qubit2, int qubit3) {
+		multipleGate(CCNOT,{qubit1,qubit2,qubit3});
 	}
 
-	// So far only gates that operate on single or multiple consecutive QBits have been implemented
-	// So this emulates a quantum computer with the QBits connected linearly
-	// i.e. Each Qbit is only directly connected to its nearest neighbours
-	void doubleGate(QGate gate, int qbit1, int qbit2) {
-		if(gate.qbits!=2)throw std::invalid_argument("This gate does not operate on two qbits");
-		if(qbit1==qbit2)throw std::invalid_argument("This gate must operate on different qbits");
-		int lowest = std::min(qbit1,qbit2);
-		int highest = std::max(qbit1,qbit2);
+	void singleGate(QGate gate, int qubit) {
+		gates.push_back(std::make_pair(qubit,gate));
+	}
+
+	// So far only gates that operate on single or multiple consecutive qubits have been implemented
+	// So this emulates a quantum computer with the qubits connected linearly
+	// i.e. Each qubit is only directly connected to its nearest neighbours
+	void doubleGate(QGate gate, int qubit1, int qubit2) {
+		if(gate.qubits!=2)throw std::invalid_argument("This gate does not operate on two qubits");
+		if(qubit1==qubit2)throw std::invalid_argument("This gate must operate on different qubits");
+		int lowest = std::min(qubit1,qubit2);
+		int highest = std::max(qubit1,qubit2);
 		for(int i = highest-1; i > lowest; i--) {
 			swapNext(i);
 		}
-		if(qbit2>qbit1) {
+		if(qubit2>qubit1) {
 			gates.push_back(std::make_pair(lowest,gate));
 		} else {
 			swapNext(lowest);
@@ -67,34 +73,34 @@ class QCircuit {
 		}
 	}
 
-	void multipleGate(QGate gate, std::vector<int> qbits) {
-		if(gate.qbits!=qbits.size())throw std::invalid_argument("This gate does not operate on the correct number of qbits");
-		int lowest = qbits[0];
-		int overlaps[qreg.nqbits] = {-1};
-		for(int i = 0; i < qbits.size(); i++) {
-			overlaps[qbits[i]]=qbits[i];
-			lowest = std::min(lowest,qbits[i]);
-			for(int j = i+1; j < qbits.size(); j++) {
-				if(qbits[i]==qbits[j])throw std::invalid_argument("This gate must operate on different qbits");
+	void multipleGate(QGate gate, std::vector<int> qubits) {
+		if(gate.qubits!=qubits.size())throw std::invalid_argument("This gate does not operate on the correct number of qubits");
+		int lowest = qubits[0];
+		std::vector<int> overlaps(qreg.nqubits);
+		for(int i = 0; i < qubits.size(); i++) {
+			overlaps[qubits[i]]=qubits[i];
+			lowest = std::min(lowest,qubits[i]);
+			for(int j = i+1; j < qubits.size(); j++) {
+				if(qubits[i]==qubits[j])throw std::invalid_argument("This gate must operate on different qubits");
 			}
 		}
-		for(int i = 0; i < qbits.size(); i++) {
-			if(overlaps[qbits[i]]!=lowest+i) {
-				swap(overlaps[qbits[i]],lowest+i);
-				overlaps[lowest+i]=qbits[i];
+		for(int i = 0; i < qubits.size(); i++) {
+			if(overlaps[qubits[i]]!=lowest+i) {
+				swap(overlaps[qubits[i]],lowest+i);
+				overlaps[lowest+i]=qubits[i];
 			}
 		}
 		gates.push_back(std::make_pair(lowest,gate));
-		for(int i = qbits.size()-1; i >= 0; i--) {
-			if(overlaps[qbits[i]]!=lowest+i) {
-				swap(overlaps[qbits[i]],lowest+i);
-				overlaps[lowest+i]=qbits[i];
+		for(int i = qubits.size()-1; i >= 0; i--) {
+			if(overlaps[qubits[i]]!=lowest+i) {
+				swap(overlaps[qubits[i]],lowest+i);
+				overlaps[lowest+i]=qubits[i];
 			}
 		}
 	}
 
-	void swapNext(int qbit) {
-		gates.push_back(std::make_pair(qbit,SWAP));
+	void swapNext(int qubit) {
+		gates.push_back(std::make_pair(qubit,SWAP));
 	}
 
 	std::vector<double> simulate(int shots) {

@@ -3,16 +3,20 @@
 #include "numeric/numeric.hpp"
 #include <gsl/gsl>
 #include <math.h>
+#include <string>
 
 namespace qc {
 
 class QGate {
 	public:
-	int qbits;
+	int qubits;
 	const dmatrix matrix;
-	inline QGate(int qbits, std::initializer_list<complex> cdata)
-	: qbits(qbits), matrix(1<<qbits,1<<qbits,cdata) {}
+	inline QGate(int qubits, std::initializer_list<complex> cdata)
+	: qubits(qubits), matrix(1<<qubits,1<<qubits,cdata) {}
 };
+
+
+std::optional<QGate> getGate(std::string gate);
 
 extern QGate ID;
 extern QGate X;

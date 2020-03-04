@@ -11,14 +11,14 @@ All arguments are integers. For gates, these arguments are the zero-indexed qubi
 
 The following instructions are used:
 
-  - Mandatory header: `runs`. Takes a single argument, the number of runs.
   - Mandatory header: `qubits`. Takes a single argument, the number of qubits.
-  - Unary gates: `id`, `x`, `y`, `z`, `h`
+  - Optional header (default 1024): `shots`. Takes a single argument, the number of shots.
+  - Unary gates: `id/nop`, `x`, `y`, `z`, `h`
   - Binary gates: `cnot`, `cy`, `cz`, `swap`
-  - Ternary gates: `ccnot`
+  - Ternary gates: `ccnot/toffoli`
   - Operators: none yet implemented
 
-We assume that at the very end all quantum registers are measured. The resulting matrix returned contains the integer count of times the result was returned. The exact format for this will be defined later.
+We assume that at the very end all quantum registers are measured. The resulting vector returned contains the fraction of times the result was returned.
 
 ## Building and running
 

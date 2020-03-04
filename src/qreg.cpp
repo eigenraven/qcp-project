@@ -2,12 +2,12 @@
 
 namespace qc {
 
-void QRegister::applyOperator(QGate gate, int qbit) {
+void QRegister::applyOperator(QGate gate, int qubit) {
 	std::vector<std::reference_wrapper<const dmatrix>> matrices;
-	for(int i = 0; i < nqbits; i++) {
-		if(i==qbit) {
+	for(int i = 0; i < nqubits; i++) {
+		if(i==qubit) {
 			matrices.push_back(std::cref(gate.matrix));
-		} else if(i<qbit||i>=qbit+gate.qbits) {
+		} else if(i<qubit||i>=qubit+gate.qubits) {
 			matrices.push_back(std::cref(ID.matrix));
 		}
 	}
@@ -32,14 +32,14 @@ std::vector<int> QRegister::measureState() {
 		}
 	}
 	std::vector<int> states;
-	for(int i = 0; i < nqbits; i++) {
-		states.push_back((state>>(nqbits-1-i))&1);
+	for(int i = 0; i < nqubits; i++) {
+		states.push_back((state>>(nqubits-1-i))&1);
 	}
 	return states;
 }
 
 std::vector<double> QRegister::measureMultiple(int shots) {
-	std::vector<double> result(nqbits);
+	std::vector<double> result(nqubits);
 	for(int i = 0; i < shots; i++) {
 		std::vector state = measureState();
 		for(int j = 0; j < state.size(); j++) {

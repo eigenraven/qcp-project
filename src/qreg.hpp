@@ -10,15 +10,15 @@ namespace qc {
 
 class QRegister {
 	public:
-	int nqbits;
+	int nqubits;
 	dmatrix state;
-	QRegister(int nqbits)
-	: nqbits(nqbits), state(1<<nqbits,1) {
+	QRegister(int nqubits)
+	: nqubits(nqubits), state(1<<nqubits,1) {
 		state.data[0]=1;
 	}
 
 	public:
-	void applyOperator(QGate gate, int qbit);
+	void applyOperator(QGate gate, int qubit);
 
 	std::vector<int> measureState();
 
