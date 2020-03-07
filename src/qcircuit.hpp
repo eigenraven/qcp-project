@@ -70,7 +70,7 @@ class QCircuit {
 	void multipleGate(QGate gate, std::vector<int> qbits) {
 		if(gate.qbits!=qbits.size())throw std::invalid_argument("This gate does not operate on the correct number of qbits");
 		int lowest = qbits[0];
-		int overlaps[qreg.nqbits] = {-1};
+    std::vector<int> overlaps{qreg.nqbits, -1};
 		for(int i = 0; i < qbits.size(); i++) {
 			overlaps[qbits[i]]=qbits[i];
 			lowest = std::min(lowest,qbits[i]);
