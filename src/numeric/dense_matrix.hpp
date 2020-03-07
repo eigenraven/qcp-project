@@ -69,6 +69,8 @@ struct dmatrix {
     return data[element_offset(row, col)];
   }
 
+  inline std::vector<complex> to_std_vector() const { return this->data; }
+
   /// Creates the transpose of the matrix
   inline dmatrix T() const {
     dmatrix m{cols, rows};
@@ -203,6 +205,16 @@ inline dmatrix make_dvector(std::initializer_list<complex> cdata) {
 /// Shorthand to make row vector matrices
 inline dmatrix make_dcovector(std::initializer_list<complex> cdata) {
   return dmatrix{1, static_cast<int>(cdata.size()), cdata};
+}
+
+template <>
+inline dmatrix make_vector<dmatrix>(std::initializer_list<complex> cdata) {
+  return make_dvector(cdata);
+}
+
+template <>
+inline dmatrix make_covector<dmatrix>(std::initializer_list<complex> cdata) {
+  return make_dcovector(cdata);
 }
 
 /// Matrix-matrix multiplication

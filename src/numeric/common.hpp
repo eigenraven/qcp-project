@@ -34,4 +34,7 @@ inline void verify_in_bounds(int val, int min, int max_m1) {
   }
 }
 
+template <class M> inline M make_vector(std::initializer_list<complex> cdata);
+template <class M> inline M make_covector(std::initializer_list<complex> cdata);
+
 } // namespace qc
