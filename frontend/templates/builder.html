@@ -32,11 +32,15 @@
       {% for op in ops.values() %}
       {% if op.kind == "gate" %}
         <div class='gate'>
-          <h2>{{op.qual_name}}</h2>
-          \(
-            {{op.mathjax.factor}}
-            \begin{pmatrix}{{op.mathjax.matrix}}\end{pmatrix}
-          \)
+          <div class='gate-icon'>{{op.name.upper()}}</div>
+          <div class='gate-hint'>
+            <h2>{{op.qual_name}}</h2>
+            <p>{{op.description}}</p>
+            \(
+              {{op.mathjax.factor}}
+              \begin{pmatrix}{{op.mathjax.matrix}}\end{pmatrix}
+            \)
+          </div>
         </div>
       {% endif %}
       {% endfor %}

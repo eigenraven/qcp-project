@@ -47,6 +47,37 @@ nav li {
 .qubit .info {
   font-family: "Fantasque Sans Mono", Consolas
 }
+
+.gate{
+  display: inline-block;
+}
+.gate-icon {
+  display: inline-block;
+  background: rebeccapurple;
+  color: white;
+  border-radius: 2px;
+  width: 3em;
+  height: 3em;
+  text-align: center;
+}
+.gate-hint {
+  display: none;
+  background: aliceblue;
+  padding: 1em;
+  border-radius: 5px;
+  color: black;
+  z-index: 1000;
+  border: 2px solid rebeccapurple;
+  transform: translateY(5px);
+}
+.gate-hint h2 {
+  margin-top: 0;
+}
+.gate:hover .gate-hint {
+  display: block;
+  position: fixed;
+}
+
 .hidden {
   display: none;
 }
