@@ -67,6 +67,13 @@ struct sparse_entry_ref {
   }
 };
 
+/// Element of a sparse matrix as returned by an iterator
+struct sparse_nonzero_element {
+  int row;
+  int column;
+  complex value;
+};
+
 /// A dense complex matrix type (stores fields in a contiguous row-major array)
 struct smatrix {
   /// Dimensions of the matrix
@@ -179,6 +186,78 @@ struct smatrix {
 
   inline bool is_covector() const { return rows == 1; }
 };
+
+struct sparse_iterator {
+  typedef sparse_nonzero_element &reference;
+  typedef sparse_nonzero_element value_type;
+
+  bool end{true};
+  smatrix *matrix;
+  int row;
+  std::vector<sparse_entry>::iterator elementIter, rowEnd;
+  sparse_nonzero_element currentElement;
+
+  inline void next() {
+    if (end)
+      return;
+    if (this->matrix == nullptr)
+      return;
+    this->elementIter++;
+    wrapAround();
+    updateValue();
+  }
+  
+  inline void wrapAround() {
+    while (this->elementIter == this->rowEnd) {
+      if (this->row + 1 < this->matrix->rows) {
+        this->row++;
+        this->elementIter = this->matrix->row_data.at(this->row).begin();
+        this->rowEnd = this->matrix->row_data.at(this->row).end();
+      } else {
+        this->end = true;
+        return;
+      }
+    }
+  }
+
+  inline void updateValue() {
+    sparse_entry &en = *elementIter;
+    this->currentElement =
+        sparse_nonzero_element{this->row, en.column, en.value};
+  }
+
+  inline bool operator==(const sparse_iterator &other) {
+    if (other.end == this->end) {
+      return true;
+    }
+    return this->matrix == other.matrix && this->row == other.row &&
+           this->elementIter == other.elementIter;
+  }
+
+  inline bool operator!=(const sparse_iterator &other) {
+    return !((*this) == other);
+  }
+
+  inline sparse_nonzero_element &operator*() { return this->currentElement; }
+
+  inline sparse_nonzero_element &operator->() { return **this; }
+
+  inline sparse_iterator &operator++() {
+    this->next();
+    return *this;
+  }
+
+  inline sparse_iterator &operator++(int _) {
+    this->next();
+    return *this;
+  }
+};
+
+inline sparse_iterator begin(smatrix& m) {
+  return sparse_iterator{
+    false,
+    &m,
+    0, m.row_data[0].begin(), m.row_data[0].end()}; }
 
 inline bool operator==(const sparse_entry &a, const sparse_entry &b) {
   return a.column == b.column && a.value == b.value;
@@ -388,14 +467,17 @@ inline smatrix outer(const svector &a, const svector &b) {
 template <>
 inline smatrix kronecker<smatrix, gsl::dynamic_extent>(
     gsl::span<const smatrix *, gsl::dynamic_extent> mats) {
-  std::vector<int> row_idx(mats.size()), col_idx(mats.size());
   int total_rows =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
                       [](int acc, const smatrix *m) { return acc * m->rows; });
   int total_cols =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
                       [](int acc, const smatrix *m) { return acc * m->cols; });
+  using row_iter = std::vector<sparse_entry>::iterator;
+  std::vector<int> row_idx(mats.size()), col_idx(mats.size());
+  std::vector<row_iter> col_iter(mats.size());
   smatrix kp{total_rows, total_cols};
+
   return kp;
 }
 
