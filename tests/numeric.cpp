@@ -5,6 +5,18 @@
 using namespace testing;
 using namespace qc;
 
+namespace qc {
+std::ostream &operator<<(std::ostream &os, const dmatrix &m) {
+  os << "dmatrix{" << ::testing::PrintToString(m.data) << "}";
+  return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const smatrix &m) {
+  os << "smatrix{" << ::testing::PrintToString(m.to_std_vector()) << "}";
+  return os;
+}
+} // namespace qc
+
 TEST(numeric, sanity_check) { EXPECT_EQ(1, 1); }
 
 template <typename M> class MatrixTest : public ::testing::Test {
@@ -54,8 +66,10 @@ TYPED_TEST(MatrixTest, Matrix_transposes) {
   Matrix m{2, 2, {1.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 4.0 + 4.0_i}};
   Matrix t{m.T()};
   Matrix h{m.H()};
-  EXPECT_EQ(t, (Matrix{2, 2, {1.0 + 1.0_i, 3.0 + 3.0_i, 2.0 + 2.0_i, 4.0 + 4.0_i}}));
-  EXPECT_EQ(h, (Matrix{2, 2, {1.0 - 1.0_i, 3.0 - 3.0_i, 2.0 - 2.0_i, 4.0 - 4.0_i}}));
+  EXPECT_EQ(
+      t, (Matrix{2, 2, {1.0 + 1.0_i, 3.0 + 3.0_i, 2.0 + 2.0_i, 4.0 + 4.0_i}}));
+  EXPECT_EQ(
+      h, (Matrix{2, 2, {1.0 - 1.0_i, 3.0 - 3.0_i, 2.0 - 2.0_i, 4.0 - 4.0_i}}));
 }
 
 TYPED_TEST(MatrixTest, Matrix_equality) {
@@ -99,16 +113,16 @@ TYPED_TEST(MatrixTest, Matrix_neg) {
   using Matrix = typename TestFixture::Matrix;
   Matrix m{2, 2, {1.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 4.0 + 4.0_i}};
   Matrix m_neg = -m;
-  EXPECT_THAT(m_neg.to_std_vector(), ElementsAre(-1.0 - 1.0_i, -2.0 - 2.0_i, -3.0 - 3.0_i,
-                                      -4.0 - 4.0_i));
+  EXPECT_THAT(m_neg.to_std_vector(), ElementsAre(-1.0 - 1.0_i, -2.0 - 2.0_i,
+                                                 -3.0 - 3.0_i, -4.0 - 4.0_i));
 }
 
 TYPED_TEST(MatrixTest, Matrix_mulconst) {
   using Matrix = typename TestFixture::Matrix;
   Matrix m{2, 2, {1.0 + 1.0_i, 2.0 + 2.0_i, 3.0 + 3.0_i, 4.0 + 4.0_i}};
   Matrix m_neg = m * (-1.0 + 0.0_i);
-  EXPECT_THAT(m_neg.to_std_vector(), ElementsAre(-1.0 - 1.0_i, -2.0 - 2.0_i, -3.0 - 3.0_i,
-                                      -4.0 - 4.0_i));
+  EXPECT_THAT(m_neg.to_std_vector(), ElementsAre(-1.0 - 1.0_i, -2.0 - 2.0_i,
+                                                 -3.0 - 3.0_i, -4.0 - 4.0_i));
   EXPECT_EQ(m, m * 1.0);
   EXPECT_EQ(m, 1.0 * m);
   EXPECT_EQ(m * -1.0, m * (-1.0 + 0.0_i));
@@ -116,7 +130,8 @@ TYPED_TEST(MatrixTest, Matrix_mulconst) {
 
 TYPED_TEST(MatrixTest, make_dvector) {
   using Matrix = typename TestFixture::Matrix;
-  EXPECT_EQ((make_vector<Matrix>({1.0, 2.0, 3.0})), (Matrix{3, 1, {1.0, 2.0, 3.0}}));
+  EXPECT_EQ((make_vector<Matrix>({1.0, 2.0, 3.0})),
+            (Matrix{3, 1, {1.0, 2.0, 3.0}}));
   EXPECT_EQ((make_covector<Matrix>({1.0, 2.0, 3.0})),
             (Matrix{1, 3, {1.0, 2.0, 3.0}}));
 }
@@ -128,7 +143,7 @@ TYPED_TEST(MatrixTest, vector_products) {
   EXPECT_EQ(dot(a, b), -1.0_i);
   EXPECT_EQ(dot(b, a), 1.0_i);
   EXPECT_EQ(outer(a, b), (Matrix{2, 2, {0.0, 1.0, 0.0, 1.0_i}}));
-  EXPECT_EQ(outer(b, a), (Matrix{2, 2, {0.0, 0.0, 1.0, 1.0_i}}));
+  EXPECT_EQ(outer(b, a), (Matrix{2, 2, {0.0, 0.0, 1.0, -1.0_i}}));
 }
 
 TYPED_TEST(MatrixTest, matrix_multiply_square) {
@@ -142,4 +157,18 @@ TYPED_TEST(MatrixTest, matrix_multiply_square) {
   EXPECT_EQ(m * id, m);
   EXPECT_EQ(id * id, id);
   EXPECT_EQ(m * m, (Matrix{2, 2, {1.0 + 2.0_i, 4.0_i, 8.0, 9.0 + 2.0_i}}));
+}
+
+TYPED_TEST(MatrixTest, kronecker_product) {
+  using Matrix = typename TestFixture::Matrix;
+  Matrix id2 = Matrix::identity(2, 2);
+  Matrix krid2 = kronecker({&id2, &id2});
+  EXPECT_EQ(krid2, Matrix::identity(4, 4));
+  {
+    std::vector<const Matrix *> id2list;
+    id2list.push_back(&id2);
+    id2list.push_back(&id2);
+    Matrix krid2_fromvec = kronecker(gsl::make_span(id2list));
+    EXPECT_EQ(krid2_fromvec, Matrix::identity(4, 4));
+  }
 }
