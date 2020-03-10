@@ -55,7 +55,8 @@ struct sparse_entry_ref {
         // no-op
       } else {
         // insert value
-        row.insert(row.begin() + this->index, sparse_entry{this->column, newVal});
+        row.insert(row.begin() + this->index,
+                   sparse_entry{this->column, newVal});
       }
     }
   }
@@ -129,20 +130,22 @@ struct smatrix {
 
   inline sparse_entry_ref find_ref(int row, int col) {
     auto &vrow = this->row_data.at(row);
-    return sparse_entry_ref{vrow, col,
-                            int(std::lower_bound(vrow.begin(), vrow.end(), col,
-                                             [](const sparse_entry &en, int cidx) {
-                                               return en.column < cidx;
-                                             }) - vrow.begin())};
+    return sparse_entry_ref{
+        vrow, col,
+        int(std::lower_bound(vrow.begin(), vrow.end(), col,
+                             [](const sparse_entry &en, int cidx) {
+                               return en.column < cidx;
+                             }) -
+            vrow.begin())};
   }
 
   inline sparse_entry_ref operator()(int row, int col) {
     return find_ref(row, col);
   }
 
-  inline smatrix T() const { return zero(1,1); }
+  inline smatrix T() const { return zero(1, 1); }
 
-  inline smatrix H() const { return zero(1,1); }
+  inline smatrix H() const { return zero(1, 1); }
 
   inline bool is_vector() const { return cols == 1; }
 
@@ -159,19 +162,90 @@ inline bool operator==(const smatrix &a, const smatrix &b) {
 
 inline bool operator!=(const smatrix &a, const smatrix &b) { return !(a == b); }
 
-inline smatrix operator+(const smatrix& a, const smatrix& b) {
+inline smatrix operator+(const smatrix &a, const smatrix &b) {
   if (a.cols != b.cols || a.rows != b.rows) {
     throw std::invalid_argument("Trying to add matrices of different sizes");
   }
   smatrix r{a.rows, a.cols};
+  for (int row = 0; row < a.rows; row++) {
+    auto &rrow = r.row_data.at(row);
+    auto &arow = a.row_data.at(row);
+    auto &brow = b.row_data.at(row);
+    rrow.reserve(
+        std::min(arow.size() + brow.size(), static_cast<size_t>(a.cols)));
+    auto m1col = arow.begin();
+    auto m2col = brow.begin();
+    auto m1end = arow.end();
+    auto m2end = brow.end();
+    while (!(m1col == m1end && m2col == m2end)) {
+      if (m1col == m1end) {
+        rrow.insert(rrow.end(), m2col, m2end);
+        break;
+      } else if (m2col == m2end) {
+        rrow.insert(rrow.end(), m1col, m1end);
+        break;
+      } else {
+        if (m1col->column < m2col->column) {
+          rrow.push_back(sparse_entry{m1col->column, m1col->value});
+          m1col++;
+        } else if (m1col->column > m2col->column) {
+          rrow.push_back(sparse_entry{m2col->column, m2col->value});
+          m2col++;
+        } else {
+          rrow.push_back(
+              sparse_entry{m1col->column, m1col->value + m2col->value});
+          m1col++;
+          m2col++;
+        }
+      }
+    }
+  }
+
   return r;
 }
 
 inline smatrix operator-(const smatrix &a, const smatrix &b) {
   if (a.cols != b.cols || a.rows != b.rows) {
-    throw std::invalid_argument("Trying to subtract matrices of different sizes");
+    throw std::invalid_argument(
+        "Trying to subtract matrices of different sizes");
   }
   smatrix r{a.rows, a.cols};
+  for (int row = 0; row < a.rows; row++) {
+    auto &rrow = r.row_data.at(row);
+    auto &arow = a.row_data.at(row);
+    auto &brow = b.row_data.at(row);
+    rrow.reserve(
+        std::min(arow.size() + brow.size(), static_cast<size_t>(a.cols)));
+    auto m1col = arow.begin();
+    auto m2col = brow.begin();
+    auto m1end = arow.end();
+    auto m2end = brow.end();
+    while (!(m1col == m1end && m2col == m2end)) {
+      if (m1col == m1end) {
+        std::transform(m2col, m2end, std::back_inserter(rrow),
+                       [](const sparse_entry &a) {
+                         return sparse_entry{a.column, -a.value};
+                       });
+        break;
+      } else if (m2col == m2end) {
+        rrow.insert(rrow.end(), m1col, m1end);
+        break;
+      } else {
+        if (m1col->column < m2col->column) {
+          rrow.push_back(sparse_entry{m1col->column, m1col->value});
+          m1col++;
+        } else if (m1col->column > m2col->column) {
+          rrow.push_back(sparse_entry{m2col->column, -m2col->value});
+          m2col++;
+        } else {
+          rrow.push_back(
+              sparse_entry{m1col->column, m1col->value - m2col->value});
+          m1col++;
+          m2col++;
+        }
+      }
+    }
+  }
   return r;
 }
 
@@ -215,7 +289,7 @@ inline smatrix make_covector<smatrix>(std::initializer_list<complex> cdata) {
 }
 
 /// Matrix-matrix multiplication
-inline smatrix operator*(const smatrix& a, const smatrix& b) {
+inline smatrix operator*(const smatrix &a, const smatrix &b) {
   if (a.cols != b.rows) {
     throw std::invalid_argument(
         "Mismatched dimensions for matrix multiplication");
@@ -253,7 +327,8 @@ inline smatrix outer(const svector &a, const svector &b) {
 }
 
 template <>
-inline smatrix kronecker<smatrix, gsl::dynamic_extent>(gsl::span<const smatrix *, gsl::dynamic_extent> mats) {
+inline smatrix kronecker<smatrix, gsl::dynamic_extent>(
+    gsl::span<const smatrix *, gsl::dynamic_extent> mats) {
   std::vector<int> row_idx(mats.size()), col_idx(mats.size());
   int total_rows =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
@@ -264,6 +339,5 @@ inline smatrix kronecker<smatrix, gsl::dynamic_extent>(gsl::span<const smatrix *
   smatrix kp{total_rows, total_cols};
   return kp;
 }
-
 
 } // namespace qc
