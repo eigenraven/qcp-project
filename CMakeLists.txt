@@ -35,6 +35,8 @@ file(GLOB_RECURSE driver_cmd_files CONFIGURE_DEPENDS LIST_DIRECTORIES false driv
 file(GLOB_RECURSE driver_http_files CONFIGURE_DEPENDS LIST_DIRECTORIES false drivers/http/*.cpp)
 file(GLOB_RECURSE test_files CONFIGURE_DEPENDS LIST_DIRECTORIES false tests/*.cpp)
 
+add_subdirectory(docs)
+
 add_library(qcsim_common ${source_files})
 target_link_libraries(qcsim_common PUBLIC GSL)
 target_include_directories(qcsim_common PUBLIC src/)
