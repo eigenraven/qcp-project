@@ -36,7 +36,19 @@ make
 ./qcsim
 ```
 
+### Running the HTTP driver
+```
+./http_qcsim
+```
+And open your web browser to <http://localhost:12345/version>
+
 ### Running unit tests
 ```
-./test_qcsim
+make test
 ```
+
+### Building HTML docs (Requires Doxygen)
+```
+make docs
+```
+They will be located at `PROJECT_DIR/build/docs/html/index.html`
