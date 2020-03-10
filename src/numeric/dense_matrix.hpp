@@ -262,7 +262,7 @@ inline dmatrix outer(const dvector &a, const dvector &b) {
   for (int row = 0; row < a.rows; row++, it += a.rows) {
     complex e = a.data[row];
     std::transform(b.data.cbegin(), b.data.cend(), it,
-                   [e](complex v) { return e * v; });
+                   [e](complex v) { return e * std::conj(v); });
   }
   return r;
 }

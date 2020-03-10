@@ -5,6 +5,18 @@
 using namespace testing;
 using namespace qc;
 
+namespace qc {
+std::ostream &operator<<(std::ostream &os, const dmatrix &m) {
+  os << "dmatrix{" << ::testing::PrintToString(m.data) << "}";
+  return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const smatrix &m) {
+  os << "smatrix{" << ::testing::PrintToString(m.to_std_vector()) << "}";
+  return os;
+}
+} // namespace qc
+
 TEST(numeric, sanity_check) { EXPECT_EQ(1, 1); }
 
 template <typename M> class MatrixTest : public ::testing::Test {
@@ -131,7 +143,7 @@ TYPED_TEST(MatrixTest, vector_products) {
   EXPECT_EQ(dot(a, b), -1.0_i);
   EXPECT_EQ(dot(b, a), 1.0_i);
   EXPECT_EQ(outer(a, b), (Matrix{2, 2, {0.0, 1.0, 0.0, 1.0_i}}));
-  EXPECT_EQ(outer(b, a), (Matrix{2, 2, {0.0, 0.0, 1.0, 1.0_i}}));
+  EXPECT_EQ(outer(b, a), (Matrix{2, 2, {0.0, 0.0, 1.0, -1.0_i}}));
 }
 
 TYPED_TEST(MatrixTest, matrix_multiply_square) {

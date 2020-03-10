@@ -143,9 +143,37 @@ struct smatrix {
     return find_ref(row, col);
   }
 
-  inline smatrix T() const { return zero(1, 1); }
+  inline smatrix T() const {
+    smatrix r{this->cols, this->rows};
+    if (this->rows > 0) {
+      for (int row = 0; row < r.rows; row++) {
+        r.row_data.at(row).reserve(this->row_data[0].size());
+      }
+    }
+    for (int row = 0; row < this->rows; row++) {
+      for (auto &el : this->row_data.at(row)) {
+        r.row_data.at(el.column).push_back(sparse_entry{row, el.value});
+      }
+    }
+    for (int row = 0; row < r.rows; row++) {
+      auto &rdata = r.row_data.at(row);
+      std::sort(rdata.begin(), rdata.end(),
+                [](const sparse_entry &a, const sparse_entry &b) {
+                  return a.column < b.column;
+                });
+    }
+    return r;
+  }
 
-  inline smatrix H() const { return zero(1, 1); }
+  inline smatrix H() const {
+    smatrix r{this->T()};
+    for (auto &row : r.row_data) {
+      for (auto &el : row) {
+        el.value = std::conj(el.value);
+      }
+    }
+    return r;
+  }
 
   inline bool is_vector() const { return cols == 1; }
 
@@ -250,12 +278,16 @@ inline smatrix operator-(const smatrix &a, const smatrix &b) {
 }
 
 inline smatrix operator-(const smatrix &a) {
-  smatrix r{a.rows, a.cols};
-  return r;
+  return smatrix::zero(a.rows, a.cols) - a;
 }
 
 inline smatrix operator*(const smatrix &a, complex b) {
-  smatrix r{a.rows, a.cols};
+  smatrix r{a};
+  for (auto &row : r.row_data) {
+    for (auto &el : row) {
+      el.value *= b;
+    }
+  }
   return r;
 }
 
@@ -295,6 +327,34 @@ inline smatrix operator*(const smatrix &a, const smatrix &b) {
         "Mismatched dimensions for matrix multiplication");
   }
   smatrix r{a.rows, b.cols};
+  smatrix bT{b.T()};
+  for (int row = 0; row < r.rows; row++) {
+    auto &rrow = r.row_data.at(row);
+    auto &arow = a.row_data.at(row);
+    for (int col = 0; col < r.cols; col++) {
+      complex sum{0.0};
+      auto &brow = bT.row_data.at(col);
+      rrow.reserve(std::max(arow.size(), brow.size()));
+      auto m1col = arow.begin();
+      auto m2col = brow.begin();
+      auto m1end = arow.end();
+      auto m2end = brow.end();
+      while (!(m1col == m1end || m2col == m2end)) {
+        if (m1col->column < m2col->column) {
+          m1col++;
+        } else if (m1col->column > m2col->column) {
+          m2col++;
+        } else {
+          sum += m1col->value * m2col->value;
+          m1col++;
+          m2col++;
+        }
+      }
+      if (sum != 0.0) {
+        rrow.push_back(sparse_entry{col, sum});
+      }
+    }
+  }
   return r;
 }
 
@@ -322,8 +382,7 @@ inline smatrix outer(const svector &a, const svector &b) {
     throw std::invalid_argument(
         "Trying to calculate outer product of non-vector matrices");
   }
-  smatrix r{a.rows, b.rows};
-  return r;
+  return a * b.H();
 }
 
 template <>
