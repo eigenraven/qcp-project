@@ -252,25 +252,18 @@ inline smatrix outer(const svector &a, const svector &b) {
   return r;
 }
 
-template <ptrdiff_t N>
-inline smatrix kronecker_sparse(
-  gsl::span<const std::reference_wrapper<const smatrix>, N> mats) {
+template <>
+inline smatrix kronecker<smatrix, gsl::dynamic_extent>(gsl::span<const smatrix *, gsl::dynamic_extent> mats) {
   std::vector<int> row_idx(mats.size()), col_idx(mats.size());
   int total_rows =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
-                      [](int acc, const smatrix &m) { return acc * m.rows; });
+                      [](int acc, const smatrix *m) { return acc * m->rows; });
   int total_cols =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
-                      [](int acc, const smatrix &m) { return acc * m.cols; });
+                      [](int acc, const smatrix *m) { return acc * m->cols; });
   smatrix kp{total_rows, total_cols};
   return kp;
 }
 
-/// Kronecker product producing a dense matrix
-/// Usage: kronecker_dense({mat1, mat2, mat3});
-inline smatrix kronecker_sparse(
-    std::initializer_list<std::reference_wrapper<const smatrix>> mats) {
-  return kronecker_sparse(gsl::make_span(mats.begin(), mats.end()));
-}
 
 } // namespace qc

@@ -267,29 +267,29 @@ inline dmatrix outer(const dvector &a, const dvector &b) {
   return r;
 }
 
-template <ptrdiff_t N>
-inline dmatrix kronecker_dense(
-    gsl::span<const std::reference_wrapper<const dmatrix>, N> mats) {
+template<>
+inline dmatrix kronecker<dmatrix, gsl::dynamic_extent>(
+    gsl::span<const dmatrix*, gsl::dynamic_extent> mats) {
   std::vector<int> row_idx(mats.size()), col_idx(mats.size());
   int total_rows =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
-                      [](int acc, const dmatrix &m) { return acc * m.rows; });
+                      [](int acc, const dmatrix *m) { return acc * m->rows; });
   int total_cols =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
-                      [](int acc, const dmatrix &m) { return acc * m.cols; });
+                      [](int acc, const dmatrix *m) { return acc * m->cols; });
   dmatrix kp{total_rows, total_cols};
   for (int r = 0; r < total_rows; r++) {
     for (int c = 0; c < total_cols; c++) {
       // calculate product for the element
       complex P = 1.0;
       for (int mi = 0; P != 0.0 && mi < mats.size(); mi++) {
-        P *= mats[mi](row_idx[mi], col_idx[mi]);
+        P *= (*mats[mi])(row_idx[mi], col_idx[mi]);
       }
       kp(r, c) = P;
       // increase column index
       for (int p = col_idx.size() - 1; p >= 0; p--) {
         col_idx[p]++;
-        if (col_idx[p] >= mats[p].get().cols) {
+        if (col_idx[p] >= mats[p]->cols) {
           col_idx[p] = 0;
         } else {
           break;
@@ -301,7 +301,7 @@ inline dmatrix kronecker_dense(
     // increase row index
     for (int p = row_idx.size() - 1; p >= 0; p--) {
       row_idx[p]++;
-      if (row_idx[p] >= mats[p].get().rows) {
+      if (row_idx[p] >= mats[p]->rows) {
         row_idx[p] = 0;
       } else {
         break;
@@ -309,13 +309,6 @@ inline dmatrix kronecker_dense(
     }
   }
   return kp;
-}
-
-/// Kronecker product producing a dense matrix
-/// Usage: kronecker_dense({mat1, mat2, mat3});
-inline dmatrix kronecker_dense(
-    std::initializer_list<std::reference_wrapper<const dmatrix>> mats) {
-  return kronecker_dense(gsl::make_span(mats.begin(), mats.end()));
 }
 
 } // namespace qc

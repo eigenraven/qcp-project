@@ -3,16 +3,15 @@
 namespace qc {
 
 void QRegister::applyOperator(QGate gate, int qbit) {
-	std::vector<std::reference_wrapper<const dmatrix>> matrices;
+	std::vector<const dmatrix*> matrices;
 	for(int i = 0; i < nqbits; i++) {
 		if(i==qbit) {
-			matrices.push_back(std::cref(gate.matrix));
+			matrices.push_back(&gate.matrix);
 		} else if(i<qbit||i>=qbit+gate.qbits) {
-			matrices.push_back(std::cref(ID.matrix));
+			matrices.push_back(&ID.matrix);
 		}
 	}
-	gsl::span<const std::reference_wrapper<const dmatrix>> s = gsl::make_span(matrices);
-	dmatrix quantumGate = kronecker_dense(s);
+	dmatrix quantumGate = kronecker(gsl::make_span(matrices));
 	state=quantumGate*state;
 }
 

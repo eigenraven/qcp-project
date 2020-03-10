@@ -37,4 +37,13 @@ inline void verify_in_bounds(int val, int min, int max_m1) {
 template <class M> inline M make_vector(std::initializer_list<complex> cdata);
 template <class M> inline M make_covector(std::initializer_list<complex> cdata);
 
+/// Kronecker product for a given span of matrices
+template <class M, ptrdiff_t N> inline M kronecker(gsl::span<const M *, N> mats);
+
+/// Kronecker product
+/// Usage: kronecker({mat1, mat2, mat3});
+template <class M> inline M kronecker(std::initializer_list<const M *> mats) {
+  return kronecker(gsl::make_span(mats.begin(), mats.end()));
+}
+
 } // namespace qc
