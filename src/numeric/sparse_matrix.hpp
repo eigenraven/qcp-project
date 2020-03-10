@@ -206,7 +206,7 @@ struct sparse_iterator {
     wrapAround();
     updateValue();
   }
-  
+
   inline void wrapAround() {
     while (this->elementIter == this->rowEnd) {
       if (this->row + 1 < this->matrix->rows) {
@@ -253,11 +253,19 @@ struct sparse_iterator {
   }
 };
 
-inline sparse_iterator begin(smatrix& m) {
-  return sparse_iterator{
-    false,
-    &m,
-    0, m.row_data[0].begin(), m.row_data[0].end()}; }
+inline sparse_iterator begin(smatrix &m) {
+  auto it = sparse_iterator{false,
+                            &m,
+                            0,
+                            m.row_data[0].begin(),
+                            m.row_data[0].end(),
+                            sparse_nonzero_element{}};
+  it.wrapAround();
+  it.updateValue();
+  return it;
+}
+
+inline sparse_iterator end(smatrix& m) { return sparse_iterator{true, &m, m.rows}; }
 
 inline bool operator==(const sparse_entry &a, const sparse_entry &b) {
   return a.column == b.column && a.value == b.value;
