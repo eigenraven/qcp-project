@@ -43,7 +43,8 @@ template <class M, ptrdiff_t N> inline M kronecker(gsl::span<const M *, N> mats)
 /// Kronecker product
 /// Usage: kronecker({mat1, mat2, mat3});
 template <class M> inline M kronecker(std::initializer_list<const M *> mats) {
-  return kronecker(gsl::make_span(mats.begin(), mats.end()));
+  return kronecker<M, gsl::dynamic_extent>(gsl::make_span(
+      const_cast<const M **>(mats.begin()), const_cast<const M **>(mats.end())));
 }
 
 } // namespace qc
