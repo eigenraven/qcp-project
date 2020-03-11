@@ -1,0 +1,5 @@
+qubits,8
+// Simple Entanglement Demo
+h,2
+x,7
+ccnot,2,7,0

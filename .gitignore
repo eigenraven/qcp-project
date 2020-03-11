@@ -35,4 +35,6 @@
 /out/
 CMakeSettings.json
 .vs/
+
 *.pyc
+__pycache__/
