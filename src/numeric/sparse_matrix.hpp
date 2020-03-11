@@ -265,7 +265,9 @@ inline sparse_iterator begin(smatrix &m) {
   return it;
 }
 
-inline sparse_iterator end(smatrix& m) { return sparse_iterator{true, &m, m.rows}; }
+inline sparse_iterator end(smatrix &m) {
+  return sparse_iterator{true, &m, m.rows};
+}
 
 inline bool operator==(const sparse_entry &a, const sparse_entry &b) {
   return a.column == b.column && a.value == b.value;

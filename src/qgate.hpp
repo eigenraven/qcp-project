@@ -8,13 +8,12 @@
 namespace qc {
 
 class QGate {
-	public:
-	int qubits;
-	const dmatrix matrix;
-	inline QGate(int qubits, std::initializer_list<complex> cdata)
-	: qubits(qubits), matrix(1<<qubits,1<<qubits,cdata) {}
+public:
+  int qubits;
+  const dmatrix matrix;
+  inline QGate(int qubits, std::initializer_list<complex> cdata)
+      : qubits(qubits), matrix(1 << qubits, 1 << qubits, cdata) {}
 };
-
 
 std::optional<QGate> getGate(std::string gate);
 
@@ -28,4 +27,4 @@ extern QGate CY;
 extern QGate CZ;
 extern QGate SWAP;
 extern QGate CCNOT;
-}
+} // namespace qc
