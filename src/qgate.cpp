@@ -41,4 +41,39 @@ QGate CCNOT(3,{	1,0,0,0,0,0,0,0,
 				0,0,0,0,0,1,0,0,
 				0,0,0,0,0,0,0,1,
 				0,0,0,0,0,0,1,0});
+
+
+std::optional<QGate> getGate(std::string gate) {
+	if(gate=="id"||gate=="nop") {
+		return ID;
+	}
+	if(gate=="x") {
+		return X;
+	} else 
+	if(gate=="y") {
+		return Y;
+	} else 
+	if(gate=="z") {
+		return Z;
+	} else 
+	if(gate=="h") {
+		return H;
+	} else 
+	if(gate=="cnot") {
+		return CNOT;
+	} else 
+	if(gate=="cy") {
+		return CY;
+	} else 
+	if(gate=="cz") {
+		return CZ;
+	} else 
+	if(gate=="swap") {
+		return SWAP;
+	} else 
+	if(gate=="ccnot"||gate=="toffoli") {
+		return CCNOT;
+	}
+	else return std::nullopt;
+}
 }
