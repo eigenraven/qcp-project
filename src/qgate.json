@@ -1,0 +1,61 @@
+{
+    "runs": {"kind": "meta", "arity": "1"},
+    "qubits": {"kind": "meta", "arity": "1"},
+    "id": {"kind": "gate", "arity": 1, "matrix": [
+        "1 & 0",
+        "0 & 1"
+    ],  "name": "Identity (no-op) gate",
+        "description": "This gate has no effect."
+    },
+    "x": {"kind": "gate", "arity": 1, "matrix": [
+        "0 & 1",
+        "1 & 0"
+    ],  "name": "X-rotation gate"},
+    "y": {"kind": "gate", "arity": 1, "matrix": [
+        "0  & -1i",
+        "1i &  1"
+    ],  "name": "Y-rotation gate"},
+    "z": {"kind": "gate", "arity": 1, "matrix": [
+        "1 &  0",
+        "0 & -1"
+    ],  "name": "Z-rotation gate"},
+    "h": {"kind": "gate", "arity": 1, "matrix": [
+        "1& 1",
+        "1&-1"
+    ],  "factor": "\\frac{1}{\\sqrt{2}}",
+        "name": "Hadamard gate"},
+    "cnot": {"kind": "gate", "arity": 2, "matrix": [
+        "1 &0 &0 &0",
+        "0 &1 &0 &0",
+        "0 &0 &0 &1",
+        "0 &0 &1 &0"
+    ],  "name": "CNOT gate"},
+    "cy": {"kind": "gate", "arity": 2, "matrix": [
+        " 1 & 0 & 0  & 0 ",
+        " 0 & 1 & 0  & 0 ",
+        " 0 & 0 & 0  &-1i",
+        " 0 & 0 & 1i & 0 "
+    ],  "name": "CY gate"},
+    "cz": {"kind": "gate", "arity": 2, "matrix": [
+        "1 &0 &0 & 0",
+        "0 &1 &0 & 0",
+        "0 &0 &1 & 0",
+        "0 &0 &0 &-1"
+    ],  "name": "CZ gate"},
+    "swap": {"kind": "gate", "arity": 2, "matrix": [
+        "1 &0 &0 &0",
+        "0 &0 &1 &0",
+        "0 &1 &0 &0",
+        "0 &0 &0 &1"
+    ],  "name": "Qubit-swap gate"},
+    "ccnot": {"kind": "gate", "arity": 3, "matrix": [
+        "1 &0 &0 &0 &0 &0 &0 &0",
+        "0 &1 &0 &0 &0 &0 &0 &0",
+        "0 &0 &1 &0 &0 &0 &0 &0",
+        "0 &0 &0 &1 &0 &0 &0 &0",
+        "0 &0 &0 &0 &1 &0 &0 &0",
+        "0 &0 &0 &0 &0 &1 &0 &0",
+        "0 &0 &0 &0 &0 &0 &0 &1",
+        "0 &0 &0 &0 &0 &0 &1 &0"
+    ],  "name": "CCNot gate"}
+}

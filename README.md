@@ -9,7 +9,7 @@ While the front-end implements QASM, the backend uses a simple `.csv` format rep
 
 All arguments are integers. For gates, these arguments are the zero-indexed qubit indexes. An error MUST be raised if the number of 
 
-The following instructions are used:
+The following instructions are used. Their names are case-insensitive.
 
   - Mandatory header: `qubits`. Takes a single argument, the number of qubits.
   - Optional header (default 1024): `shots`. Takes a single argument, the number of shots.
