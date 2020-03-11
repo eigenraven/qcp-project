@@ -267,9 +267,9 @@ inline dmatrix outer(const dvector &a, const dvector &b) {
   return r;
 }
 
-template<>
+template <>
 inline dmatrix kronecker<dmatrix, gsl::dynamic_extent>(
-    gsl::span<const dmatrix*, gsl::dynamic_extent> mats) {
+    gsl::span<const dmatrix *, gsl::dynamic_extent> mats) {
   std::vector<int> row_idx(mats.size()), col_idx(mats.size());
   int total_rows =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
