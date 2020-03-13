@@ -221,6 +221,10 @@ struct sparse_iterator {
   }
 
   inline void updateValue() {
+    if (this->end) {
+      this->currentElement = sparse_nonzero_element{};
+      return;
+    }
     sparse_entry &en = *elementIter;
     this->currentElement =
         sparse_nonzero_element{this->row, en.column, en.value};
