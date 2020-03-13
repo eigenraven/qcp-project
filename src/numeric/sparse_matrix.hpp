@@ -189,6 +189,14 @@ struct smatrix {
   inline bool is_vector() const { return cols == 1; }
 
   inline bool is_covector() const { return rows == 1; }
+
+  inline int64_t count_nonzero() const {
+    int64_t count{0};
+    for(const auto& row: this->row_data) {
+      count += row.size();
+    }
+    return count;
+  }
 };
 
 struct sparse_iterator {
@@ -498,20 +506,25 @@ inline smatrix kronecker<smatrix, gsl::dynamic_extent>(
       std::accumulate(mats.cbegin(), mats.cend(), 1,
                       [](int acc, const smatrix *m) { return acc * m->cols; });
   using row_iter = std::vector<sparse_entry>::iterator;
+  smatrix kp{totalRows, totalCols};
   std::vector<sparse_iterator> iterators, endIterators, beginIterators;
   std::vector<int> rowMultipliers(numMats, 1), colMultipliers(numMats, 1);
   beginIterators.reserve(numMats);
   endIterators.reserve(numMats);
+  uint64_t elements{1};
   for (int i = 0; i < numMats; i++) {
     beginIterators.push_back(begin(*mats[i]));
     endIterators.push_back(end(*mats[i]));
+    elements *= mats[i]->count_nonzero() / mats[i]->rows;
+  }
+  for (int i = 0; i < totalRows; i++) {
+    kp.row_data.at(i).reserve(elements);
   }
   for (int i = numMats - 2; i >= 0; i--) {
     rowMultipliers[i] = rowMultipliers[i + 1] * mats[i + 1]->rows;
     colMultipliers[i] = colMultipliers[i + 1] * mats[i + 1]->cols;
   }
   iterators = beginIterators;
-  smatrix kp{totalRows, totalCols};
   while (iterators[0] != endIterators[0]) {
     int targetRow{0}, targetCol{0};
     complex product{1.0};
