@@ -226,7 +226,7 @@ struct sparse_iterator {
         sparse_nonzero_element{this->row, en.column, en.value};
   }
 
-  inline bool operator==(const sparse_iterator &other) {
+  inline bool operator==(const sparse_iterator &other) const {
     if (other.end == this->end) {
       return true;
     }
@@ -234,7 +234,7 @@ struct sparse_iterator {
            this->elementIter == other.elementIter;
   }
 
-  inline bool operator!=(const sparse_iterator &other) {
+  inline bool operator!=(const sparse_iterator &other) const {
     return !((*this) == other);
   }
 

@@ -172,3 +172,20 @@ TYPED_TEST(MatrixTest, kronecker_product) {
     EXPECT_EQ(krid2_fromvec, Matrix::identity(4, 4));
   }
 }
+
+TEST(SparseMatrixTest, iterator_test) {
+  smatrix zeros = smatrix::zero(10, 10);
+  smatrix ones = smatrix::identity(10, 10);
+  EXPECT_EQ(begin(zeros), end(zeros));
+  EXPECT_NE(begin(ones), end(ones));
+  sparse_iterator oneBegin{begin(ones)}, oneEnd{end(ones)};
+  for(int i=0; i<10; i++) {
+    EXPECT_NE(oneBegin, oneEnd);
+    sparse_nonzero_element val = *oneBegin;
+    EXPECT_EQ(val.row, val.column);
+    EXPECT_EQ(val.row, i);
+    EXPECT_EQ(val.value, 1.0);
+    oneBegin++;
+  }
+  EXPECT_EQ(oneBegin, oneEnd);
+}
