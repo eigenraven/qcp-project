@@ -42,7 +42,7 @@ inline ParsedCircuit parseCircuit(std::istream &input) {
       std::optional<QGate> gate = getGate(token);
       if (gate) {
         if (!circuit) {
-          throw std::exception(
+          throw std::runtime_error(
               "Error: Circuit must initialized before applying gates");
         }
         std::vector<int> qubits;

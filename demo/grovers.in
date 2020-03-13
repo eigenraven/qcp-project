@@ -1,0 +1,57 @@
+qubits,3
+// 3 qubit Grover's Algorithm Demo
+
+// Initial Setup
+h,0
+h,1
+h,2
+
+// Main Loop. Repeated order sqrt(N). For 3 qubits, repeated twice
+
+//Loop 1
+
+// Oracle Operator, flips the state |111>, equivalent to searching for "7" in the "database"
+h,2
+ccnot,0,1,2
+h,2
+
+// Grover's operator, reflects the wavefunction
+h,0
+h,1
+h,2
+x,0
+x,1
+x,2
+h,2
+ccnot,0,1,2
+h,2
+x,0
+x,1
+x,2
+h,0
+h,1
+h,2
+
+//Loop 2
+
+// Oracle Operator, flips the state |111>, equivalent to searching for "7" in the "database"
+h,2
+ccnot,0,1,2
+h,2
+
+// Grover's operator, reflects the wavefunction
+h,0
+h,1
+h,2
+x,0
+x,1
+x,2
+h,2
+ccnot,0,1,2
+h,2
+x,0
+x,1
+x,2
+h,0
+h,1
+h,2
