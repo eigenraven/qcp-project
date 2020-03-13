@@ -485,9 +485,9 @@ inline smatrix outer(const svector &a, const svector &b) {
 template <>
 inline smatrix kronecker<smatrix, gsl::dynamic_extent>(
     gsl::span<const smatrix *, gsl::dynamic_extent> mats) {
-  if(mats.size() == 0){
-    return smatrix{1,1};
-  } else if(mats.size() == 1) {
+  if (mats.size() == 0) {
+    return smatrix{1, 1};
+  } else if (mats.size() == 1) {
     return smatrix{*mats[0]};
   }
   const int numMats = mats.size();
@@ -499,7 +499,7 @@ inline smatrix kronecker<smatrix, gsl::dynamic_extent>(
                       [](int acc, const smatrix *m) { return acc * m->cols; });
   using row_iter = std::vector<sparse_entry>::iterator;
   std::vector<sparse_iterator> iterators, endIterators, beginIterators;
-  std::vector<int> rowMultipliers{numMats, 1}, colMultipliers{numMats, 1};
+  std::vector<int> rowMultipliers(numMats, 1), colMultipliers(numMats, 1);
   beginIterators.reserve(numMats);
   endIterators.reserve(numMats);
   for (int i = 0; i < numMats; i++) {
@@ -515,7 +515,7 @@ inline smatrix kronecker<smatrix, gsl::dynamic_extent>(
   while (iterators[0] != endIterators[0]) {
     int targetRow{0}, targetCol{0};
     complex product{1.0};
-    for(int i = 0; i < numMats; i++) {
+    for (int i = 0; i < numMats; i++) {
       sparse_nonzero_element el = *iterators[i];
       targetRow += rowMultipliers[i] * el.row;
       targetCol += colMultipliers[i] * el.column;

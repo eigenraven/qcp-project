@@ -7,3 +7,13 @@
 #include "common.hpp"
 #include "dense_matrix.hpp"
 #include "sparse_matrix.hpp"
+
+namespace qc {
+
+inline dmatrix convert_sparse_to_dense(const smatrix& m) {
+  dmatrix r{m.rows, m.cols};
+  r.data = m.to_std_vector();
+  return r;
+}
+
+}

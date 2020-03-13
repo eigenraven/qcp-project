@@ -1,6 +1,7 @@
 #include "numeric/numeric.hpp"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include <random>
 
 using namespace testing;
 using namespace qc;
@@ -173,13 +174,13 @@ TYPED_TEST(MatrixTest, kronecker_product) {
   }
 }
 
-TEST(SparseMatrixTest, iterator_test) {
+TEST(MatrixTest, sparse_iterator_test) {
   smatrix zeros = smatrix::zero(10, 10);
   smatrix ones = smatrix::identity(10, 10);
   EXPECT_EQ(begin(zeros), end(zeros));
   EXPECT_NE(begin(ones), end(ones));
   sparse_iterator oneBegin{begin(ones)}, oneEnd{end(ones)};
-  for(int i=0; i<10; i++) {
+  for (int i = 0; i < 10; i++) {
     EXPECT_NE(oneBegin, oneEnd);
     sparse_nonzero_element val = *oneBegin;
     EXPECT_EQ(val.row, val.column);
@@ -188,4 +189,33 @@ TEST(SparseMatrixTest, iterator_test) {
     oneBegin++;
   }
   EXPECT_EQ(oneBegin, oneEnd);
+}
+
+TEST(MatrixTest, RandomKPEquivalence) {
+  std::mt19937 rng{738643};
+  std::uniform_int_distribution<> elements_dist{5, 40};
+  std::uniform_int_distribution<> position_dist{0, 6};
+  std::uniform_real_distribution<> values_dist{-100.0f, 100.0f};
+  std::vector<smatrix> S;
+  std::vector<dmatrix> D;
+  S.resize(3, smatrix::zero(7, 7));
+  D.resize(3, dmatrix::zero(7, 7));
+  for (int _trial = 0; _trial < 64; _trial++) {
+    std::fill(S.begin(), S.end(), smatrix::zero(7, 7));
+    std::fill(D.begin(), D.end(), dmatrix::zero(7, 7));
+    for (int mat = 0; mat < S.size(); mat++) {
+      int els = elements_dist(rng);
+      for (int el = 0; el < els; el++) {
+        int row = position_dist(rng);
+        int col = position_dist(rng);
+        complex val = values_dist(rng) + 1.0_i * values_dist(rng);
+        S[mat](row, col) = val;
+        D[mat](row, col) = val;
+      }
+    }
+    smatrix skp = kronecker({&S[0], &S[1], &S[2]});
+    dmatrix dkp = kronecker({&D[0], &D[1], &D[2]});
+    dmatrix skp_d = convert_sparse_to_dense(skp);
+    ASSERT_EQ(dkp, skp_d);
+  }
 }
