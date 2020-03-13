@@ -162,14 +162,18 @@ struct smatrix {
         r.row_data.at(el.column).push_back(sparse_entry{row, el.value});
       }
     }
-    for (int row = 0; row < r.rows; row++) {
-      auto &rdata = r.row_data.at(row);
+    r.fix_column_order();
+    return r;
+  }
+
+  inline void fix_column_order() {
+    for (int row = 0; row < this->rows; row++) {
+      auto &rdata = this->row_data.at(row);
       std::sort(rdata.begin(), rdata.end(),
                 [](const sparse_entry &a, const sparse_entry &b) {
                   return a.column < b.column;
                 });
     }
-    return r;
   }
 
   inline smatrix H() const {
@@ -192,9 +196,9 @@ struct sparse_iterator {
   typedef sparse_nonzero_element value_type;
 
   bool end{true};
-  smatrix *matrix;
+  const smatrix *matrix;
   int row;
-  std::vector<sparse_entry>::iterator elementIter, rowEnd;
+  std::vector<sparse_entry>::const_iterator elementIter, rowEnd;
   sparse_nonzero_element currentElement;
 
   inline void next() {
@@ -211,8 +215,8 @@ struct sparse_iterator {
     while (this->elementIter == this->rowEnd) {
       if (this->row + 1 < this->matrix->rows) {
         this->row++;
-        this->elementIter = this->matrix->row_data.at(this->row).begin();
-        this->rowEnd = this->matrix->row_data.at(this->row).end();
+        this->elementIter = this->matrix->row_data.at(this->row).cbegin();
+        this->rowEnd = this->matrix->row_data.at(this->row).cend();
       } else {
         this->end = true;
         return;
@@ -225,7 +229,7 @@ struct sparse_iterator {
       this->currentElement = sparse_nonzero_element{};
       return;
     }
-    sparse_entry &en = *elementIter;
+    const sparse_entry &en = *elementIter;
     this->currentElement =
         sparse_nonzero_element{this->row, en.column, en.value};
   }
@@ -257,7 +261,7 @@ struct sparse_iterator {
   }
 };
 
-inline sparse_iterator begin(smatrix &m) {
+inline sparse_iterator begin(const smatrix &m) {
   auto it = sparse_iterator{false,
                             &m,
                             0,
@@ -269,7 +273,7 @@ inline sparse_iterator begin(smatrix &m) {
   return it;
 }
 
-inline sparse_iterator end(smatrix &m) {
+inline sparse_iterator end(const smatrix &m) {
   return sparse_iterator{true, &m, m.rows};
 }
 
@@ -481,17 +485,55 @@ inline smatrix outer(const svector &a, const svector &b) {
 template <>
 inline smatrix kronecker<smatrix, gsl::dynamic_extent>(
     gsl::span<const smatrix *, gsl::dynamic_extent> mats) {
-  int total_rows =
+  if(mats.size() == 0){
+    return smatrix{1,1};
+  } else if(mats.size() == 1) {
+    return smatrix{*mats[0]};
+  }
+  const int numMats = mats.size();
+  int totalRows =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
                       [](int acc, const smatrix *m) { return acc * m->rows; });
-  int total_cols =
+  int totalCols =
       std::accumulate(mats.cbegin(), mats.cend(), 1,
                       [](int acc, const smatrix *m) { return acc * m->cols; });
   using row_iter = std::vector<sparse_entry>::iterator;
-  std::vector<int> row_idx(mats.size()), col_idx(mats.size());
-  std::vector<row_iter> col_iter(mats.size());
-  smatrix kp{total_rows, total_cols};
-
+  std::vector<sparse_iterator> iterators, endIterators, beginIterators;
+  std::vector<int> rowMultipliers{numMats, 1}, colMultipliers{numMats, 1};
+  beginIterators.reserve(numMats);
+  endIterators.reserve(numMats);
+  for (int i = 0; i < numMats; i++) {
+    beginIterators.push_back(begin(*mats[i]));
+    endIterators.push_back(end(*mats[i]));
+  }
+  for (int i = numMats - 2; i >= 0; i--) {
+    rowMultipliers[i] = rowMultipliers[i + 1] * mats[i + 1]->rows;
+    colMultipliers[i] = colMultipliers[i + 1] * mats[i + 1]->cols;
+  }
+  iterators = beginIterators;
+  smatrix kp{totalRows, totalCols};
+  while (iterators[0] != endIterators[0]) {
+    int targetRow{0}, targetCol{0};
+    complex product{1.0};
+    for(int i = 0; i < numMats; i++) {
+      sparse_nonzero_element el = *iterators[i];
+      targetRow += rowMultipliers[i] * el.row;
+      targetCol += colMultipliers[i] * el.column;
+      product *= el.value;
+    }
+    if (product != 0.0) {
+      kp.row_data.at(targetRow).push_back(sparse_entry{targetCol, product});
+    }
+    for (int i = numMats - 1; i >= 0; i--) {
+      iterators[i]++;
+      if (iterators[i] == endIterators[i] && i > 0) {
+        iterators[i] = beginIterators[i];
+      } else {
+        break;
+      }
+    }
+  }
+  kp.fix_column_order();
   return kp;
 }
 
