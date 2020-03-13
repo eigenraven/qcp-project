@@ -20,7 +20,7 @@ inline ParsedCircuit parseCircuit(std::istream &input) {
   using std::getline;
   using std::string;
   if (input.bad()) {
-    throw std::runtime_error("Invalid circuit input stream");
+    throw std::logic_error("Invalid circuit input stream");
   }
   string line;
   string token;
@@ -42,7 +42,7 @@ inline ParsedCircuit parseCircuit(std::istream &input) {
       std::optional<QGate> gate = getGate(token);
       if (gate) {
         if (!circuit) {
-          throw std::runtime_error(
+          throw std::logic_error(
               "Error: Circuit must initialized before applying gates");
         }
         std::vector<int> qubits;
@@ -55,7 +55,7 @@ inline ParsedCircuit parseCircuit(std::istream &input) {
     }
   }
   if (!circuit) {
-    throw std::runtime_error("Error: Circuit must have >0 qubits");
+    throw std::logic_error("Error: Circuit must have >0 qubits");
   }
   return {std::move(circuit), shots};
 }
