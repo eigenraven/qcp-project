@@ -8,7 +8,7 @@ namespace qc {
 
 class QCircuit {
   std::unique_ptr<QRegister> qreg;
-  std::vector<std::pair<int, QGate>> gates;
+  std::vector<std::pair<int, QGate*>> gates;
 
 public:
   template <class M> inline static std::unique_ptr<QCircuit> make(int qubits) {
@@ -17,25 +17,25 @@ public:
     return r;
   }
 
-  void nop(int qubit) { singleGate(ID, qubit); }
+  void nop(int qubit) { singleGate(&ID, qubit); }
 
-  void h(int qubit) { singleGate(H, qubit); }
+  void h(int qubit) { singleGate(&H, qubit); }
 
-  void x(int qubit) { singleGate(X, qubit); }
+  void x(int qubit) { singleGate(&X, qubit); }
 
-  void y(int qubit) { singleGate(Y, qubit); }
+  void y(int qubit) { singleGate(&Y, qubit); }
 
-  void z(int qubit) { singleGate(Z, qubit); }
+  void z(int qubit) { singleGate(&Z, qubit); }
 
-  void cnot(int qubit1, int qubit2) { doubleGate(CNOT, qubit1, qubit2); }
+  void cnot(int qubit1, int qubit2) { doubleGate(&CNOT, qubit1, qubit2); }
 
-  void swap(int qubit1, int qubit2) { doubleGate(SWAP, qubit1, qubit2); }
+  void swap(int qubit1, int qubit2) { doubleGate(&SWAP, qubit1, qubit2); }
 
   void ccnot(int qubit1, int qubit2, int qubit3) {
-    multipleGate(CCNOT, {qubit1, qubit2, qubit3});
+    multipleGate(&CCNOT, {qubit1, qubit2, qubit3});
   }
 
-  void singleGate(QGate gate, int qubit) {
+  void singleGate(QGate *gate, int qubit) {
     gates.push_back(std::make_pair(qubit, gate));
   }
 
@@ -43,8 +43,8 @@ public:
   // have been implemented So this emulates a quantum computer with the qubits
   // connected linearly i.e. Each qubit is only directly connected to its
   // nearest neighbours
-  void doubleGate(QGate gate, int qubit1, int qubit2) {
-    if (gate.qubits != 2)
+  void doubleGate(QGate *gate, int qubit1, int qubit2) {
+    if (gate->qubits != 2)
       throw std::invalid_argument("This gate does not operate on two qubits");
     if (qubit1 == qubit2)
       throw std::invalid_argument("This gate must operate on different qubits");
@@ -65,8 +65,8 @@ public:
     }
   }
 
-  void multipleGate(QGate gate, std::vector<int> qubits) {
-    if (gate.qubits != qubits.size())
+  void multipleGate(QGate *gate, std::vector<int> qubits) {
+    if (gate->qubits != qubits.size())
       throw std::invalid_argument(
           "This gate does not operate on the correct number of qubits");
     int lowest = qubits[0];
@@ -95,11 +95,10 @@ public:
     }
   }
 
-  void swapNext(int qubit) { gates.push_back(std::make_pair(qubit, SWAP)); }
+  void swapNext(int qubit) { gates.push_back(std::make_pair(qubit, &SWAP)); }
 
   std::vector<double> simulate(int shots) {
-    for (std::pair<int, QGate> gate : gates)
-      qreg->applyOperator(gate.second, gate.first);
+    qreg->applyOperators(gsl::make_span(gates));
     return qreg->measureMultiple(shots);
   }
 };

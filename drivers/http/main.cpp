@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
     std::string strDesc = req.get_param_value("circuit");
     std::istringstream circuitStream{strDesc};
     try {
-      auto [circuit, runs] = parseCircuit(circuitStream);
+      auto [circuit, runs] = parseCircuit(circuitStream, false);
       auto simResult = circuit->simulate(runs);
       std::ostringstream results;
       results << "OK\n";

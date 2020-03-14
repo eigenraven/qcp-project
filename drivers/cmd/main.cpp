@@ -2,24 +2,46 @@
 #include <fstream>
 #include <input/input.hpp>
 #include <iostream>
+#include <locale>
 #include <qcircuit.hpp>
 
 using namespace qc;
 
 using hrclock = std::chrono::high_resolution_clock;
 
+class ThousandsSeparation : public std::numpunct<char> {
+protected:
+  virtual char do_thousands_sep() const { return ' '; }
+  virtual std::string do_grouping() const { return "\03"; }
+};
+
 int main(int argc, char **argv) {
-  if (argc < 2) {
-    std::cerr << "Usage: " << argv[0] << " [input file]" << std::endl;
+  std::string_view inputFilePath;
+  bool useSparseFlag = false;
+  for (int argi = 1; argi < argc; argi++) {
+    std::string_view arg = argv[argi];
+    if (arg.size() < 1) {
+      continue;
+    }
+    if (arg.front() == '-') {
+      if (arg == "-sparse") {
+        useSparseFlag = true;
+      }
+    } else {
+      inputFilePath = arg;
+    }
+  }
+  if (argc < 2 || inputFilePath.size() == 0) {
+    std::cerr << "Usage: " << argv[0] << " <input file> [-sparse]" << std::endl;
     return 1;
   }
-  std::ifstream inputFile{argv[1]};
+  std::ifstream inputFile{std::string{inputFilePath}};
   if (!inputFile.is_open() || inputFile.fail()) {
     std::cerr << "Couldn't read input file: " << argv[1] << std::endl;
   }
   try {
     auto tStart = hrclock::now();
-    auto [circuit, shots] = parseCircuit(inputFile);
+    auto [circuit, shots] = parseCircuit(inputFile, useSparseFlag);
     auto tParsed = hrclock::now();
     auto result = circuit->simulate(shots);
     auto tSimulated = hrclock::now();
@@ -31,12 +53,10 @@ int main(int argc, char **argv) {
     int64_t nsSimulation = std::chrono::duration_cast<std::chrono::nanoseconds>(
                                tSimulated - tParsed)
                                .count();
+    std::cout.imbue(
+        std::locale(std::locale::classic(), new ThousandsSeparation));
     std::cout << "Parse time: " << nsParse << "ns" << std::endl;
-    std::cout << "Simulation time (all runs): " << nsSimulation << "ns"
-              << std::endl;
-    std::cout << "Simulation time (average per run): "
-              << nsSimulation / static_cast<int64_t>(shots) << "ns"
-              << std::endl;
+    std::cout << "Simulation time: " << nsSimulation << "ns" << std::endl;
     auto minDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(
                            hrclock::duration(1))
                            .count();

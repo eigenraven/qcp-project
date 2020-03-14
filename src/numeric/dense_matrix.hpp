@@ -270,20 +270,21 @@ inline dmatrix outer(const dvector &a, const dvector &b) {
 template <>
 inline dmatrix kronecker<dmatrix, gsl::dynamic_extent>(
     gsl::span<const dmatrix *, gsl::dynamic_extent> mats) {
-  std::vector<int> row_idx(mats.size()), col_idx(mats.size());
+  std::vector<int> row_idx(mats.size(), 0), col_idx(mats.size(), 0);
   int total_rows =
-      std::accumulate(mats.cbegin(), mats.cend(), 1,
+      std::accumulate(mats.begin(), mats.end(), 1,
                       [](int acc, const dmatrix *m) { return acc * m->rows; });
   int total_cols =
-      std::accumulate(mats.cbegin(), mats.cend(), 1,
+      std::accumulate(mats.begin(), mats.end(), 1,
                       [](int acc, const dmatrix *m) { return acc * m->cols; });
-  dmatrix kp{total_rows, total_cols};
+  dmatrix kp = dmatrix::zero(total_rows, total_cols);
   for (int r = 0; r < total_rows; r++) {
     for (int c = 0; c < total_cols; c++) {
       // calculate product for the element
       complex P = 1.0;
       for (int mi = 0; P != 0.0 && mi < mats.size(); mi++) {
-        P *= (*mats[mi])(row_idx[mi], col_idx[mi]);
+        const dmatrix& mat = *(mats.at(mi));
+        P *= mat(row_idx[mi], col_idx[mi]);
       }
       kp(r, c) = P;
       // increase column index

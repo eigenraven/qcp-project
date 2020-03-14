@@ -16,7 +16,8 @@ struct ParsedCircuit {
   int shots;
 };
 
-inline ParsedCircuit parseCircuit(std::istream &input) {
+inline ParsedCircuit parseCircuit(std::istream &input,
+                                  bool useSparseMatrices = false) {
   using std::getline;
   using std::string;
   if (input.bad()) {
@@ -32,7 +33,11 @@ inline ParsedCircuit parseCircuit(std::istream &input) {
     getline(ss, token, ',');
     if (token == "qubits") {
       getline(ss, token, ',');
-      circuit = QCircuit::make<dmatrix>(stoi(token));
+      if (useSparseMatrices) {
+        circuit = QCircuit::make<smatrix>(stoi(token));
+      } else {
+        circuit = QCircuit::make<dmatrix>(stoi(token));
+      }
     } else if (token == "sparsequbits") {
       getline(ss, token, ',');
       circuit = QCircuit::make<smatrix>(stoi(token));
@@ -42,8 +47,9 @@ inline ParsedCircuit parseCircuit(std::istream &input) {
     } else {
       std::transform(token.begin(), token.end(), token.begin(),
                      [](unsigned char c) { return std::tolower(c); });
-      std::optional<QGate> gate = getGate(token);
-      if (gate) {
+      std::optional<QGate *> ogate = getGate(token);
+      if (ogate) {
+        QGate *gate = *ogate;
         if (!circuit) {
           throw std::logic_error(
               "Error: Circuit must initialized before applying gates");
@@ -53,7 +59,7 @@ inline ParsedCircuit parseCircuit(std::istream &input) {
           getline(ss, token, ',');
           qubits.push_back(stoi(token));
         }
-        circuit->multipleGate(*gate, qubits);
+        circuit->multipleGate(gate, qubits);
       }
     }
   }

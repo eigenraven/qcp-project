@@ -15,7 +15,7 @@ public:
   inline QRegister() : QRegister(1) {}
   inline QRegister(int nqubits) : nqubits(nqubits) {}
 
-  virtual void applyOperator(QGate gate, int qubit) = 0;
+  virtual void applyOperators(gsl::span<std::pair<int, QGate*>> operators) = 0;
   virtual std::vector<int> measureState() = 0;
   virtual std::vector<double> measureMultiple(int shots) = 0;
 };
@@ -29,24 +29,57 @@ public:
   }
 
 public:
-  void applyOperator(QGate gate, int qubit) final override;
+  void
+  applyOperators(gsl::span<std::pair<int, QGate*>> operators) final override;
 
   std::vector<int> measureState() final override;
 
   std::vector<double> measureMultiple(int shots) final override;
 };
 
-template <class M> void QRegisterImpl<M>::applyOperator(QGate gate, int qbit) {
+template <class M>
+void QRegisterImpl<M>::applyOperators(
+    gsl::span<std::pair<int, QGate*>> operators) {
   std::vector<const M *> matrices;
-  for (int i = 0; i < nqubits; i++) {
-    if (i == qbit) {
-      matrices.push_back(&gate.matrix<M>());
-    } else if (i < qbit || i >= qbit + gate.qubits) {
-      matrices.push_back(&ID.matrix<M>());
+  matrices.reserve(this->nqubits);
+  std::vector<bool> covered(nqubits, false);
+  const M *IDmatrix = &ID.matrix<M>();
+  while (operators.size() > 0) {
+    auto nonOverlappingEnd = operators.end();
+    std::fill(covered.begin(), covered.end(), false);
+    for (auto it = operators.begin(); it != operators.end(); it++) {
+      auto [qbit, gate] = *it;
+      if (std::any_of(covered.begin() + qbit,
+                      covered.begin() + qbit + gate->qubits,
+                      [](bool b) { return b; })) {
+        nonOverlappingEnd = it;
+        break;
+      }
+      std::fill(covered.begin() + qbit, covered.begin() + qbit + gate->qubits,
+                true);
+    }
+    matrices.clear();
+    for (int i = 0; i < nqubits; i++) {
+      if (!covered.at(i)) {
+        matrices.push_back(IDmatrix);
+      } else {
+        auto [qbit, gate] = *std::find_if(
+            operators.begin(), nonOverlappingEnd,
+            [i](const std::pair<int, QGate*> &a) { return a.first == i; });
+        assert(i == qbit);
+        matrices.push_back(&gate->template matrix<M>());
+        i += gate->qubits - 1;
+      }
+    }
+    M quantumGate = kronecker<M>(gsl::make_span(matrices));
+    state = quantumGate * state;
+    if(nonOverlappingEnd == operators.end()) {
+      break;
+    } else {
+      int removed = nonOverlappingEnd - operators.begin();
+      operators = operators.subspan(removed, operators.size() - removed);
     }
   }
-  M quantumGate = kronecker<M>(gsl::make_span(matrices));
-  state = quantumGate * state;
 }
 
 template <class M> std::vector<int> QRegisterImpl<M>::measureState() {
