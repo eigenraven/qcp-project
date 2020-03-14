@@ -59,3 +59,8 @@ target_link_libraries(qcsim qcsim_common)
 
 add_executable(http_qcsim ${driver_http_files})
 target_link_libraries(http_qcsim qcsim_common httplib Threads::Threads)
+
+if(CMAKE_COMMAND MATCHES "msys64")
+  message(INFO "MSYS detected")
+  target_link_libraries(http_qcsim ws2_32)
+endif()
