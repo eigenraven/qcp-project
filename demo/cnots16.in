@@ -1,0 +1,19 @@
+//  ./gen.py 16 1 cnot 2 0 15
+
+qubits,16
+
+cnot,0,1
+cnot,1,2
+cnot,2,3
+cnot,3,4
+cnot,4,5
+cnot,5,6
+cnot,6,7
+cnot,7,8
+cnot,8,9
+cnot,9,10
+cnot,10,11
+cnot,11,12
+cnot,12,13
+cnot,13,14
+cnot,14,15
