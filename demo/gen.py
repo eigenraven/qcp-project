@@ -5,14 +5,6 @@ import sys
 qubits = int(sys.argv[1])
 n_args = int(sys.argv[2])
 
-# print arguments as a comment
-# for i in range(0, n_args): 
-#     gate   = sys.argv[4 * i + 3]
-#     size   = int(sys.argv[4 * i + 4])
-#     from_q = int(sys.argv[4 * i + 5])
-#     to_q   = int(sys.argv[4 * i + 6])
-#     print(f"// {gate}: size {size} from {from_q} to {to_q}")
-
 print("// ", ' '.join(sys.argv))
 
 print()

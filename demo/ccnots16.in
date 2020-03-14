@@ -1,6 +1,6 @@
 //  ./gen.py 16 2 h 1 0 15 ccnot 3 0 15
 
-sparsequbits,16
+qubits,16
 
 ccnot,0,1,2
 ccnot,1,2,3

@@ -1,0 +1,10 @@
+//  ./gen.py 8 1 ccnot 3 0 7
+
+qubits,8
+
+ccnot,0,1,2
+ccnot,1,2,3
+ccnot,2,3,4
+ccnot,3,4,5
+ccnot,4,5,6
+ccnot,5,6,7
