@@ -24,6 +24,29 @@
         "1&-1"
     ],  "factor": "\\frac{1}{\\sqrt{2}}",
         "name": "Hadamard gate"},
+    "s": {"kind": "gate", "arity": 1, "matrix": [
+        "1& 0",
+        "0&1i"
+    ],  "name": "S phase-shift gate"},
+    "t": {"kind": "gate", "arity": 1, "matrix": [
+        "1& 0",
+        "0&e^{i pi/4}"
+    ],  "name": "T phase-shift gate"},
+    "t†": {"kind": "gate", "arity": 1, "matrix": [
+        "1& 0",
+        "0&e^{-i pi/4}"
+    ],  "factor": "\\frac{1}{\\sqrt{2}}",
+        "name": "T† phase-shift gate"},
+    "v": {"kind": "gate", "arity": 1, "matrix": [
+        "1+1i& 1-1i",
+        "1-1i&1+1i"
+    ],  "factor": "\\frac{1}{\\2}",
+        "name": "V gate"},
+    "v†": {"kind": "gate", "arity": 1, "matrix": [
+        "1-1i& 1+1i",
+        "1+1i&1-1i"
+    ],  "factor": "\\frac{1}{\\2}",
+        "name": "V† gate"},
     "cnot": {"kind": "gate", "arity": 2, "matrix": [
         "1 &0 &0 &0",
         "0 &1 &0 &0",
