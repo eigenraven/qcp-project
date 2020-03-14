@@ -32,7 +32,10 @@ inline ParsedCircuit parseCircuit(std::istream &input) {
     getline(ss, token, ',');
     if (token == "qubits") {
       getline(ss, token, ',');
-      circuit = std::make_unique<QCircuit>(stoi(token));
+      circuit = QCircuit::make<dmatrix>(stoi(token));
+    } else if (token == "sparsequbits") {
+      getline(ss, token, ',');
+      circuit = QCircuit::make<smatrix>(stoi(token));
     } else if (token == "shots") {
       getline(ss, token, ',');
       shots = std::stoi(token);

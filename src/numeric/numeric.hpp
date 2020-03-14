@@ -16,4 +16,8 @@ inline dmatrix convert_sparse_to_dense(const smatrix& m) {
   return r;
 }
 
+inline smatrix convert_dense_to_sparse(const dmatrix& m) {
+  return smatrix{m.rows, m.cols, gsl::make_span(const_cast<dmatrix&>(m).data)};
+}
+
 }

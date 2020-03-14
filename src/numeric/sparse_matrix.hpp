@@ -3,6 +3,7 @@
  * representation implementation.
  */
 #pragma once
+#include <vector>
 #include "common.hpp"
 
 namespace qc {
@@ -65,6 +66,10 @@ struct sparse_entry_ref {
     this->set_value(newVal);
     return *this;
   }
+
+  inline operator complex() {
+    return this->value();
+  }
 };
 
 /// Element of a sparse matrix as returned by an iterator
@@ -90,6 +95,11 @@ struct smatrix {
   /// Constructs a matrix with given elements (given in a row-major order)
   inline explicit smatrix(int rows, int cols,
                           std::initializer_list<complex> cdata)
+      : smatrix(rows, cols, gsl::make_span(const_cast<complex*>(cdata.begin()), const_cast<complex*>(cdata.end()))) {
+  }
+  /// Constructs a matrix with given elements (given in a row-major order)
+  inline explicit smatrix(int rows, int cols,
+                          gsl::span<complex, gsl::dynamic_extent> cdata)
       : rows(rows), cols(cols), row_data(rows) {
     if (rows * cols != cdata.size()) {
       throw std::invalid_argument("smatrix rows*cols != length(data)");

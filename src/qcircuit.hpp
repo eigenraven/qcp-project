@@ -7,11 +7,15 @@
 namespace qc {
 
 class QCircuit {
-  QRegister qreg;
+  std::unique_ptr<QRegister> qreg;
   std::vector<std::pair<int, QGate>> gates;
 
 public:
-  QCircuit(int qubits) : qreg(qubits) {}
+  template <class M> inline static std::unique_ptr<QCircuit> make(int qubits) {
+    std::unique_ptr<QCircuit> r = std::make_unique<QCircuit>();
+    r->qreg = std::make_unique<QRegisterImpl<M>>(qubits);
+    return r;
+  }
 
   void nop(int qubit) { singleGate(ID, qubit); }
 
@@ -66,7 +70,7 @@ public:
       throw std::invalid_argument(
           "This gate does not operate on the correct number of qubits");
     int lowest = qubits[0];
-    std::vector<int> overlaps(qreg.nqubits);
+    std::vector<int> overlaps(qreg->nqubits);
     for (int i = 0; i < qubits.size(); i++) {
       overlaps[qubits[i]] = qubits[i];
       lowest = std::min(lowest, qubits[i]);
@@ -95,8 +99,8 @@ public:
 
   std::vector<double> simulate(int shots) {
     for (std::pair<int, QGate> gate : gates)
-      qreg.applyOperator(gate.second, gate.first);
-    return qreg.measureMultiple(shots);
+      qreg->applyOperator(gate.second, gate.first);
+    return qreg->measureMultiple(shots);
   }
 };
 } // namespace qc
