@@ -61,6 +61,12 @@ int main(int argc, char **argv) {
                            hrclock::duration(1))
                            .count();
     std::cout << "Timer max resolution: " << minDuration << "ns" << std::endl;
+  } catch (std::bad_alloc e) {
+    std::cerr << "Cannot allocate this much memory" << std::endl;
+    return 2;
+  } catch (std::logic_error e) {
+    std::cerr << "Caught logic error: " << e.what() << std::endl;
+    return 2;
   } catch (std::exception e) {
     std::cerr << "Caught error: " << e.what() << std::endl;
     return 2;
