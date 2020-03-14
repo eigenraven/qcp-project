@@ -10,10 +10,21 @@ namespace qc {
 class QGate {
 public:
   int qubits;
-  const dmatrix matrix;
+  const dmatrix dense_matrix;
+  const smatrix sparse_matrix;
   inline QGate(int qubits, std::initializer_list<complex> cdata)
-      : qubits(qubits), matrix(1 << qubits, 1 << qubits, cdata) {}
+      : qubits(qubits), dense_matrix(1 << qubits, 1 << qubits, cdata),
+        sparse_matrix(1 << qubits, 1 << qubits, cdata) {}
+
+  template <class M> const M &matrix() const;
 };
+
+template <> inline const dmatrix &QGate::matrix<dmatrix>() const {
+  return dense_matrix;
+}
+template <> inline const smatrix &QGate::matrix<smatrix>() const {
+  return sparse_matrix;
+}
 
 std::optional<QGate> getGate(std::string gate);
 

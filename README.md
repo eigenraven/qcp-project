@@ -11,7 +11,7 @@ All arguments are integers. For gates, these arguments are the zero-indexed qubi
 
 The following instructions are used. Their names are case-insensitive.
 
-  - Mandatory header: `qubits`. Takes a single argument, the number of qubits.
+  - Mandatory header: `qubits` or `sparsequbits`. Takes a single argument, the number of qubits.
   - Optional header (default 1024): `shots`. Takes a single argument, the number of shots.
   - Unary gates: `id/nop`, `x`, `y`, `z`, `h`
   - Binary gates: `cnot`, `cy`, `cz`, `swap`
