@@ -3,8 +3,8 @@
  * representation implementation.
  */
 #pragma once
-#include <vector>
 #include "common.hpp"
+#include <vector>
 
 namespace qc {
 
@@ -67,9 +67,7 @@ struct sparse_entry_ref {
     return *this;
   }
 
-  inline operator complex() {
-    return this->value();
-  }
+  inline operator complex() { return this->value(); }
 };
 
 /// Element of a sparse matrix as returned by an iterator
@@ -95,8 +93,9 @@ struct smatrix {
   /// Constructs a matrix with given elements (given in a row-major order)
   inline explicit smatrix(int rows, int cols,
                           std::initializer_list<complex> cdata)
-      : smatrix(rows, cols, gsl::make_span(const_cast<complex*>(cdata.begin()), const_cast<complex*>(cdata.end()))) {
-  }
+      : smatrix(rows, cols,
+                gsl::make_span(const_cast<complex *>(cdata.begin()),
+                               const_cast<complex *>(cdata.end()))) {}
   /// Constructs a matrix with given elements (given in a row-major order)
   inline explicit smatrix(int rows, int cols,
                           gsl::span<complex, gsl::dynamic_extent> cdata)
@@ -202,7 +201,7 @@ struct smatrix {
 
   inline int64_t count_nonzero() const {
     int64_t count{0};
-    for(const auto& row: this->row_data) {
+    for (const auto &row : this->row_data) {
       count += row.size();
     }
     return count;
@@ -446,10 +445,10 @@ inline smatrix operator*(const smatrix &a, const smatrix &b) {
   for (int row = 0; row < r.rows; row++) {
     auto &rrow = r.row_data.at(row);
     auto &arow = a.row_data.at(row);
+    rrow.reserve(std::min(arow.size(), (size_t)r.cols));
     for (int col = 0; col < r.cols; col++) {
       complex sum{0.0};
       auto &brow = bT.row_data.at(col);
-      rrow.reserve(std::min(arow.size(), brow.size()));
       auto m1col = arow.begin();
       auto m2col = brow.begin();
       auto m1end = arow.end();
