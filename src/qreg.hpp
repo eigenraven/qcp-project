@@ -5,6 +5,7 @@
 #include <qgate.hpp>
 #include <random>
 #include <vector>
+#include <ctime>
 
 namespace qc {
 
@@ -88,11 +89,12 @@ void QRegisterImpl<M>::applyOperators(
 
 template <class M> std::vector<int> QRegisterImpl<M>::measureState() {
   std::vector<double> norm(state.rows);
+  norm.reserve(state.rows);
   for (int row = 0; row < state.rows; row++)
     norm.push_back(std::norm((complex)state(row, 0)));
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<> dis(0, 1);
+  static std::random_device rd;
+  static std::mt19937 gen(rd() ^ (int)std::time(NULL));
+  static std::uniform_real_distribution<> dis(0.0, 1.0);
   double random = dis(gen);
   int state = 0;
   for (int i = 0; i < norm.size(); i++) {
@@ -103,6 +105,7 @@ template <class M> std::vector<int> QRegisterImpl<M>::measureState() {
     }
   }
   std::vector<int> states;
+  states.reserve(nqubits);
   for (int i = 0; i < nqubits; i++) {
     states.push_back((state >> (nqubits - 1 - i)) & 1);
   }
