@@ -15,7 +15,7 @@ struct dmatrix {
 
   /// Default constructs a zero-filled matrix
   inline explicit dmatrix(int rows, int cols)
-      : rows(rows), cols(cols), data(rows * cols) {
+      : rows(rows), cols(cols), data(size_t(rows) * size_t(cols)) {
     verify_in_bounds(rows, 0, INT_MAX);
     verify_in_bounds(cols, 0, INT_MAX);
   }
@@ -23,7 +23,7 @@ struct dmatrix {
   inline explicit dmatrix(int rows, int cols,
                           std::initializer_list<complex> cdata)
       : rows(rows), cols(cols), data(cdata) {
-    if (rows * cols != cdata.size()) {
+    if (size_t(rows) * size_t(cols) != cdata.size()) {
       throw std::invalid_argument("dmatrix rows*cols != length(data)");
     }
     verify_in_bounds(rows, 0, INT_MAX);
