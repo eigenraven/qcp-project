@@ -26,7 +26,7 @@ template <> inline const smatrix &QGate::matrix<smatrix>() const {
   return sparse_matrix;
 }
 
-std::optional<QGate> getGate(std::string gate);
+std::optional<QGate*> getGate(std::string gate);
 
 extern QGate ID;
 extern QGate X;
