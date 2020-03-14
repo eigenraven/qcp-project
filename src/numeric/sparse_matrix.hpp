@@ -449,7 +449,7 @@ inline smatrix operator*(const smatrix &a, const smatrix &b) {
     for (int col = 0; col < r.cols; col++) {
       complex sum{0.0};
       auto &brow = bT.row_data.at(col);
-      rrow.reserve(std::max(arow.size(), brow.size()));
+      rrow.reserve(std::min(arow.size(), brow.size()));
       auto m1col = arow.begin();
       auto m2col = brow.begin();
       auto m1end = arow.end();
