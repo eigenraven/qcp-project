@@ -97,8 +97,8 @@ public:
 
   void swapNext(int qubit) { gates.push_back(std::make_pair(qubit, &SWAP)); }
 
-  std::vector<double> simulate(int shots) {
-    qreg->applyOperators(gsl::make_span(gates));
+  std::vector<double> simulate(int shots, bool disableGrouping = false) {
+    qreg->applyOperators(gsl::make_span(gates), disableGrouping);
     return qreg->measureMultiple(shots);
   }
 };

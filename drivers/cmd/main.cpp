@@ -18,21 +18,27 @@ protected:
 int main(int argc, char **argv) {
   std::string_view inputFilePath;
   bool useSparseFlag = false;
+  bool disableGroupingFlag = false;
   for (int argi = 1; argi < argc; argi++) {
     std::string_view arg = argv[argi];
     if (arg.size() < 1) {
       continue;
     }
     if (arg.front() == '-') {
-      if (arg == "-sparse") {
+      if (arg == "--sparse") {
         useSparseFlag = true;
+      } else if (arg == "--nogroup") {
+        disableGroupingFlag = true;
+      } else {
+        std::cerr << "Unrecognized option: " << arg << std::endl;
+        return 1;
       }
     } else {
       inputFilePath = arg;
     }
   }
   if (argc < 2 || inputFilePath.size() == 0) {
-    std::cerr << "Usage: " << argv[0] << " <input file> [-sparse]" << std::endl;
+    std::cerr << "Usage: " << argv[0] << " <input file> [--sparse] [--nogroup]" << std::endl;
     return 1;
   }
   std::ifstream inputFile{std::string{inputFilePath}};
@@ -43,10 +49,10 @@ int main(int argc, char **argv) {
     auto tStart = hrclock::now();
     auto [circuit, shots] = parseCircuit(inputFile, useSparseFlag);
     auto tParsed = hrclock::now();
-    auto result = circuit->simulate(shots);
+    auto result = circuit->simulate(shots, disableGroupingFlag);
     auto tSimulated = hrclock::now();
     for (int i = 0; i < result.size(); i++)
-      std::cout << "QBit " << i << ": " << result[i] << "\n";
+      printf("QBit %d: %.5lf\n", i, result[i]);
     int64_t nsParse =
         std::chrono::duration_cast<std::chrono::nanoseconds>(tParsed - tStart)
             .count();
