@@ -27,16 +27,54 @@ public:
 
   void z(int qubit) { singleGate(&Z, qubit); }
 
+  void s(int qubit) { singleGate(&S, qubit); }
+
+  void t(int qubit) { singleGate(&T, qubit); }
+
+  void tinv(int qubit) { singleGate(&Tinv, qubit); }
+
+  void v(int qubit) { singleGate(&V, qubit); }
+
+  void vinv(int qubit) { singleGate(&Vinv, qubit); }
+
   void cnot(int qubit1, int qubit2) { doubleGate(&CNOT, qubit1, qubit2); }
 
   void swap(int qubit1, int qubit2) { doubleGate(&SWAP, qubit1, qubit2); }
+
+  void cv(int qubit1, int qubit2) {
+	tinv(qubit1);
+	h(qubit2);
+	cnot(qubit2,qubit1);
+	t(qubit1);
+	tinv(qubit2);
+	cnot(qubit2,qubit1);
+	h(qubit2);
+  }
+
+  void cvinv(int qubit1, int qubit2) {
+	h(qubit2);
+	cnot(qubit2,qubit1);
+	tinv(qubit1);
+	t(qubit2);
+	cnot(qubit2,qubit1);
+	t(qubit1);
+	h(qubit2);
+  }
 
   void ccnot(int qubit1, int qubit2, int qubit3) {
     multipleGate(&CCNOT, {qubit1, qubit2, qubit3});
   }
 
-  void singleGate(QGate *gate, int qubit) {
+void singleGate(QGate *gate, int qubit) {
+    if (gate->qubits != 1)
+      throw std::invalid_argument("Gate must operate on one qubit");
     gates.push_back(std::make_pair(qubit, gate));
+  }
+
+  void applyAll(QGate gate) {
+	for(int i = 0; i < qreg->nqubits; i++) {
+	  singleGate(gate,i);
+	}
   }
 
   // So far only gates that operate on single or multiple consecutive qubits

@@ -19,6 +19,16 @@ QGate Z(1,{	1,0,
 			0,-1});
 QGate H(1,{	1/sqrt(2),1/sqrt(2),
 			1/sqrt(2),-1/sqrt(2)});
+QGate S(1,{	1,0,
+			0,1_i});
+QGate T(1,{	1,0,
+			0,complex{1/sqrt(2),1/sqrt(2)}});
+QGate Tinv(1,{	1,0,
+				0,complex{1/sqrt(2),-1/sqrt(2)}});
+QGate V(1,{	complex{0.5,0.5},complex{0.5,-0.5},
+			complex{0.5,-0.5},complex{0.5,0.5}});
+QGate Vinv(1,{	complex{0.5,-0.5},complex{0.5,0.5},
+				complex{0.5,0.5},complex{0.5,-0.5}});
 QGate CNOT(2,{	1,0,0,0,
 				0,1,0,0,
 				0,0,0,1,
