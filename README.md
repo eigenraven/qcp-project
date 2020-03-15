@@ -40,16 +40,14 @@ Two demo programs are written and located in `PROJECT_DIR/demo`
 
 ### Installing dependencies
 
-C++ & Python 3.7 required. API runs on web browser.
+CMake 3.10 is required to build the simulator, and Python 3.7 and a decently modern browser to use the basic front-end.
 ```
 brew install cmake
-python -m pip install flask
 brew install doxygen
+python -m pip install flask
 ```
 
 ### Building
-
-Requires CMake
 
 ```
 mkdir build
@@ -58,7 +56,12 @@ cmake ..
 make
 ```
 
-### Running the commandline driver
+Below instructions assume you are in the `src` directory for instructions.
+
+### Simulating via command line
+
+If you have already defined a file by the format above, simply run it via command-line:
+
 ```
 ./qcsim <input file> [-n[NOISE]] [--sparse] [--nogroup] [--states]
 ```
@@ -68,19 +71,21 @@ To run one of the demos above:
 ./qcsim ../demo/[grovers.in | entangle.in]
 ```
 
-### Running the HTTP driver
+### Exposing the HTTP API
+
+The simulator also may expose a HTTP API to interact; by default this will be at <http://localhost:12345/version>. Run it with:
+
 ```
 ./http_qcsim
 ```
-Then navigate to <http://localhost:12345/version>
 
 ### Running the front-end
 
-Requires Flask
+The front-end allows you to build, save and load a quantum circuit with an editor and send it off to the simulator, rather than tangle with the file format.
 
 ```
-# tested on Python 3.8; should only require 3.7
-cd frontend
+./http_qcsim
+cd ../frontend
 python -m flask run
 ```
 
@@ -99,3 +104,4 @@ make docs
 ```
 
 They will be located at `PROJECT_DIR/build/docs/html/index.html`
+
