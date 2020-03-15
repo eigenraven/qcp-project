@@ -71,7 +71,7 @@ void singleGate(QGate *gate, int qubit) {
     gates.push_back(std::make_pair(qubit, gate));
   }
 
-  void applyAll(QGate gate) {
+  void applyAll(QGate *gate) {
 	for(int i = 0; i < qreg->nqubits; i++) {
 	  singleGate(gate,i);
 	}
@@ -135,9 +135,8 @@ void singleGate(QGate *gate, int qubit) {
 
   void swapNext(int qubit) { gates.push_back(std::make_pair(qubit, &SWAP)); }
 
-  std::vector<double> simulate(int shots, bool disableGrouping = false) {
-    qreg->applyOperators(gsl::make_span(gates), disableGrouping);
-    return qreg->measureMultiple(shots);
+  std::vector<double> simulate(int shots, bool disableGrouping = false, double noise = 0.0) {
+	return qreg->simulate(gsl::make_span(gates),shots,disableGrouping,noise);
   }
 };
 } // namespace qc
