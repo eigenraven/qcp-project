@@ -3,9 +3,9 @@ Quantum Computing Project 2019/20 group 2
 
 ## Protocols used
 
-The frontend and backend communicate using a simple format titled QCSV. In its current form, it is designed mainly to fit the back-end implementation; therefore it may represent a linear subset of QASM.
+The frontend and backend communicate using a simple format specifically designed for ease of use rather than formality.
 
-Each line of QCSV is defined by ther regex `[A-Za-z]+(,(0\.)?\d+)+`, or, informally, `name,arg1[,arg2...]`. Specifically:
+Each line is defined by ther regex `[A-Za-z]+(,(0\.)?\d+)+`, or, informally, `name,arg1[,arg2...]`. Specifically:
 
   - Operations may be letters only, though names are case insensitive.
   - Each instruction has at least one argument, and MUST have the amount of arguments specified.
