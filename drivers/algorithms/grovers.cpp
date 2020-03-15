@@ -16,18 +16,18 @@ void oracle(std::shared_ptr<QCircuit> circuit) {
 }
 
 void grovers(std::shared_ptr<QCircuit> circuit) {
-  circuit->applyAll(H);
-  circuit->applyAll(X);
+  circuit->applyAll(&H);
+  circuit->applyAll(&X);
   circuit->h(2);
   circuit->ccnot(0,1,2);
   circuit->h(2);
-  circuit->applyAll(X);
-  circuit->applyAll(H);
+  circuit->applyAll(&X);
+  circuit->applyAll(&H);
 }
 
 int main(int argc, char **argv) {
   std::shared_ptr<QCircuit> circuit = QCircuit::make<smatrix>(3);
-  circuit->applyAll(H);
+  circuit->applyAll(&H);
   for(int i = 0; i < 2; i++) {
 	oracle(circuit);
 	grovers(circuit);

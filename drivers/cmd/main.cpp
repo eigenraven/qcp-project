@@ -3,6 +3,7 @@
 #include <input/input.hpp>
 #include <iostream>
 #include <locale>
+#include <string>
 #include <qcircuit.hpp>
 
 using namespace qc;
@@ -19,6 +20,7 @@ int main(int argc, char **argv) {
   std::string_view inputFilePath;
   bool useSparseFlag = false;
   bool disableGroupingFlag = false;
+  double noise1 = 0.0;
   for (int argi = 1; argi < argc; argi++) {
     std::string_view arg = argv[argi];
     if (arg.size() < 1) {
@@ -29,6 +31,8 @@ int main(int argc, char **argv) {
         useSparseFlag = true;
       } else if (arg == "--nogroup") {
         disableGroupingFlag = true;
+ 	  }	else if (arg.rfind("-n",0)==0) {
+        noise1=std::atof(arg.substr(2).data());
       } else {
         std::cerr << "Unrecognized option: " << arg << std::endl;
         return 1;
@@ -38,7 +42,7 @@ int main(int argc, char **argv) {
     }
   }
   if (argc < 2 || inputFilePath.size() == 0) {
-    std::cerr << "Usage: " << argv[0] << " <input file> [--sparse] [--nogroup]" << std::endl;
+    std::cerr << "Usage: " << argv[0] << " <input file> [-n[NOISE]] [--sparse] [--nogroup]" << std::endl;
     return 1;
   }
   std::ifstream inputFile{std::string{inputFilePath}};
@@ -47,9 +51,9 @@ int main(int argc, char **argv) {
   }
   try {
     auto tStart = hrclock::now();
-    auto [circuit, shots] = parseCircuit(inputFile, useSparseFlag);
+    auto [circuit, shots, noise2] = parseCircuit(inputFile, useSparseFlag);
     auto tParsed = hrclock::now();
-    auto result = circuit->simulate(shots, disableGroupingFlag);
+    auto result = circuit->simulate(shots, disableGroupingFlag, std::max(noise1,noise2));
     auto tSimulated = hrclock::now();
     for (int i = 0; i < result.size(); i++)
       printf("QBit %d: %.5lf\n", i, result[i]);
