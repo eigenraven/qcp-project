@@ -14,6 +14,7 @@ namespace qc {
 struct ParsedCircuit {
   std::unique_ptr<QCircuit> circuit;
   int shots;
+  double noise;
 };
 
 inline ParsedCircuit parseCircuit(std::istream &input,
@@ -26,6 +27,7 @@ inline ParsedCircuit parseCircuit(std::istream &input,
   string line;
   string token;
   int shots = 1024;
+  double noise = 0.0;
   std::unique_ptr<QCircuit> circuit;
   while (!input.eof()) {
     getline(input, line);
@@ -44,6 +46,9 @@ inline ParsedCircuit parseCircuit(std::istream &input,
     } else if (token == "shots") {
       getline(ss, token, ',');
       shots = std::stoi(token);
+ 	} else if (token == "noise") {
+      getline(ss, token, ',');
+      noise = std::stof(token);
     } else {
       std::transform(token.begin(), token.end(), token.begin(),
                      [](unsigned char c) { return std::tolower(c); });
@@ -66,7 +71,7 @@ inline ParsedCircuit parseCircuit(std::istream &input,
   if (!circuit) {
     throw std::logic_error("Error: Circuit must have >0 qubits");
   }
-  return {std::move(circuit), shots};
+  return {std::move(circuit), shots, noise};
 }
 
 } // namespace qc

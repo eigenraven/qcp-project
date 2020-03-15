@@ -13,10 +13,10 @@ The following instructions are used. Their names are case-insensitive.
 
   - Mandatory header: `qubits` or `sparsequbits`. Takes a single argument, the number of qubits.
   - Optional header (default 1024): `shots`. Takes a single argument, the number of shots.
+  - Optional header (default 0.0): `noise`. Takes a single argument, the probability of decay to |0> per qubit per operation. Any value >0 significantly decreases performance.
   - Unary gates: `id/nop`, `x`, `y`, `z`, `h`
   - Binary gates: `cnot`, `cy`, `cz`, `swap`
-  - Ternary gates: `ccnot/toffoli`
-  - Operators: none yet implemented
+  - Ternary gates: `ccnot/Toffoli`
 
 We assume that at the very end all quantum registers are measured. The resulting vector returned contains the fraction of times the result was returned.
 

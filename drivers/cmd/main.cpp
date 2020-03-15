@@ -47,9 +47,9 @@ int main(int argc, char **argv) {
   }
   try {
     auto tStart = hrclock::now();
-    auto [circuit, shots] = parseCircuit(inputFile, useSparseFlag);
+    auto [circuit, shots, noise] = parseCircuit(inputFile, useSparseFlag);
     auto tParsed = hrclock::now();
-    auto result = circuit->simulate(shots, disableGroupingFlag);
+    auto result = circuit->simulate(shots, disableGroupingFlag, noise);
     auto tSimulated = hrclock::now();
     for (int i = 0; i < result.size(); i++)
       printf("QBit %d: %.5lf\n", i, result[i]);
