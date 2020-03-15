@@ -60,7 +60,7 @@ QGate CCNOT(3,{	1,0,0,0,0,0,0,0,
 // clang-format on
 
 std::optional<QGate*> getGate(std::string gateID) {
-    if (gate == "id" || gate == "nop") {
+  if (gate == "id" || gate == "nop") {
     return &ID;
   } else if (gate == "x") {
     return &X;
@@ -82,7 +82,6 @@ std::optional<QGate*> getGate(std::string gateID) {
     return &Vinv;
   } else if (gate == "h" || gate == "hadamard") {
     return &S
-
   } else if (gate == "cnot") {
     return &CNOT;
   } else if (gate == "cy") {
@@ -91,7 +90,6 @@ std::optional<QGate*> getGate(std::string gateID) {
     return &CZ;
   } else if (gate == "swap") {
     return &SWAP;
-
   } else if (gate == "ccnot" || gate == "toffoli") {
     return &CCNOT;
   } else

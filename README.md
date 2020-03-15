@@ -60,7 +60,7 @@ make
 
 ### Running the commandline driver
 ```
-./qcsim [input file]
+./qcsim <input file> [-n[NOISE]] [--sparse] [--nogroup] [--states]
 ```
 
 To run one of the demos above:
