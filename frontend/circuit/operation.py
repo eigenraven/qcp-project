@@ -6,7 +6,6 @@ from pathlib import Path
 
 _GATES_PATH = Path(__file__).parent.parent.parent \
     / "src" / "qgate.json"
-print(_GATES_PATH)
 
 @dataclass
 class Operation:
