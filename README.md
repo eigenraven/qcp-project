@@ -70,6 +70,7 @@ Requires Flask
 ```
 # tested on Python 3.8; should only require 3.7
 cd frontend
+export FLASK_APP=app.py
 python -m flask run
 ```
 
