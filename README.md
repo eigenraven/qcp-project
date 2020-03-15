@@ -30,6 +30,12 @@ Gates MUST be defined in execution order; they are described in `src/qgate.json`
 
 We assume that at the very end all quantum registers are measured. The resulting vector returned from the backend contains the fraction of times the result was returned.
 
+### Demo programs
+Two demo programs are written and located in `PROJECT_DIR/demo`
+
+- _entangle.in_: Simple entanglement demo
+- _grovers.in_: 3-qubit Grover's Algorithm
+
 ## Building and running
 
 ### Installing dependencies
@@ -54,7 +60,12 @@ make
 
 ### Running the commandline driver
 ```
-./qcsim
+./qcsim [input file]
+```
+
+To run one of the demos above:
+```
+./qcsim ../demo/[grovers.in | entangle.in]
 ```
 
 ### Running the HTTP driver
