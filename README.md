@@ -32,7 +32,18 @@ We assume that at the very end all quantum registers are measured. The resulting
 
 ## Building and running
 
+### Installing dependencies
+
+C++ & Python 3.7 required. API runs on web browser.
+```
+brew install cmake
+python -m pip install flask
+brew install doxygen
+```
+
 ### Building
+
+Requires CMake
 
 ```
 mkdir build
@@ -54,9 +65,10 @@ Then navigate to <http://localhost:12345/version>
 
 ### Running the front-end
 
+Requires Flask
+
 ```
 # tested on Python 3.8; should only require 3.7
-python -m pip install flask
 cd frontend
 python -m flask run
 ```
