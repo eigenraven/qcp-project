@@ -1,13 +1,13 @@
 #include <qgate.hpp>
 
 /*
- * These gates are identical to those in gates.json;
- * don't modify one without the other.
+ * These gates are also specified in two other files;
+ * ensure you keep them all up-to-date:
+   * src/qgate.json
+   * README.md;
  */
 
 namespace qc {
-
-// disable formatting for the matrices
 // clang-format off
 QGate ID(1,{1,0,
 			0,1});
@@ -29,6 +29,8 @@ QGate V(1,{	complex{0.5,0.5},complex{0.5,-0.5},
 			complex{0.5,-0.5},complex{0.5,0.5}});
 QGate Vinv(1,{	complex{0.5,-0.5},complex{0.5,0.5},
 				complex{0.5,0.5},complex{0.5,-0.5}});
+
+
 QGate CNOT(2,{	1,0,0,0,
 				0,1,0,0,
 				0,0,0,1,
@@ -45,6 +47,8 @@ QGate SWAP(2,{	1,0,0,0,
 				0,0,1,0,
 				0,1,0,0,
 				0,0,0,1});
+
+
 QGate CCNOT(3,{	1,0,0,0,0,0,0,0,
 				0,1,0,0,0,0,0,0,
 				0,0,1,0,0,0,0,0,
@@ -55,29 +59,27 @@ QGate CCNOT(3,{	1,0,0,0,0,0,0,0,
 				0,0,0,0,0,0,1,0});
 // clang-format on
 
-std::optional<QGate*> getGate(std::string gate) {
-  if (gate == "id" || gate == "nop") {
-    return &ID;
+std::optional<QGate*> getGate(std::string gateID) {
+  switch(gateID){
+	  case "id":
+	  case "nop": 	return &ID;
+
+	  case "x": 	return &X;
+	  case "y": 	return &Y;
+	  case "z":		return &Z;
+	  case "h":		return &H;
+	  case "s": 	return &S;
+	  case "t": 	return &T;
+	  case "tinv":  return &Tinv;
+	  case "v":     return &Vinv;
+	  case "vinv":  return &Vinv;
+
+	  case "cnot":  return &CNOT;
+	  case "cy": 	return &CY;
+	  case "cz":	return &CZ;
+	  case "swap":	return &SWAP;
+	  case "ccnot":	return &CCNOT;
   }
-  if (gate == "x") {
-    return &X;
-  } else if (gate == "y") {
-    return &Y;
-  } else if (gate == "z") {
-    return &Z;
-  } else if (gate == "h") {
-    return &H;
-  } else if (gate == "cnot") {
-    return &CNOT;
-  } else if (gate == "cy") {
-    return &CY;
-  } else if (gate == "cz") {
-    return &CZ;
-  } else if (gate == "swap") {
-    return &SWAP;
-  } else if (gate == "ccnot" || gate == "toffoli") {
-    return &CCNOT;
-  } else
-    return std::nullopt;
+  return std::nullopt
 }
 } // namespace qc
