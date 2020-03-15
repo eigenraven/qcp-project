@@ -18,6 +18,7 @@ protected:
 
 int main(int argc, char **argv) {
   std::string_view inputFilePath;
+  bool states = false;
   bool useSparseFlag = false;
   bool disableGroupingFlag = false;
   double noise1 = 0.0;
@@ -31,6 +32,8 @@ int main(int argc, char **argv) {
         useSparseFlag = true;
       } else if (arg == "--nogroup") {
         disableGroupingFlag = true;
+      } else if (arg == "--states") {
+        states = true;
  	  }	else if (arg.rfind("-n",0)==0) {
         noise1=std::atof(arg.substr(2).data());
       } else {
@@ -42,7 +45,7 @@ int main(int argc, char **argv) {
     }
   }
   if (argc < 2 || inputFilePath.size() == 0) {
-    std::cerr << "Usage: " << argv[0] << " <input file> [-n[NOISE]] [--sparse] [--nogroup]" << std::endl;
+    std::cerr << "Usage: " << argv[0] << " <input file> [-n[NOISE]] [--sparse] [--nogroup] [--states]" << std::endl;
     return 1;
   }
   std::ifstream inputFile{std::string{inputFilePath}};
@@ -53,10 +56,9 @@ int main(int argc, char **argv) {
     auto tStart = hrclock::now();
     auto [circuit, shots, noise2] = parseCircuit(inputFile, useSparseFlag);
     auto tParsed = hrclock::now();
-    auto result = circuit->simulate(shots, disableGroupingFlag, std::max(noise1,noise2));
+    auto result = circuit->simulate(shots, disableGroupingFlag, std::max(noise1,noise2), states);
     auto tSimulated = hrclock::now();
-    for (int i = 0; i < result.size(); i++)
-      printf("QBit %d: %.5lf\n", i, result[i]);
+	std::cout<<circuit->print(result,states);
     int64_t nsParse =
         std::chrono::duration_cast<std::chrono::nanoseconds>(tParsed - tStart)
             .count();

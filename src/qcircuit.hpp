@@ -3,6 +3,9 @@
 #include <iostream>
 #include <qreg.hpp>
 #include <vector>
+#include <string>
+#include <sstream>
+#include <algorithm>
 
 namespace qc {
 
@@ -135,8 +138,30 @@ void singleGate(QGate *gate, int qubit) {
 
   void swapNext(int qubit) { gates.push_back(std::make_pair(qubit, &SWAP)); }
 
-  std::vector<double> simulate(int shots, bool disableGrouping = false, double noise = 0.0) {
-	return qreg->simulate(gsl::make_span(gates),shots,disableGrouping,noise);
+  std::vector<double> simulate(int shots, bool disableGrouping = false, double noise = 0.0, bool states = false) {
+	return qreg->simulate(gsl::make_span(gates),shots,disableGrouping,noise,states);
+  }
+
+  std::string binary(unsigned x, int size) {
+    std::string s;
+    do {
+        s.push_back('0'+(x&1));
+    } while (x>>=1);
+    std::reverse(s.begin(), s.end());
+	s=std::string(size-s.size(),'0')+s;
+    return s;
+  }
+
+  std::string print(std::vector<double> result, bool states) {
+	std::ostringstream s;
+	for (int i = 0; i < result.size(); i++) {
+	  if(states) {
+		s<<"|"<<binary(i,qreg->nqubits)<<">: "<<result[i]<<"\n";
+	  } else {
+		s<<"QBit "<<i<<": "<<result[i]<<"\n";
+	  }
+	}
+	return s.str();
   }
 };
 } // namespace qc
