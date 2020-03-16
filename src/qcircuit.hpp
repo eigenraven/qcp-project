@@ -20,31 +20,35 @@ public:
     return r;
   }
 
-  void nop(int qubit) { singleGate(&ID, qubit); }
+  inline void reset() {
+    qreg->reset();
+  }
 
-  void h(int qubit) { singleGate(&H, qubit); }
+  inline void nop(int qubit) { singleGate(&ID, qubit); }
 
-  void x(int qubit) { singleGate(&X, qubit); }
+  inline void h(int qubit) { singleGate(&H, qubit); }
 
-  void y(int qubit) { singleGate(&Y, qubit); }
+  inline void x(int qubit) { singleGate(&X, qubit); }
 
-  void z(int qubit) { singleGate(&Z, qubit); }
+  inline void y(int qubit) { singleGate(&Y, qubit); }
 
-  void s(int qubit) { singleGate(&S, qubit); }
+  inline void z(int qubit) { singleGate(&Z, qubit); }
 
-  void t(int qubit) { singleGate(&T, qubit); }
+  inline void s(int qubit) { singleGate(&S, qubit); }
 
-  void tinv(int qubit) { singleGate(&Tinv, qubit); }
+  inline void t(int qubit) { singleGate(&T, qubit); }
 
-  void v(int qubit) { singleGate(&V, qubit); }
+  inline void tinv(int qubit) { singleGate(&Tinv, qubit); }
 
-  void vinv(int qubit) { singleGate(&Vinv, qubit); }
+  inline void v(int qubit) { singleGate(&V, qubit); }
 
-  void cnot(int qubit1, int qubit2) { doubleGate(&CNOT, qubit1, qubit2); }
+  inline void vinv(int qubit) { singleGate(&Vinv, qubit); }
 
-  void swap(int qubit1, int qubit2) { doubleGate(&SWAP, qubit1, qubit2); }
+  inline void cnot(int qubit1, int qubit2) { doubleGate(&CNOT, qubit1, qubit2); }
 
-  void cv(int qubit1, int qubit2) {
+  inline void swap(int qubit1, int qubit2) { doubleGate(&SWAP, qubit1, qubit2); }
+
+  inline void cv(int qubit1, int qubit2) {
     tinv(qubit1);
     h(qubit2);
     cnot(qubit2, qubit1);
@@ -54,7 +58,7 @@ public:
     h(qubit2);
   }
 
-  void cvinv(int qubit1, int qubit2) {
+  inline void cvinv(int qubit1, int qubit2) {
     h(qubit2);
     cnot(qubit2, qubit1);
     tinv(qubit1);
@@ -64,17 +68,17 @@ public:
     h(qubit2);
   }
 
-  void ccnot(int qubit1, int qubit2, int qubit3) {
+  inline void ccnot(int qubit1, int qubit2, int qubit3) {
     multipleGate(&CCNOT, {qubit1, qubit2, qubit3});
   }
 
-  void singleGate(QGate *gate, int qubit) {
+  inline void singleGate(QGate *gate, int qubit) {
     if (gate->qubits != 1)
       throw std::invalid_argument("Gate must operate on one qubit");
     gates.push_back(std::make_pair(qubit, gate));
   }
 
-  void applyAll(QGate *gate) {
+  inline void applyAll(QGate *gate) {
     for (int i = 0; i < qreg->nqubits; i++) {
       singleGate(gate, i);
     }
@@ -84,7 +88,7 @@ public:
   // have been implemented So this emulates a quantum computer with the qubits
   // connected linearly i.e. Each qubit is only directly connected to its
   // nearest neighbours
-  void doubleGate(QGate *gate, int qubit1, int qubit2) {
+  inline void doubleGate(QGate *gate, int qubit1, int qubit2) {
     if (gate->qubits != 2)
       throw std::invalid_argument("This gate does not operate on two qubits");
     if (qubit1 == qubit2)
@@ -106,7 +110,7 @@ public:
     }
   }
 
-  void multipleGate(QGate *gate, std::vector<int> qubits) {
+  inline void multipleGate(QGate *gate, std::vector<int> qubits) {
     if (gate->qubits != qubits.size())
       throw std::invalid_argument(
           "This gate does not operate on the correct number of qubits");
@@ -136,15 +140,15 @@ public:
     }
   }
 
-  void swapNext(int qubit) { gates.push_back(std::make_pair(qubit, &SWAP)); }
+  inline void swapNext(int qubit) { gates.push_back(std::make_pair(qubit, &SWAP)); }
 
-  std::vector<double> simulate(int shots, bool disableGrouping = false,
+  inline std::vector<double> simulate(int shots, bool disableGrouping = false,
                                double noise = 0.0, bool states = false) {
     return qreg->simulate(gsl::make_span(gates), shots, disableGrouping, noise,
                           states);
   }
 
-  std::string binary(unsigned x, int size) {
+  inline std::string binary(unsigned x, int size) {
     std::string s;
     do {
       s.push_back('0' + (x & 1));
@@ -154,7 +158,7 @@ public:
     return s;
   }
 
-  std::string print(std::vector<double> result, bool states) {
+  inline std::string print(std::vector<double> result, bool states) {
     std::ostringstream s;
     for (int i = 0; i < result.size(); i++) {
       if (states) {
