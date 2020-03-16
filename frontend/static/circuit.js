@@ -1,11 +1,16 @@
 $(function(){
-  circuits = Array()
+  /*  */
+  gates = Array()
+
+  /* Qubit elements */
+  qubits = Array()
   $('.qubit').each((i, el) => {
-    circuits.push({
+    qubits.push({
       el: el
     })
   });
-  $('#qubit-count').text(circuits.length)
+
+  $('#qubit-count').text(qubits.length)
 
   var ket0
   function get_ket0(){
@@ -29,30 +34,30 @@ $(function(){
   $('#qubit-more').click(function(){
     get_ket0()
     console.log('more')
-    var qnum = circuits.length
-    circuits.push({
+    var qnum = qubits.length
+    qubits.push({
       el: $(
         HTML_QUBIT
         .replace('%N', String(qnum))
         .replace('%KET0', ket0)
       ).appendTo('#qubits')
     })
-    $('#qubit-count').text(circuits.length)
+    $('#qubit-count').text(qubits.length)
   })
 
   $('#qubit-less').click(function(){
     get_ket0()
     var line
     console.log('fewer')
-    if (circuits.length > 0) {
-      var line = circuits.pop()
+    if (qubits.length > 0) {
+      var line = qubits.pop()
       var lineIsEmpty = true
       if (lineIsEmpty) {
         line.el.remove()
       } else {
-        circuits.push(line)
+        qubits.push(line)
       }
-      $('#qubit-count').text(circuits.length)
+      $('#qubit-count').text(qubits.length)
     }
   })
 })

@@ -34,19 +34,7 @@ nav li {
   display: flex;
 }
 
-.circuit {
-  background-color: honeydew; /* just while */
-  width: 100%;
-}
-.qubit {
-  width: 100%;
-  height: 100px;
-  background-color: red;
-  margin-bottom: 10px;
-}
-.qubit .info {
-  font-family: "Fantasque Sans Mono", Consolas
-}
+/* GATES */
 
 .gates {
   width: 55%;
@@ -100,6 +88,28 @@ nav li {
 .gate:hover .gate-hint {
   display: block;
   position: fixed;
+}
+
+/* CONTROL PANEL */
+
+.panel {
+
+}
+
+/* CIRCUIT */
+
+.circuit {
+  background-color: honeydew; /* just while */
+  width: 100%;
+}
+.qubit {
+  width: 100%;
+  height: 100px;
+  background-color: red;
+  margin-bottom: 10px;
+}
+.qubit .info {
+  font-family: "Fantasque Sans Mono", Consolas
 }
 
 .hidden {
