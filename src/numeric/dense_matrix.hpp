@@ -137,14 +137,6 @@ struct dmatrix {
   inline bool is_vector() const { return cols == 1; }
 
   inline bool is_covector() const { return rows == 1; }
-
-  complex determinant() const;
-
-  std::optional<dmatrix> inverse() const;
-
-  /// Checks if this matrix is unitary
-  /// Warning: slow
-  bool is_unitary() const;
 };
 
 inline bool operator==(const dmatrix &a, const dmatrix &b) {

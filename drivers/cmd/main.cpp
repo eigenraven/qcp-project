@@ -3,8 +3,8 @@
 #include <input/input.hpp>
 #include <iostream>
 #include <locale>
-#include <string>
 #include <qcircuit.hpp>
+#include <string>
 
 using namespace qc;
 
@@ -18,47 +18,40 @@ protected:
 
 int main(int argc, char **argv) {
   std::string_view inputFilePath;
-  bool states = false;
-  bool useSparseFlag = false;
-  bool disableGroupingFlag = false;
-  double noise1 = 0.0;
+  std::stringstream config;
   for (int argi = 1; argi < argc; argi++) {
     std::string_view arg = argv[argi];
-    if (arg.size() < 1) {
+    if (arg.size() < 2) {
       continue;
     }
     if (arg.front() == '-') {
-      if (arg == "--sparse") {
-        useSparseFlag = true;
-      } else if (arg == "--nogroup") {
-        disableGroupingFlag = true;
-      } else if (arg == "--states") {
-        states = true;
- 	  }	else if (arg.rfind("-n",0)==0) {
-        noise1=std::atof(arg.substr(2).data());
-      } else {
-        std::cerr << "Unrecognized option: " << arg << std::endl;
-        return 1;
-      }
+      config << arg.substr(arg[1] == '-' ? 2 : 1) << "\n";
     } else {
       inputFilePath = arg;
     }
   }
   if (argc < 2 || inputFilePath.size() == 0) {
-    std::cerr << "Usage: " << argv[0] << " <input file> [-n[NOISE]] [--sparse] [--nogroup] [--states]" << std::endl;
+    std::cerr << "Usage: " << argv[0]
+              << " <input file> [--noise,0.5] [--sparse] [--nogroup] [--states]"
+              << std::endl;
     return 1;
   }
   std::ifstream inputFile{std::string{inputFilePath}};
   if (!inputFile.is_open() || inputFile.fail()) {
     std::cerr << "Couldn't read input file: " << argv[1] << std::endl;
   }
+  std::string configStr = config.str();
+  config.clear();
+  config << inputFile.rdbuf() << "\n" << configStr << "\n";
+  config << std::flush;
   try {
     auto tStart = hrclock::now();
-    auto [circuit, shots, noise2] = parseCircuit(inputFile, useSparseFlag);
+    auto parsed = parseCircuit(config);
     auto tParsed = hrclock::now();
-    auto result = circuit->simulate(shots, disableGroupingFlag, std::max(noise1,noise2), states);
+    auto result = parsed.circuit->simulate(parsed.shots, parsed.noGroup,
+                                           parsed.noise, parsed.states);
     auto tSimulated = hrclock::now();
-	std::cout<<circuit->print(result,states);
+    std::cout << parsed.circuit->print(result, parsed.states);
     int64_t nsParse =
         std::chrono::duration_cast<std::chrono::nanoseconds>(tParsed - tStart)
             .count();

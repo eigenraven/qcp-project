@@ -1,12 +1,12 @@
 #pragma once
 
 #include "numeric/numeric.hpp"
+#include <ctime>
 #include <functional>
+#include <iostream>
 #include <qgate.hpp>
 #include <random>
-#include <iostream>
 #include <vector>
-#include <ctime>
 
 namespace qc {
 
@@ -23,7 +23,9 @@ public:
   virtual void reset() = 0;
   virtual std::vector<int> measureQubits() = 0;
   virtual int measureState() = 0;
-  virtual std::vector<double> simulate(gsl::span<std::pair<int, QGate *>> operators, int shots, bool disableGrouping, double noise, bool states) = 0;
+  virtual std::vector<double>
+  simulate(gsl::span<std::pair<int, QGate *>> operators, int shots,
+           bool disableGrouping, double noise, bool states) = 0;
 };
 
 template <class M> class QRegisterImpl : public QRegister {
@@ -44,18 +46,20 @@ public:
   std::vector<int> measureQubits() final override;
   int measureState() final override;
 
-  std::vector<double> simulate(gsl::span<std::pair<int, QGate *>> operators, int shots, bool disableGrouping, double noise, bool states) final override;
+  std::vector<double> simulate(gsl::span<std::pair<int, QGate *>> operators,
+                               int shots, bool disableGrouping, double noise,
+                               bool states) final override;
 };
 
-template <class M>
-void QRegisterImpl<M>::reset() {
-  state = M(1<<nqubits,1);
+template <class M> void QRegisterImpl<M>::reset() {
+  state = M(1 << nqubits, 1);
   state(0, 0) = 1;
 }
 
 template <class M>
 void QRegisterImpl<M>::applyOperators(
-    gsl::span<std::pair<int, QGate *>> operators, bool disableGrouping, double noise) {
+    gsl::span<std::pair<int, QGate *>> operators, bool disableGrouping,
+    double noise) {
   std::vector<const M *> matrices;
   matrices.reserve(this->nqubits);
   std::vector<bool> covered(nqubits, false);
@@ -98,23 +102,26 @@ void QRegisterImpl<M>::applyOperators(
       int removed = nonOverlappingEnd - operators.begin();
       operators = operators.subspan(removed, operators.size() - removed);
     }
-	if(noise)applyNoise(noise);
+    if (noise)
+      applyNoise(noise);
   }
 }
 
-template <class M>
-void QRegisterImpl<M>::applyNoise(double noise) {
+template <class M> void QRegisterImpl<M>::applyNoise(double noise) {
   static std::random_device rd;
-  static std::mt19937 gen(rd()^(int)std::time(NULL));
+  static std::mt19937 gen(rd() ^ (int)std::time(NULL));
   static std::uniform_real_distribution<> dis(0.0, 1.0);
-  for(int i = 0; i < nqubits; i++) {
-	if(dis(gen)<noise) {
-	  for(int j = 0; j < state.rows; j++) {
-		if(j>>i&1) {
-			state(j&~(1<<i),0)=std::polar(sqrt(pow(std::abs((complex)state(j&~(1<<i),0)),2)+pow(std::abs((complex)state(j,0)),2)),std::arg((complex)state(j&~(1<<i),0)));
-		}
-	  }
-	}
+  for (int i = 0; i < nqubits; i++) {
+    if (dis(gen) < noise) {
+      for (int j = 0; j < state.rows; j++) {
+        if (j >> i & 1) {
+          state(j & ~(1 << i), 0) = std::polar(
+              sqrt(pow(std::abs((complex)state(j & ~(1 << i), 0)), 2) +
+                   pow(std::abs((complex)state(j, 0)), 2)),
+              std::arg((complex)state(j & ~(1 << i), 0)));
+        }
+      }
+    }
   }
 }
 
@@ -149,32 +156,34 @@ template <class M> int QRegisterImpl<M>::measureState() {
 }
 
 template <class M>
-std::vector<double> QRegisterImpl<M>::simulate(gsl::span<std::pair<int, QGate *>> operators, int shots, bool disableGrouping, double noise, bool states) {
-	std::vector<double> result;
-  	if(states) {
-	  result = std::vector<double>(1<<nqubits);
-	} else {
-	  result = std::vector<double>(nqubits);
-	}
-	if(!noise) {
-	  applyOperators(operators, disableGrouping, noise);
-	}
-  	for (int i = 0; i < shots; i++) {
-	  if(noise) {
-		reset();
-	  	applyOperators(operators, disableGrouping, noise);
-	  }
-	  if(states) {
-		result[measureState()]+=1/(double)shots;
-	  } else {
-		std::vector<int> state = measureQubits();
-		for (int j = 0; j < state.size(); j++) {
-		result[j] += state[j] / (double)shots;
-	  }
-	  }
-  	}
+std::vector<double>
+QRegisterImpl<M>::simulate(gsl::span<std::pair<int, QGate *>> operators,
+                           int shots, bool disableGrouping, double noise,
+                           bool states) {
+  std::vector<double> result;
+  if (states) {
+    result = std::vector<double>(1 << nqubits);
+  } else {
+    result = std::vector<double>(nqubits);
+  }
+  if (!noise) {
+    applyOperators(operators, disableGrouping, noise);
+  }
+  for (int i = 0; i < shots; i++) {
+    if (noise) {
+      reset();
+      applyOperators(operators, disableGrouping, noise);
+    }
+    if (states) {
+      result[measureState()] += 1 / (double)shots;
+    } else {
+      std::vector<int> state = measureQubits();
+      for (int j = 0; j < state.size(); j++) {
+        result[j] += state[j] / (double)shots;
+      }
+    }
+  }
   return result;
-
 }
 
 } // namespace qc

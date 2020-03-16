@@ -21,8 +21,9 @@ int main(int argc, char **argv) {
     std::string strDesc = req.get_param_value("circuit");
     std::istringstream circuitStream{strDesc};
     try {
-      auto [circuit, shots, noise] = parseCircuit(circuitStream, false);
-      auto simResult = circuit->simulate(shots,false,noise);
+      auto parsed = parseCircuit(circuitStream);
+      auto simResult = parsed.circuit->simulate(parsed.shots, parsed.noGroup,
+                                                parsed.noise, parsed.states);
       std::ostringstream results;
       results << "OK\n";
       results << "entries " << simResult.size() << "\n";
@@ -35,5 +36,6 @@ int main(int argc, char **argv) {
     }
   });
   server.listen("localhost", 12345);
+  std::cerr << "QCSim backend server running at localhost:12345" << std::endl;
   return 0;
 }
