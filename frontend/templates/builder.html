@@ -25,21 +25,24 @@
 </header>
 <div class='content'>
   <p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, nisi! Quaerat, obcaecati sapiente. Eius aperiam eaque aliquid, vel libero autem! Corrupti adipisci molestiae odio quibusdam dolore facilis, deleniti ipsam aperiam.
+    Hover the mouse over a gate to view its properties.
+    Click on a gate and then an insertion point to add it to the circuit.
   </p>
   <div class='builder'>
     <div class='gates' id='gates'>
       {% for op in ops.values() %}
       {% if op.kind not in ("operation", ) %}
-        <div class='gate'>
+        <div id='{{op.id}}' class='gate {{op.kind}}'>
           <div class='gate-icon'>\[{{op.symbol}}\]</div>
           <div class='gate-hint'>
             <h2>{{op.name}}</h2>
-            <p>{{op.description}}</p>
+            <p>
             \(
               {{op.mathjax.factor}}
-              \begin{pmatrix}{{op.mathjax.matrix}}\end{pmatrix}
+              \begin{bmatrix}{{op.mathjax.matrix}}\end{bmatrix}
             \)
+            </p>
+            <p>{{op.description}}</p>
           </div>
         </div>
       {% endif %}

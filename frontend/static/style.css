@@ -48,21 +48,41 @@ nav li {
   font-family: "Fantasque Sans Mono", Consolas
 }
 
+.gates {
+  width: 50%;
+}
+
 .gate{
   display: inline-block;
+  margin: 2px;
 }
+
 .gate-icon {
   display: inline-block;
-  background: rebeccapurple;
   color: white;
   border-radius: 2px;
   width: 3em;
   height: 3em;
   text-align: center;
 }
+
+.gate .gate-icon, .general .gate-icon {
+  background: rebeccapurple;
+}
+.rotation .gate-icon {
+  background: wheat;
+}
+.phase .gate-icon {
+  background: thistle;
+}
+.controlled .gate-icon {
+  background: orange;
+}
+
 .gate-hint {
   display: none;
   background: aliceblue;
+  max-width: 20em;
   padding: 1em;
   border-radius: 5px;
   color: black;
