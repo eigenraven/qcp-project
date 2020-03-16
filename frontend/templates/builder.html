@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Qbuilder</title>
+  <title>Quantum Builder</title>
   <link rel="stylesheet" href="/static/style.css">
   <script
     src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -15,6 +15,9 @@
           src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
   </script>
   <script src="/static/circuit.js"></script>
+  <script>
+    gate_kinds = {{gate_data|safe}}
+  </script>
 </head>
 <body>
 <div class='header-anchor'></div>
@@ -28,11 +31,13 @@
     Hover the mouse over a gate to view its properties.
     Click on a gate and then an insertion point to add it to the circuit.
   </p>
+  <pre>
+  </pre>
   <div class='builder'>
-    <div class='gates' id='gates'>
-      {% for op in ops.values() %}
-      {% if op.kind not in ("operation", ) %}
-        <div id='{{op.id}}' class='gate {{op.kind}}'>
+    <div class='panels'>
+    <div class='panel-gates'>
+      {% for op in gate_items.values() %}
+        <div class='gate-kind {{op.kind}}' id='{{op.id}}'>
           <div class='gate-icon'>\({{op.symbol}}\)</div>
           <div class='gate-hint'>
             <h2>{{op.name}}</h2>
@@ -45,10 +50,9 @@
             <p>{{op.description}}</p>
           </div>
         </div>
-      {% endif %}
       {% endfor %}
     </div>
-    <div class='panel'>
+    <div class='panel-rest'>
       Qubits: <span id='qubit-count'>0</span>
       <button id='qubit-more'>+</button>
       <button id='qubit-less'>-</button>
@@ -65,12 +69,17 @@
           -- circuitry, and should be fixed with async behaviour.
           -->
         <div class='qubit'>
-          <p class='info'>qubit 0</p>
+          <div class='header'>q[0]</div>
           <div class='ket0'>\(\ket{0}\)</div>
+          <div class='line'></div>
         </div>
         <div class='qubit'>
-          <p class='info'>qubit 1</p>
+          <div class='header'>q[1]</div>
           <div class='ket0'>\(\ket{0}\)</div>
+          <div class='line'></div>
+        </div>
+        <div id='gates', class='gates'>
+
         </div>
       </div>
     </div>

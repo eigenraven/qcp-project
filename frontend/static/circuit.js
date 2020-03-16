@@ -1,7 +1,4 @@
 $(function(){
-  /*  */
-  gates = Array()
-
   /* Qubit elements */
   qubits = Array()
   $('.qubit').each((i, el) => {
@@ -20,15 +17,7 @@ $(function(){
     }
   }
 
-  var HTML_QUBIT = `
-    <div class='qubit'>
-      <p class='info'>
-        qubit %N
-      </p>
-      <div class='ket0'>
-        %KET0
-      </div>
-    </div>`
+  var HTML_QUBIT = 
 
 
   $('#qubit-more').click(function(){
@@ -36,11 +25,11 @@ $(function(){
     console.log('more')
     var qnum = qubits.length
     qubits.push({
-      el: $(
-        HTML_QUBIT
-        .replace('%N', String(qnum))
-        .replace('%KET0', ket0)
-      ).appendTo('#qubits')
+      el: $(`
+      <div class='qubit'>
+        <div class='header'>q${String(qnum)}</div>
+        <div class='ket0'>${ket0}</div>
+      </div>`).appendTo('#qubits')
     })
     $('#qubit-count').text(qubits.length)
   })
@@ -59,5 +48,24 @@ $(function(){
       }
       $('#qubit-count').text(qubits.length)
     }
+  })
+
+
+  /* GATES */
+  gates = []
+
+  $.each(gate_kinds, function(id, op){
+    op.gate_icon = $('#' + id).click(function(){
+      gate = {
+        /* TODO: literally everything else */
+        el: $(`
+        <div class='gate ${id}'>
+          ${id}
+        </div>
+        `).appendTo('#gates')
+      }
+      gates.push(gate)
+      /* TODO: add to qubit log; render nicely */
+    })
   })
 })

@@ -26,5 +26,6 @@ app = Flask(__name__, static_url_path='/static')
 def index():
     return render_template(
         'builder.html',
-        ops=OPERATIONS
+        gate_items=OPERATIONS,
+        gate_data=json.dumps(OPERATIONS)
     )
