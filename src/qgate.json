@@ -6,7 +6,7 @@
         "matrix": [
             "1 & 0",
             "0 & 1"
-        ],  
+        ]
     }, "x": {"kind": "gate", "arity": 1,
         "symbol": "X",
         "name": "X-rotation gate",
