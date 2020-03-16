@@ -30,7 +30,7 @@
   <div class='builder'>
     <div class='gates' id='gates'>
       {% for op in ops.values() %}
-      {% if op.kind == "gate" %}
+      {% if op.kind not in ("operation", ) %}
         <div class='gate'>
           <div class='gate-icon'>\[{{op.symbol}}\]</div>
           <div class='gate-hint'>

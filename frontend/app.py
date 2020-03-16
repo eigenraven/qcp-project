@@ -5,17 +5,20 @@ from flask import Flask, render_template
 
 _GATES_PATH = Path(__file__).parent.parent / "src" / "qgate.json"
 
-OPERATIONS = {}  # op.name -> op
+OPERATIONS = dict()
 with open(_GATES_PATH, encoding="utf8") as f:
-    for id, data in json.load(f).items():
+    for data in json.load(f):
+        assert "id" in data and "arity" in data
+        id_ = data['id']
+
         op = dict(
-            id=id, symbol=id.upper(), name="No name", description="",
+            symbol=id_.upper(), kind="general", name="No name", description="",
             mathjax={
                 "factor": data.pop("factor", ""),
                 "matrix": "\\\\".join(data.pop("matrix", ["\\text{Not a gate}"]))
         })
         op.update(data)
-        OPERATIONS[id] = op
+        OPERATIONS[id_] = op
 
 app = Flask(__name__, static_url_path='/static')
 
