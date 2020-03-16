@@ -1,4 +1,13 @@
 $(function(){
+  const GATE_ALIAS = {
+    "nop": "id", "hadamard": "h", "toffoli": "ccnot"
+  }
+  let GATE_ARITY = {}
+  for (let i = 0; i < gate_kinds.length; i++) {
+    const gate = gate_kinds[i];
+    GATE_ARITY[gate.id] = gate.arity
+  }
+
   /* Qubit elements */
   qubits = Array()
   $('.qubit').each((i, el) => {
@@ -9,7 +18,7 @@ $(function(){
 
   $('#qubit-count').text(qubits.length)
 
-  var ket0
+  let ket0;
   function get_ket0(){
     if( !ket0 ){
       console.log('Initial |0> MathJax found')
@@ -17,13 +26,10 @@ $(function(){
     }
   }
 
-  var HTML_QUBIT = 
-
-
   $('#qubit-more').click(function(){
     get_ket0()
     console.log('more')
-    var qnum = qubits.length
+    let qnum = qubits.length
     qubits.push({
       el: $(`
       <div class='qubit'>
@@ -36,11 +42,11 @@ $(function(){
 
   $('#btn-qubit-less').click(function(){
     get_ket0()
-    var line
+    let line
     console.log('fewer')
     if (qubits.length > 0) {
-      var line = qubits.pop()
-      var lineIsEmpty = true
+      let line = qubits.pop()
+      let lineIsEmpty = true
       if (lineIsEmpty) {
         line.el.remove()
       } else {
@@ -56,9 +62,8 @@ $(function(){
   $.each(gate_kinds, function(id, op){
     op.gate_icon = $('#' + id).click(function(){
       gate = {
-        /* TODO: literally everything else */
         id: id,
-        qubits: [],
+        qubits: [], // add qubits..?
         el: $(`
         <div class='gate ${id}'>
           ${id}
@@ -69,20 +74,23 @@ $(function(){
       /* TODO: add to qubit log; render nicely */
     })
   })
-  
+
+  /* FILE IO */
+
   as_file = function(){
     // TODO: implement form & gathering
-    isSparse = false
-    doGroup = true
-    noise = 0.0
-    shots = 1024
+    isSparse = false;
+    doGroup = true;
+    noise = 0.0;
+    shots = 1024;
+    emitStates = true;
 
     str = `qubits,${qubits.length}\n`
-    if(shots != 1024){str += `shots,${shots}\n`}
-    if(noise){str += `noise,${noise}\n`}
-    if(isSparse){str += `sparse\n`}
-    if(!doGroup){str += `nogroup\n`}
-    /* `states` ..? */
+    if(shots != 1024) str += `shots,${shots}\n`
+    if(noise) str += `noise,${noise}\n`
+    if(isSparse) str += `sparse\n`
+    if(!doGroup) str += `nogroup\n`
+    if(emitStates) str += `states\n`
     
     $.each(gates, function(i, gate){
       console.log(gate)
@@ -92,14 +100,12 @@ $(function(){
     })
     return str
   }
-
-  
-function download(data, filename, type) {
-  var file = new Blob([data], {type: type});
-  if (window.navigator.msSaveOrOpenBlob) // IE10+
-      window.navigator.msSaveOrOpenBlob(file, filename);
-  else { // Others
-      var a = document.createElement("a"),
+  function download(data, filename, type) {
+    let file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+      let a = document.createElement("a"),
               url = URL.createObjectURL(file);
       a.href = url;
       a.download = filename;
@@ -113,5 +119,98 @@ function download(data, filename, type) {
   }
   $('#btn-save').click(function(){
     download(as_file(), "circuit.in", "text/plaintext")
+  })
+
+  
+  $('#btn-load').click(function(){
+    $('#btn-load')[0].files[0].text()
+    .then(function(str){
+      let hasError = false
+      let f_gates = [];
+      let f_qubits;
+      let f_noise = 0;
+      let f_shots = 1024;
+      let f_isSparse = false;
+      let f_doGroup = true;
+      let f_emitStates = true;
+
+      function error(lineno, msg){
+        msg = `Error in line ${lineno}: ${msg}`
+        $('#load-error').innerText = msg
+        console.log(msg)
+        hasError = true
+      }
+
+      $.each(str.split(/\r\n|\r|\n/), function(l, line){
+        if( !hasError ){
+          line = line.split(/\s*(\/\/|#)/)[0] // strip comments
+          let args = line.split(",").toLowerCase()
+          let name = args.shift()
+          
+          function numHeader(val, name, cond){
+            let token = args.shift()
+            if( token == undefined ){
+              error(l, `${name} requires a value`)
+            }
+            let numval = Number(token)
+            if( cond(numval) ){
+              console.log(name, "obtained", numval)
+              return numval
+            } else {
+              error(l, `${name} cannot be ${token}`)
+              return val
+            }
+          }
+          
+          switch( name ){
+            case "qubits": f_qubits = numHeader(
+              f_qubits, "Qubit count",
+              n => Number.isInteger(n) && n > 0
+            ); break;
+
+            case "shots": f_shots = numHeader(
+              f_shots, "Shots",
+              n => Number.isInteger(n) && n > 0
+            );
+            case "noise": f_noise = numHeader(
+              f_noise, "Noise",
+              n => 0 <= n && n <= 1
+            )
+            
+            case "sparse": f_isSparse = true; break;
+            case "nogroup": f_doGroup = false; break;
+            case "states": f_emitStates = true; break;
+
+            default:
+              for (let arity = 0; arity < GATE_ARITY.length; arity++) {
+                arity = GATE_ARITY[name];
+                if( arity ){
+                  if( args.length <= arity ){
+                    error(l, `Not enough args to ${name} (need ${arity})`)
+                  } else {
+                    // TODO: assert stuff with indices here
+                    f_gates.push({
+                      id=name,
+                    })
+                  }
+                  break;
+                } else {
+                }
+              }
+              break;
+          }
+          if( !hasError ){
+            console.log('loaded successfully!')
+            console.log(f_qubits, f_shots, f_noise)
+            console.log(f_doGroup, f_emitStates, f_isSparse)
+            console.log(f_gates)
+            // TODO: actually load
+          } else {
+            console.log('loaded abysmally!')
+          }
+        }
+      })
+      console.log(str)
+    })
   })
 })
