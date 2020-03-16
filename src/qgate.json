@@ -1,87 +1,125 @@
 {
-    "runs": {"kind": "meta", "arity": "1"},
-    "qubits": {"kind": "meta", "arity": "1"},
-
-    "id": {"kind": "gate", "arity": 1, "matrix": [
-        "1 & 0",
-        "0 & 1"
-    ],  "name": "Identity (no-op) gate",
-        "description": "This gate has no effect."
-    },
-    "x": {"kind": "gate", "arity": 1, "matrix": [
-        "0 & 1",
-        "1 & 0"
-    ],  "name": "X-rotation gate"},
-    "y": {"kind": "gate", "arity": 1, "matrix": [
-        "0  & -1i",
-        "1i &  1"
-    ],  "name": "Y-rotation gate"},
-    "z": {"kind": "gate", "arity": 1, "matrix": [
-        "1 &  0",
-        "0 & -1"
-    ],  "name": "Z-rotation gate"},
-    "h": {"kind": "gate", "arity": 1, "matrix": [
-        "1& 1",
-        "1&-1"
-    ],  "factor": "\\frac{1}{\\sqrt{2}}",
-        "name": "Hadamard gate"},
-    "s": {"kind": "gate", "arity": 1, "matrix": [
-        "1& 0",
-        "0&1i"
-    ],  "name": "S phase-shift gate"},
-    "t": {"kind": "gate", "arity": 1, "matrix": [
-        "1& 0",
-        "0&e^{i pi/4}"
-    ],  "name": "T phase-shift gate"},
-    "tinv": {"kind": "gate", "arity": 1, "matrix": [
-        "1& 0",
-        "0&e^{-i pi/4}"
-    ],  "factor": "\\frac{1}{\\sqrt{2}}",
-        "name": "T† phase-shift gate"},
-    "v": {"kind": "gate", "arity": 1, "matrix": [
-        "1+1i& 1-1i",
-        "1-1i&1+1i"
-    ],  "factor": "\\frac{1}{\\2}",
-        "name": "V gate"},
-    "vinv": {"kind": "gate", "arity": 1, "matrix": [
-        "1-1i& 1+1i",
-        "1+1i&1-1i"
-    ],  "factor": "\\frac{1}{\\2}",
-        "name": "V† gate"},
-
-    "cnot": {"kind": "gate", "arity": 2, "matrix": [
-        "1 &0 &0 &0",
-        "0 &1 &0 &0",
-        "0 &0 &0 &1",
-        "0 &0 &1 &0"
-    ],  "name": "Controlled NOT gate"},
-    "cy": {"kind": "gate", "arity": 2, "matrix": [
-        " 1 & 0 & 0  & 0 ",
-        " 0 & 1 & 0  & 0 ",
-        " 0 & 0 & 0  &-1i",
-        " 0 & 0 & 1i & 0 "
-    ],  "name": "CY gate"},
-    "cz": {"kind": "gate", "arity": 2, "matrix": [
-        "1 &0 &0 & 0",
-        "0 &1 &0 & 0",
-        "0 &0 &1 & 0",
-        "0 &0 &0 &-1"
-    ],  "name": "CZ gate"},
-    "swap": {"kind": "gate", "arity": 2, "matrix": [
-        "1 &0 &0 &0",
-        "0 &0 &1 &0",
-        "0 &1 &0 &0",
-        "0 &0 &0 &1"
-    ],  "name": "Qubit-swap gate"},
-
-    "ccnot": {"kind": "gate", "arity": 3, "matrix": [
-        "1 &0 &0 &0 &0 &0 &0 &0",
-        "0 &1 &0 &0 &0 &0 &0 &0",
-        "0 &0 &1 &0 &0 &0 &0 &0",
-        "0 &0 &0 &1 &0 &0 &0 &0",
-        "0 &0 &0 &0 &1 &0 &0 &0",
-        "0 &0 &0 &0 &0 &1 &0 &0",
-        "0 &0 &0 &0 &0 &0 &0 &1",
-        "0 &0 &0 &0 &0 &0 &1 &0"
-    ],  "name": "CCNot gate"}
+       "id": {"kind": "gate", "arity": 1,
+        "symbol": "ID",
+        "name": "Identity (no-op) gate",
+        "description": "This gate has no effect.",
+        "matrix": [
+            "1 & 0",
+            "0 & 1"
+        ],  
+    }, "x": {"kind": "gate", "arity": 1,
+        "symbol": "X",
+        "name": "X-rotation gate",
+        "matrix": [
+            "0 & 1",
+            "1 & 0"
+        ]
+    }, "y": {"kind": "gate", "arity": 1,
+        "symbol": "Y",
+        "name": "Y-rotation gate",
+        "matrix": [
+            "0  & -1i",
+            "1i &  1"
+        ]
+    }, "z": {"kind": "gate", "arity": 1,
+        "symbol": "Z",
+        "name": "Z-rotation gate",
+        "matrix": [
+            "1 &  0",
+            "0 & -1"
+        ]
+    }, "h": {"kind": "gate", "arity": 1,
+        "symbol": "H",
+        "name": "Hadamard gate",
+        "factor": "\\frac{1}{\\sqrt{2}}",
+        "matrix": [
+            "1& 1",
+            "1&-1"
+        ]
+    }, "s": {"kind": "gate", "arity": 1,
+        "symbol": "S",
+        "name": "S phase-shift gate",
+        "matrix": [
+            "1& 0",
+            "0&1i"
+        ]
+    }, "t": {"kind": "gate", "arity": 1,
+        "symbol": "T",
+        "name": "T phase-shift gate",
+        "matrix": [
+            "1& 0",
+            "0&e^{i \\pi/4}"
+        ]
+    }, "tinv": {"kind": "gate", "arity": 1,
+        "symbol": "T^\\dag",
+        "name": "T† phase-shift gate",
+        "matrix": [
+            "1& 0",
+            "0&e^{-i pi/4}"
+        ]
+    }, "v": {"kind": "gate", "arity": 1,
+        "name": "V gate",
+        "matrix": [
+            "1+1i& 1-1i",
+            "1-1i& 1+1i"
+        ]
+    }, "vinv": {"kind": "gate", "arity": 1,
+        "symbol": "V^\\dag",
+        "name": "V† gate",
+        "matrix": [
+            "1-1i& 1+1i",
+            "1+1i &1-1i"
+        ]
+    
+    },  "cnot": {"kind": "gate", "arity": 2,
+        "symbol": "C¬",
+        "name": "Controlled NOT gate",
+        "matrix": [
+            "1 &0 &0 &0",
+            "0 &1 &0 &0",
+            "0 &0 &0 &1",
+            "0 &0 &1 &0"
+        ]
+    }, "cy": {"kind": "gate", "arity": 2,
+        "symbol": "CY",
+        "name": "CY gate",
+        "matrix": [
+            " 1 & 0 & 0  & 0 ",
+            " 0 & 1 & 0  & 0 ",
+            " 0 & 0 & 0  &-1i",
+            " 0 & 0 & 1i & 0 "
+        ]
+    }, "cz": {"kind": "gate", "arity": 2,
+        "symbol": "CZ",
+        "name": "CZ gate",
+        "matrix": [
+            "1 &0 &0 & 0",
+            "0 &1 &0 & 0",
+            "0 &0 &1 & 0",
+            "0 &0 &0 &-1"
+        ]
+    }, "swap": {"kind": "gate", "arity": 2,
+        "symbol": "↔",
+        "name": "Qubit-swap gate",
+        "matrix": [
+            "1 &0 &0 &0",
+            "0 &0 &1 &0",
+            "0 &1 &0 &0",
+            "0 &0 &0 &1"
+        ]
+    
+    }, "ccnot": {"kind": "gate", "arity": 3,
+        "symbol": "CCnot",
+        "name": "CCNot gate",
+        "matrix": [
+            "1 &0 &0 &0 &0 &0 &0 &0",
+            "0 &1 &0 &0 &0 &0 &0 &0",
+            "0 &0 &1 &0 &0 &0 &0 &0",
+            "0 &0 &0 &1 &0 &0 &0 &0",
+            "0 &0 &0 &0 &1 &0 &0 &0",
+            "0 &0 &0 &0 &0 &1 &0 &0",
+            "0 &0 &0 &0 &0 &0 &0 &1",
+            "0 &0 &0 &0 &0 &0 &1 &0"
+        ]
+    }
 }
