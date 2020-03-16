@@ -14,7 +14,7 @@ Each line is either empty, a comment (starts with `//`), or a command defined by
 
 The circuit MUST begin with the instruction:
 
-  - **Mandatory header: `qubits`. One argument: the number of qubits.
+  - **Mandatory header**: `qubits`. One argument: the number of qubits.
 
 The following headers may be applied. Headers MAY be defined any where but SHOULD be defined before gates.
 
