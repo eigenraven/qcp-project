@@ -15,10 +15,11 @@ struct ParsedCircuit {
   std::unique_ptr<QCircuit> circuit;
   int shots;
   double noise;
+  bool noGroup;
+  bool states;
 };
 
-inline ParsedCircuit parseCircuit(std::istream &input,
-                                  bool useSparseMatrices = false) {
+inline ParsedCircuit parseCircuit(std::istream &input) {
   using std::getline;
   using std::string;
   if (input.bad()) {
@@ -26,23 +27,38 @@ inline ParsedCircuit parseCircuit(std::istream &input,
   }
   string line;
   string token;
+
+  bool useSparseMatrices = false;
+  bool noGroup = false;
+  bool states = false;
+  int qubitCount = 0;
   int shots = 1024;
   double noise = 0.0;
+
+  std::vector<std::pair<QGate *, std::vector<int>>> gates;
+  gates.reserve(32);
   std::unique_ptr<QCircuit> circuit;
+
   while (!input.eof()) {
     getline(input, line);
+    if (line.size() < 1) {
+      continue;
+    }
+    line = line.substr(line.find_first_not_of(" \t", 0));
+    if (line.find("//", 0) == 0) {
+      continue;
+    }
     std::stringstream ss(line);
     getline(ss, token, ',');
     if (token == "qubits") {
       getline(ss, token, ',');
-      if (useSparseMatrices) {
-        circuit = QCircuit::make<smatrix>(stoi(token));
-      } else {
-        circuit = QCircuit::make<dmatrix>(stoi(token));
-      }
-    } else if (token == "sparsequbits") {
-      getline(ss, token, ',');
-      circuit = QCircuit::make<smatrix>(stoi(token));
+      qubitCount = stoi(token);
+    } else if (token == "sparse") {
+      useSparseMatrices = true;
+    } else if (token == "nogroup") {
+      noGroup = true;
+    } else if (token == "states") {
+      states = true;
     } else if (token == "shots") {
       getline(ss, token, ',');
       shots = std::stoi(token);
@@ -55,23 +71,33 @@ inline ParsedCircuit parseCircuit(std::istream &input,
       std::optional<QGate *> ogate = getGate(token);
       if (ogate) {
         QGate *gate = *ogate;
-        if (!circuit) {
-          throw std::logic_error(
-              "Error: Circuit must initialized before applying gates");
-        }
         std::vector<int> qubits;
         for (int i = 0; i < gate->qubits; i++) {
           getline(ss, token, ',');
           qubits.push_back(stoi(token));
         }
-        circuit->multipleGate(gate, qubits);
+        gates.push_back(std::make_pair(gate, std::move(qubits)));
+      } else {
+        throw std::logic_error("Error: unknown gate encountered");
       }
     }
   }
-  if (!circuit) {
+
+  if (qubitCount < 1) {
     throw std::logic_error("Error: Circuit must have >0 qubits");
   }
-  return {std::move(circuit), shots, noise};
+
+  if (useSparseMatrices) {
+    circuit = QCircuit::make<smatrix>(qubitCount);
+  } else {
+    circuit = QCircuit::make<dmatrix>(qubitCount);
+  }
+
+  for (auto &[gate, qubits] : gates) {
+    circuit->multipleGate(gate, std::move(qubits));
+  }
+
+  return {std::move(circuit), shots, noise, noGroup, states};
 }
 
 } // namespace qc
