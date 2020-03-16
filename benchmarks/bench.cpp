@@ -19,7 +19,7 @@ template <class M> M matrix_with_random_data(int rows_cols, int elements) {
   for (int el = 0; el < elements; el++) {
     int row = position_dist(rng);
     int col = position_dist(rng);
-    int pos = col + row*rows_cols;
+    int pos = col + row * rows_cols;
     while (placedElements.count(pos) > 0) {
       col++;
       if (col >= rows_cols) {
@@ -48,15 +48,16 @@ static void CustomKroneckerArguments(benchmark::internal::Benchmark *b) {
 
 static void BM_Kronecker_Dense_2(benchmark::State &state) {
   int size = state.range(0);
-  int elements = state.range(1)*size*size/100;
+  int elements = state.range(1) * size * size / 100;
   using Matrix = dmatrix;
   Matrix m1 = matrix_with_random_data<Matrix>(size, elements);
   Matrix m2 = matrix_with_random_data<Matrix>(size, elements);
-  for(auto _ : state) {
+  for (auto _ : state) {
     Matrix kp = kronecker({&m1, &m2});
     benchmark::DoNotOptimize(kp);
   }
 }
+
 static void BM_Kronecker_Sparse_2(benchmark::State &state) {
   int size = state.range(0);
   int elements = state.range(1) * size * size / 100;

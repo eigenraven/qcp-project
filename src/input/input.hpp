@@ -46,7 +46,7 @@ inline ParsedCircuit parseCircuit(std::istream &input,
     } else if (token == "shots") {
       getline(ss, token, ',');
       shots = std::stoi(token);
- 	} else if (token == "noise") {
+    } else if (token == "noise") {
       getline(ss, token, ',');
       noise = std::stof(token);
     } else {

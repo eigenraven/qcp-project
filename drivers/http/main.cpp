@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     std::istringstream circuitStream{strDesc};
     try {
       auto [circuit, shots, noise] = parseCircuit(circuitStream, false);
-      auto simResult = circuit->simulate(shots,false,noise);
+      auto simResult = circuit->simulate(shots, false, noise);
       std::ostringstream results;
       results << "OK\n";
       results << "entries " << simResult.size() << "\n";
@@ -35,5 +35,6 @@ int main(int argc, char **argv) {
     }
   });
   server.listen("localhost", 12345);
+  std::cerr << "QCSim backend server running at localhost:12345" << std::endl;
   return 0;
 }
