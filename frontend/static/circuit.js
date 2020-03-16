@@ -31,10 +31,10 @@ $(function(){
         <div class='ket0'>${ket0}</div>
       </div>`).appendTo('#qubits')
     })
-    $('#qubit-count').text(qubits.length)
+    $('#btn-qubit-count').text(qubits.length)
   })
 
-  $('#qubit-less').click(function(){
+  $('#btn-qubit-less').click(function(){
     get_ket0()
     var line
     console.log('fewer')
@@ -50,7 +50,6 @@ $(function(){
     }
   })
 
-
   /* GATES */
   gates = []
 
@@ -58,6 +57,8 @@ $(function(){
     op.gate_icon = $('#' + id).click(function(){
       gate = {
         /* TODO: literally everything else */
+        id: id,
+        qubits: [],
         el: $(`
         <div class='gate ${id}'>
           ${id}
@@ -67,5 +68,32 @@ $(function(){
       gates.push(gate)
       /* TODO: add to qubit log; render nicely */
     })
+  })
+  
+  as_file = function(){
+    // TODO: implement form & gathering
+    isSparse = false
+    doGroup = true
+    noise = 0.0
+    shots = 1024
+
+    str = `qubits,${qubits.length}\n`
+    if(shots != 1024){str += `shots,${shots}\n`}
+    if(noise){str += `noise,${noise}\n`}
+    if(isSparse){str += `sparse\n`}
+    if(!doGroup){str += `nogroup\n`}
+    /* `states` ..? */
+    
+    $.each(gates, function(i, gate){
+      console.log(gate)
+      str += `${gate.id}`
+      $.each(gate.qubits, (i,q) => str+= `,${q}`)
+      str += `\n`
+    })
+    return str
+  }
+
+  $('#btn-save').click(function(){
+    console.log(as_file())
   })
 })
