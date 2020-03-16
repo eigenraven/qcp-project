@@ -137,6 +137,7 @@
     }, {
 		"id": "ccnot", "arity": 3,
         "symbol": "ccX",
+        "kind": "controlled",
         "name": "Toffoli gate (aka ccX or ccNOT)",
         "description": "Much like the cX gate, will apply the X (aka the NOT) gate if both control qubits are \\(\\ket{1}\\), with entanglement for qubits neither \\(\\ket{0}\\) nor \\(\\ket{1}\\)",
         "matrix": [

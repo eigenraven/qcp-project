@@ -47,7 +47,7 @@ nav li {
 
 .gate-icon {
   display: inline-block;
-  color: white;
+  color: black;
   border-radius: 2px;
   width: 3em;
   height: 3em;
@@ -59,13 +59,13 @@ nav li {
 }
 
 .gate .gate-icon, .general .gate-icon {
-  background: rebeccapurple;
+  background: thistle;
 }
 .rotation .gate-icon {
   background: wheat;
 }
 .phase .gate-icon {
-  background: thistle;
+  background: pink;
 }
 .controlled .gate-icon {
   background: orange;
