@@ -17,6 +17,7 @@ struct ParsedCircuit {
   double noise;
   bool noGroup;
   bool states;
+  int benchmark;
 };
 
 inline ParsedCircuit parseCircuit(std::istream &input) {
@@ -31,6 +32,7 @@ inline ParsedCircuit parseCircuit(std::istream &input) {
   bool useSparseMatrices = false;
   bool noGroup = false;
   bool states = false;
+  int benchmark = 0;
   int qubitCount = 0;
   int shots = 1024;
   double noise = 0.0;
@@ -59,6 +61,9 @@ inline ParsedCircuit parseCircuit(std::istream &input) {
       noGroup = true;
     } else if (token == "states") {
       states = true;
+    } else if (token == "benchmark") {
+      getline(ss, token, ',');
+      benchmark = std::stoi(token);
     } else if (token == "shots") {
       getline(ss, token, ',');
       shots = std::stoi(token);
@@ -97,7 +102,7 @@ inline ParsedCircuit parseCircuit(std::istream &input) {
     circuit->multipleGate(gate, std::move(qubits));
   }
 
-  return {std::move(circuit), shots, noise, noGroup, states};
+  return {std::move(circuit), shots, noise, noGroup, states, benchmark};
 }
 
 } // namespace qc
