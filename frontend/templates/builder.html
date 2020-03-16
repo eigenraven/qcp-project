@@ -33,14 +33,14 @@
       {% for op in ops.values() %}
       {% if op.kind not in ("operation", ) %}
         <div id='{{op.id}}' class='gate {{op.kind}}'>
-          <div class='gate-icon'>\[{{op.symbol}}\]</div>
+          <div class='gate-icon'>\({{op.symbol}}\)</div>
           <div class='gate-hint'>
             <h2>{{op.name}}</h2>
             <p>
-            \(
+            \[
               {{op.mathjax.factor}}
               \begin{bmatrix}{{op.mathjax.matrix}}\end{bmatrix}
-            \)
+            \]
             </p>
             <p>{{op.description}}</p>
           </div>

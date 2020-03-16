@@ -19,7 +19,7 @@
         "id": "x", "arity": 1,
         "kind": "rotation",
         "name": "Pauli-X rotation gate",
-        "description": "Sometimes known as the \"bit-flip\" or \"NOT\" gate, as it transforms \\(\\ket{0}\\) to \\(\\ket{1}\\) and vice versa. On the Bloch sphere, this is a rotation of \\pi/2 in the X axis.",
+        "description": "Sometimes known as the \"bit-flip\" or \"NOT\" gate, as it transforms \\(\\ket{0}\\) to \\(\\ket{1}\\) and vice versa. On the Bloch sphere, this is a rotation of \\(\\pi\\) in the X axis.",
         "matrix": [
             "0 & 1",
             "1 & 0"
@@ -28,7 +28,7 @@
 		"id": "y", "arity": 1,
         "kind": "rotation",
         "name": "Pauli-Y rotation gate",
-        "description": "Maps \\(\\ket{0}\\) to \\(i\\ket{1}\\) and \\(\\ket{1}\\) to \\(-i\\ket{0}\\). On the Bloch sphere, this is a rotation of \\pi/2 in the Y axis.",
+        "description": "Maps \\(\\ket{0}\\) to \\(i\\ket{1}\\) and \\(\\ket{1}\\) to \\(-i\\ket{0}\\). On the Bloch sphere, this is a rotation of \\(\\pi\\) in the Y axis.",
         "matrix": [
             "0  & -1i",
             "1i &  1"
@@ -37,7 +37,7 @@
 		"id": "z", "arity": 1,
         "kind": "phase",
         "name": "Pauli-Z rotation gate",
-        "description": "The same as an X gate followed by a Y, this maps \\(\\ket{0}\\) to itself and \\(\\ket{1}\\) to \\(-\\ket{1}\\). On the Bloch sphere, this is a rotation of \\pi/2 in the Z axis.",
+        "description": "The same as an X gate followed by a Y, this maps \\(\\ket{0}\\) to itself and \\(\\ket{1}\\) to \\(-\\ket{1}\\). On the Bloch sphere, this is a rotation of \\(\\pi\\) in the Z axis.",
         "matrix": [
             "1 &  0",
             "0 & e^{i \\pi} = -1"
@@ -46,7 +46,7 @@
         "id": "s", "arity": 1,
         "kind": "phase",
         "name": "S phase-shift gate",
-        "description": "Equivalent to half of the Z gate.",
+        "description": "Equivalent to half of the Z gate: a rotation of \\(\\pi/2\\) in the Z axis.",
         "matrix": [
             "1& 0",
             "0&e^{i \\pi/2} = i"
@@ -55,6 +55,7 @@
 		"id": "t", "arity": 1,
         "kind": "phase",
         "name": "T phase-shift gate",
+        "description": "Equivalent to a quarter of the Z gate: a rotation of \\(\\pi/4\\) in the Z axis.",
         "matrix": [
             "1& 0",
             "0&e^{i \\pi/4} = \\frac{1+i}{\\sqrt{2}}"
@@ -62,8 +63,9 @@
     }, {
 		"id": "tinv", "arity": 1,
         "kind": "phase",
-        "symbol": "T\\dagger",
+        "symbol": "T^\\dagger",
         "name": "\\(T^\\dagger\\) phase-shift gate",
+        "description": "The opposite of the T gate: a rotation of \\(-\\pi/4\\) in the Z axis.",
         "matrix": [
             "1& 0",
             "0&e^{-i \\pi/4} = \\frac{1-i}{\\sqrt{2}}"
@@ -77,7 +79,7 @@
         ]
     }, {
 		"id": "vinv", "arity": 1,
-        "symbol": "V\\dagger",
+        "symbol": "V^\\dagger",
         "name": "\\(V^\\dagger\\) gate",
         "matrix": [
             "1-1i& 1+1i",
