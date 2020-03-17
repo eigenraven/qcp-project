@@ -26,7 +26,7 @@ $(function(){
     }
   }
 
-  $('#qubit-more').click(function(){
+  $('#btn-qubit-more').click(function(){
     get_ket0()
     console.log('more')
     let qnum = qubits.length
@@ -37,7 +37,7 @@ $(function(){
         <div class='ket0'>${ket0}</div>
       </div>`).appendTo('#qubits')
     })
-    $('#btn-qubit-count').text(qubits.length)
+    $('#qubit-count').text(qubits.length)
   })
 
   $('#btn-qubit-less').click(function(){
