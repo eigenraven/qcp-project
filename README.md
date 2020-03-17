@@ -44,14 +44,13 @@ There are a few more sample files in that folder, used for performance evaluatio
 
 ### Installing dependencies
 
-CMake 3.10 and a C++17-compliant compiler are required to build the simulator, and Python 3.7 and a decently modern browser to use the basic front-end.
+CMake 3.10 and a C++17-compliant compiler are required to build the simulator, and a decently modern browser to use the front-end.
 Doxygen is used for HTML source documentation generation.
 
-Example installation instructions with Homebrew and pip:
+Example installation instructions with Homebrew:
 ```
 brew install cmake
 brew install doxygen
-python -m pip install flask
 ```
 
 ### Building
@@ -91,17 +90,20 @@ It accepts POST requests to `/simulate` with a single parameter, `circuit`, whic
 Start the API server with:
 
 ```
-./http_qcsim
+./http_qcsim &
 ```
 
 ### Running the front-end
 
 The front-end allows you to build, save and load a quantum circuit with an editor and send it off to the simulator, rather than tangle with the file format.
 
+While it requires the HTTP API to be launched, it is compiled to a static HTML file located at `frontend/qbuilder.html`; simply launch this to run.
+
+If you make any changes, compile them by running:
+
 ```
-./http_qcsim &
-cd ../frontend
-python -m flask run
+python -m pip install jinja2
+python frontend/compile/compile.py
 ```
 
 ### Running unit tests
@@ -119,4 +121,3 @@ make docs
 ```
 
 They will be located at `PROJECT_DIR/build/docs/html/index.html`
-
