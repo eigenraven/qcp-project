@@ -192,7 +192,7 @@ $(function(){
                   } else {
                     // TODO: assert stuff with indices here
                     f_gates.push({
-                      id=name,
+                      id: name
                     })
                   }
                   break;
