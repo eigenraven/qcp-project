@@ -86,7 +86,7 @@ If you make any changes, compile them by running:
 
 ```
 python -m pip install jinja2
-python frontend/app.py
+python frontend/compile/compile.py
 ```
 
 ### Running unit tests

@@ -11,7 +11,7 @@ def open2(path, mode="r"):
         mode, encoding="utf8")
 
 OPERATIONS = dict()
-with open2("../src/qgate.json") as f:
+with open2("../../src/qgate.json") as f:
     for data in json.load(f):
         assert "id" in data and "arity" in data
         id_ = data["id"]
@@ -24,7 +24,7 @@ with open2("../src/qgate.json") as f:
         op.update(data)
         OPERATIONS[id_] = op
 
-with open2("templates/builder.html") as f:
+with open2("template.html") as f:
     template = Template(f.read(-1))
 
 export = template.render(
@@ -32,5 +32,5 @@ export = template.render(
     gate_data=json.dumps(OPERATIONS)
 ).replace("\t", "").replace("  ", "")
 
-with open2("qbuilder.html", "w") as f:
+with open2("../qbuilder.html", "w") as f:
     f.write(export)

@@ -8,7 +8,7 @@
             "name": "Compile frontend",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/frontend/app.py",
+            "program": "${workspaceFolder}/frontend/compile/compile.py",
             "console": "integratedTerminal"
         }
     ]
