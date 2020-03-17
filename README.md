@@ -40,11 +40,10 @@ Two demo programs are written and located in `PROJECT_DIR/demo`
 
 ### Installing dependencies
 
-CMake 3.10 is required to build the simulator, and Python 3.7 and a decently modern browser to use the basic front-end.
+CMake 3.10 is required to build the simulator, and a decently modern browser to use the basic front-end.
 ```
 brew install cmake
 brew install doxygen
-python -m pip install flask
 ```
 
 ### Building
@@ -55,8 +54,6 @@ cd build
 cmake ..
 make
 ```
-
-Below instructions assume you are in the `src` directory for instructions.
 
 ### Simulating via command line
 
@@ -83,10 +80,13 @@ The simulator also may expose a HTTP API to interact; by default this will be at
 
 The front-end allows you to build, save and load a quantum circuit with an editor and send it off to the simulator, rather than tangle with the file format.
 
+While it requires the HTTP API to be launched, it is compiled to a static HTML file located at `frontend/qbuilder.html`; simply launch this to run.
+
+If you make any changes, compile them by running:
+
 ```
-./http_qcsim
-cd ../frontend
-python -m flask run
+python -m pip install jinja2
+python frontend/app.py
 ```
 
 ### Running unit tests
@@ -104,4 +104,3 @@ make docs
 ```
 
 They will be located at `PROJECT_DIR/build/docs/html/index.html`
-

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Quantum Builder</title>
+<link rel="stylesheet" href="static/style.css">
+<script
+src="https://code.jquery.com/jquery-3.4.1.min.js"
+integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+crossorigin="anonymous"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script"
+src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+<script src="static/circuit.js"></script>
+<script>
+gate_kinds = {"id": {"symbol": "ID", "kind": "general", "name": "Identity (no-op) gate", "description": "This gate has no effect.", "mathjax": {"factor": "", "matrix": "1 & 0\\\\0 & 1"}, "id": "id", "arity": 1}, "h": {"symbol": "H", "kind": "general", "name": "Hadamard gate", "description": "", "mathjax": {"factor": "\\frac{1}{\\sqrt{2}}", "matrix": "1& 1\\\\1&-1"}, "id": "h", "arity": 1}, "x": {"symbol": "X", "kind": "rotation", "name": "Pauli-X rotation gate", "description": "Sometimes known as the \"bit-flip\" or \"NOT\" gate, as it transforms \\(\\ket{0}\\) to \\(\\ket{1}\\) and vice versa. On the Bloch sphere, this is a rotation of \\(\\pi\\) in the X axis.", "mathjax": {"factor": "", "matrix": "0 & 1\\\\1 & 0"}, "id": "x", "arity": 1}, "y": {"symbol": "Y", "kind": "rotation", "name": "Pauli-Y rotation gate", "description": "Maps \\(\\ket{0}\\) to \\(i\\ket{1}\\) and \\(\\ket{1}\\) to \\(-i\\ket{0}\\). On the Bloch sphere, this is a rotation of \\(\\pi\\) in the Y axis.", "mathjax": {"factor": "", "matrix": "0& -1i\\\\1i &1"}, "id": "y", "arity": 1}, "z": {"symbol": "Z", "kind": "phase", "name": "Pauli-Z rotation gate", "description": "The same as an X gate followed by a Y, this maps \\(\\ket{0}\\) to itself and \\(\\ket{1}\\) to \\(-\\ket{1}\\). On the Bloch sphere, this is a rotation of \\(\\pi\\) in the Z axis.", "mathjax": {"factor": "", "matrix": "1 &0\\\\0 & e^{i \\pi} = -1"}, "id": "z", "arity": 1}, "s": {"symbol": "S", "kind": "phase", "name": "S phase-shift gate", "description": "Equivalent to half of the Z gate: a rotation of \\(\\pi/2\\) in the Z axis.", "mathjax": {"factor": "", "matrix": "1& 0\\\\0&e^{i \\pi/2} = i"}, "id": "s", "arity": 1}, "t": {"symbol": "T", "kind": "phase", "name": "T phase-shift gate", "description": "Equivalent to a quarter of the Z gate: a rotation of \\(\\pi/4\\) in the Z axis.", "mathjax": {"factor": "", "matrix": "1& 0\\\\0&e^{i \\pi/4} = \\frac{1+i}{\\sqrt{2}}"}, "id": "t", "arity": 1}, "tinv": {"symbol": "T^\\dagger", "kind": "phase", "name": "\\(T^\\dagger\\) phase-shift gate", "description": "The opposite of the T gate: a rotation of \\(-\\pi/4\\) in the Z axis.", "mathjax": {"factor": "", "matrix": "1& 0\\\\0&e^{-i \\pi/4} = \\frac{1-i}{\\sqrt{2}}"}, "id": "tinv", "arity": 1}, "v": {"symbol": "V", "kind": "general", "name": "V gate", "description": "", "mathjax": {"factor": "", "matrix": "1+1i& 1-1i\\\\1-1i& 1+1i"}, "id": "v", "arity": 1}, "vinv": {"symbol": "V^\\dagger", "kind": "general", "name": "\\(V^\\dagger\\) gate", "description": "", "mathjax": {"factor": "", "matrix": "1-1i& 1+1i\\\\1+1i &1-1i"}, "id": "vinv", "arity": 1}, "cnot": {"symbol": "cX", "kind": "controlled", "name": "Controlled X gate", "description": "Also known as the controlled NOT gate. Will leave the source qubit alone if the control qubit is \\(\\ket{0}\\), and perform the X gate on the source qubit (\\(\\ket{0}\\) \u2194 \\(\\ket{1}\\)) if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.", "mathjax": {"factor": "", "matrix": "1 &0 &0 &0\\\\0 &1 &0 &0\\\\0 &0 &0 &1\\\\0 &0 &1 &0"}, "id": "cnot", "arity": 2}, "cy": {"symbol": "cY", "kind": "controlled", "name": "Controlled Y gate", "description": "Will leave the source qubit alone if the control qubit is \\(\\ket{0}\\), and perform the Y gate on the source qubit if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.", "mathjax": {"factor": "", "matrix": " 1 & 0 & 0& 0 \\\\ 0 & 1 & 0& 0 \\\\ 0 & 0 & 0&-1i\\\\ 0 & 0 & 1i & 0 "}, "id": "cy", "arity": 2}, "cz": {"symbol": "cZ", "kind": "controlled", "name": "Controlled Z gate", "description": "Will leave the source qubit alone if the control qubit is \\(\\ket{0}\\), and perform the Z gate on the source qubit if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.", "mathjax": {"factor": "", "matrix": "1 &0 &0 & 0\\\\0 &1 &0 & 0\\\\0 &0 &1 & 0\\\\0 &0 &0 &-1"}, "id": "cz", "arity": 2}, "swap": {"symbol": "\u2194", "kind": "general", "name": "Qubit-swap gate", "description": "Swaps two qubit values between registers. This does not entangle.", "mathjax": {"factor": "", "matrix": "1 &0 &0 &0\\\\0 &0 &1 &0\\\\0 &1 &0 &0\\\\0 &0 &0 &1"}, "id": "swap", "arity": 2}, "ccnot": {"symbol": "ccX", "kind": "controlled", "name": "Toffoli gate (aka ccX or ccNOT)", "description": "Much like the cX gate, will apply the X (aka the NOT) gate if both control qubits are \\(\\ket{1}\\), with entanglement for qubits neither \\(\\ket{0}\\) nor \\(\\ket{1}\\)", "mathjax": {"factor": "", "matrix": "1 &0 &0 &0 &0 &0 &0 &0\\\\0 &1 &0 &0 &0 &0 &0 &0\\\\0 &0 &1 &0 &0 &0 &0 &0\\\\0 &0 &0 &1 &0 &0 &0 &0\\\\0 &0 &0 &0 &1 &0 &0 &0\\\\0 &0 &0 &0 &0 &1 &0 &0\\\\0 &0 &0 &0 &0 &0 &0 &1\\\\0 &0 &0 &0 &0 &0 &1 &0"}, "id": "ccnot", "arity": 3}}
+</script>
+</head>
+<body>
+<div class='header-anchor'></div>
+<header>
+<div class='content'>
+<div class="title">Quantum Builder</div>
+</div>
+</header>
+<div class='content'>
+<p>
+Hover the mouse over a gate to view its properties.
+Click on a gate and then an insertion point to add it to the circuit.
+</p>
+<pre>
+</pre>
+<div class='builder'>
+<div class='panels'>
+<div class='panel-gates'>
+
+<div class='gate-kind general' id='id'>
+<div class='gate-icon'>\(ID\)</div>
+<div class='gate-hint'>
+<h2>Identity (no-op) gate</h2>
+<p>
+\[
+
+\begin{bmatrix}1 & 0\\0 & 1\end{bmatrix}
+\]
+</p>
+<p>This gate has no effect.</p>
+</div>
+</div>
+
+<div class='gate-kind general' id='h'>
+<div class='gate-icon'>\(H\)</div>
+<div class='gate-hint'>
+<h2>Hadamard gate</h2>
+<p>
+\[
+\frac{1}{\sqrt{2}}
+\begin{bmatrix}1& 1\\1&-1\end{bmatrix}
+\]
+</p>
+<p></p>
+</div>
+</div>
+
+<div class='gate-kind rotation' id='x'>
+<div class='gate-icon'>\(X\)</div>
+<div class='gate-hint'>
+<h2>Pauli-X rotation gate</h2>
+<p>
+\[
+
+\begin{bmatrix}0 & 1\\1 & 0\end{bmatrix}
+\]
+</p>
+<p>Sometimes known as the "bit-flip" or "NOT" gate, as it transforms \(\ket{0}\) to \(\ket{1}\) and vice versa. On the Bloch sphere, this is a rotation of \(\pi\) in the X axis.</p>
+</div>
+</div>
+
+<div class='gate-kind rotation' id='y'>
+<div class='gate-icon'>\(Y\)</div>
+<div class='gate-hint'>
+<h2>Pauli-Y rotation gate</h2>
+<p>
+\[
+
+\begin{bmatrix}0& -1i\\1i &1\end{bmatrix}
+\]
+</p>
+<p>Maps \(\ket{0}\) to \(i\ket{1}\) and \(\ket{1}\) to \(-i\ket{0}\). On the Bloch sphere, this is a rotation of \(\pi\) in the Y axis.</p>
+</div>
+</div>
+
+<div class='gate-kind phase' id='z'>
+<div class='gate-icon'>\(Z\)</div>
+<div class='gate-hint'>
+<h2>Pauli-Z rotation gate</h2>
+<p>
+\[
+
+\begin{bmatrix}1 &0\\0 & e^{i \pi} = -1\end{bmatrix}
+\]
+</p>
+<p>The same as an X gate followed by a Y, this maps \(\ket{0}\) to itself and \(\ket{1}\) to \(-\ket{1}\). On the Bloch sphere, this is a rotation of \(\pi\) in the Z axis.</p>
+</div>
+</div>
+
+<div class='gate-kind phase' id='s'>
+<div class='gate-icon'>\(S\)</div>
+<div class='gate-hint'>
+<h2>S phase-shift gate</h2>
+<p>
+\[
+
+\begin{bmatrix}1& 0\\0&e^{i \pi/2} = i\end{bmatrix}
+\]
+</p>
+<p>Equivalent to half of the Z gate: a rotation of \(\pi/2\) in the Z axis.</p>
+</div>
+</div>
+
+<div class='gate-kind phase' id='t'>
+<div class='gate-icon'>\(T\)</div>
+<div class='gate-hint'>
+<h2>T phase-shift gate</h2>
+<p>
+\[
+
+\begin{bmatrix}1& 0\\0&e^{i \pi/4} = \frac{1+i}{\sqrt{2}}\end{bmatrix}
+\]
+</p>
+<p>Equivalent to a quarter of the Z gate: a rotation of \(\pi/4\) in the Z axis.</p>
+</div>
+</div>
+
+<div class='gate-kind phase' id='tinv'>
+<div class='gate-icon'>\(T^\dagger\)</div>
+<div class='gate-hint'>
+<h2>\(T^\dagger\) phase-shift gate</h2>
+<p>
+\[
+
+\begin{bmatrix}1& 0\\0&e^{-i \pi/4} = \frac{1-i}{\sqrt{2}}\end{bmatrix}
+\]
+</p>
+<p>The opposite of the T gate: a rotation of \(-\pi/4\) in the Z axis.</p>
+</div>
+</div>
+
+<div class='gate-kind general' id='v'>
+<div class='gate-icon'>\(V\)</div>
+<div class='gate-hint'>
+<h2>V gate</h2>
+<p>
+\[
+
+\begin{bmatrix}1+1i& 1-1i\\1-1i& 1+1i\end{bmatrix}
+\]
+</p>
+<p></p>
+</div>
+</div>
+
+<div class='gate-kind general' id='vinv'>
+<div class='gate-icon'>\(V^\dagger\)</div>
+<div class='gate-hint'>
+<h2>\(V^\dagger\) gate</h2>
+<p>
+\[
+
+\begin{bmatrix}1-1i& 1+1i\\1+1i &1-1i\end{bmatrix}
+\]
+</p>
+<p></p>
+</div>
+</div>
+
+<div class='gate-kind controlled' id='cnot'>
+<div class='gate-icon'>\(cX\)</div>
+<div class='gate-hint'>
+<h2>Controlled X gate</h2>
+<p>
+\[
+
+\begin{bmatrix}1 &0 &0 &0\\0 &1 &0 &0\\0 &0 &0 &1\\0 &0 &1 &0\end{bmatrix}
+\]
+</p>
+<p>Also known as the controlled NOT gate. Will leave the source qubit alone if the control qubit is \(\ket{0}\), and perform the X gate on the source qubit (\(\ket{0}\) ↔ \(\ket{1}\)) if the control qubit is \(\ket{1}\). If the control qubit is another state, this causes entanglement.</p>
+</div>
+</div>
+
+<div class='gate-kind controlled' id='cy'>
+<div class='gate-icon'>\(cY\)</div>
+<div class='gate-hint'>
+<h2>Controlled Y gate</h2>
+<p>
+\[
+
+\begin{bmatrix} 1 & 0 & 0& 0 \\ 0 & 1 & 0& 0 \\ 0 & 0 & 0&-1i\\ 0 & 0 & 1i & 0 \end{bmatrix}
+\]
+</p>
+<p>Will leave the source qubit alone if the control qubit is \(\ket{0}\), and perform the Y gate on the source qubit if the control qubit is \(\ket{1}\). If the control qubit is another state, this causes entanglement.</p>
+</div>
+</div>
+
+<div class='gate-kind controlled' id='cz'>
+<div class='gate-icon'>\(cZ\)</div>
+<div class='gate-hint'>
+<h2>Controlled Z gate</h2>
+<p>
+\[
+
+\begin{bmatrix}1 &0 &0 & 0\\0 &1 &0 & 0\\0 &0 &1 & 0\\0 &0 &0 &-1\end{bmatrix}
+\]
+</p>
+<p>Will leave the source qubit alone if the control qubit is \(\ket{0}\), and perform the Z gate on the source qubit if the control qubit is \(\ket{1}\). If the control qubit is another state, this causes entanglement.</p>
+</div>
+</div>
+
+<div class='gate-kind general' id='swap'>
+<div class='gate-icon'>\(↔\)</div>
+<div class='gate-hint'>
+<h2>Qubit-swap gate</h2>
+<p>
+\[
+
+\begin{bmatrix}1 &0 &0 &0\\0 &0 &1 &0\\0 &1 &0 &0\\0 &0 &0 &1\end{bmatrix}
+\]
+</p>
+<p>Swaps two qubit values between registers. This does not entangle.</p>
+</div>
+</div>
+
+<div class='gate-kind controlled' id='ccnot'>
+<div class='gate-icon'>\(ccX\)</div>
+<div class='gate-hint'>
+<h2>Toffoli gate (aka ccX or ccNOT)</h2>
+<p>
+\[
+
+\begin{bmatrix}1 &0 &0 &0 &0 &0 &0 &0\\0 &1 &0 &0 &0 &0 &0 &0\\0 &0 &1 &0 &0 &0 &0 &0\\0 &0 &0 &1 &0 &0 &0 &0\\0 &0 &0 &0 &1 &0 &0 &0\\0 &0 &0 &0 &0 &1 &0 &0\\0 &0 &0 &0 &0 &0 &0 &1\\0 &0 &0 &0 &0 &0 &1 &0\end{bmatrix}
+\]
+</p>
+<p>Much like the cX gate, will apply the X (aka the NOT) gate if both control qubits are \(\ket{1}\), with entanglement for qubits neither \(\ket{0}\) nor \(\ket{1}\)</p>
+</div>
+</div>
+
+</div>
+<div class='panel-rest'>
+<p>
+Qubits: <span id='qubit-count'>0</span>
+<button id='btn-qubit-more'>+</button>
+<button id='btn-qubit-less'>-</button>
+</p>
+<p>
+<button id='btn-save'>Save</button>
+<input id='btn-load' type="file" accept=".in," id="myFile" size="50">
+</p>
+<p id='load-error' class='error'></p>
+
+</div>
+<div class='circuit' id='circuit'>
+<div class='qubits' id='qubits'>
+<!-- TECHNICAL DEBT
+-- The default qubits are manually placed
+-- so typesetting can be done.
+-- Adding more qubits will with 99.9% likelihood
+-- be done by the user *after* typesetting,
+-- so we then will be able to copy anything typeset.
+-- This is an issue if we want to save or load
+-- circuitry, and should be fixed with async behaviour.
+-->
+<div class='qubit'>
+<div class='header'>q[0]</div>
+<div class='ket0'>\(\ket{0}\)</div>
+<div class='line'></div>
+</div>
+<div class='qubit'>
+<div class='header'>q[1]</div>
+<div class='ket0'>\(\ket{0}\)</div>
+<div class='line'></div>
+</div>
+<div id='gates', class='gates'>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
