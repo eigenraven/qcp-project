@@ -143,7 +143,9 @@ $(function(){
 
       $.each(str.split(/\r\n|\r|\n/), function(l, line){
         if( !hasError ){
-          line = line.split(/\s*(\/\/|#)/)[0] // strip comments
+          if( !line || lines.startsWith(`//`)){
+            return; // strip comments
+          }
           let args = line.split(",").toLowerCase()
           let name = args.shift()
           
