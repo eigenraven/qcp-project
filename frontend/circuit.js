@@ -2,11 +2,6 @@ $(function(){
   const GATE_ALIAS = {
     "nop": "id", "hadamard": "h", "toffoli": "ccnot"
   }
-  let GATE_ARITY = {}
-  for (let i = 0; i < gate_kinds.length; i++) {
-    const gate = gate_kinds[i];
-    GATE_ARITY[gate.id] = gate.arity
-  }
 
   /* Qubit elements */
   qubits = Array()
@@ -59,7 +54,7 @@ $(function(){
   /* GATES */
   gates = []
 
-  $.each(gate_kinds, function(id, op){
+  $.each(GATES, function(id, op){
     op.gate_icon = $('#' + id).click(function(){
       gate = {
         id: id,
@@ -184,35 +179,32 @@ $(function(){
             case "states": f_emitStates = true; break;
 
             default:
-              for (let arity = 0; arity < GATE_ARITY.length; arity++) {
-                arity = GATE_ARITY[name];
-                if( arity ){
-                  if( args.length <= arity ){
-                    error(l, `Not enough args to ${name} (need ${arity})`)
-                  } else {
-                    // TODO: assert stuff with indices here
-                    f_gates.push({
-                      id: name
-                    })
-                  }
-                  break;
-                } else {
-                }
+              let gate = GATES[name];
+              if( !gate ){
+                error(l, `Unknown operation "${name}"`)
+              }
+              if( args.length <= gate.args.length ){
+                error(l, `Not enough args to ${name} (need ${arity})`)
+              } else {
+                // TODO: assert stuff with indices here
+                f_gates.push({
+                  id: name
+                })
               }
               break;
+            }
           }
-          if( !hasError ){
-            console.log('loaded successfully!')
-            console.log(f_qubits, f_shots, f_noise)
-            console.log(f_doGroup, f_emitStates, f_isSparse)
-            console.log(f_gates)
-            // TODO: actually load
-          } else {
-            console.log('loaded abysmally!')
-          }
+        })
+        if( !hasError ){
+          console.log('loaded successfully!')
+          console.log(f_qubits, f_shots, f_noise)
+          console.log(f_doGroup, f_emitStates, f_isSparse)
+          console.log(f_gates)
+          // TODO: actually load
+        } else {
+          console.log('loaded abysmally!')
         }
       })
       console.log(str)
     })
-  })
 })

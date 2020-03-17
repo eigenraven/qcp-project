@@ -14,10 +14,10 @@
   <script id="MathJax-script"
           src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
   </script>
-  <script src="circuit.js"></script>
   <script>
-    gate_kinds = {{gate_data|safe}}
+    let GATES = {{gate_data|safe}}
   </script>
+  <script src="circuit.js"></script>
 </head>
 <body>
 <div class='header-anchor'></div>
@@ -35,35 +35,35 @@
   </pre>
   <div class='builder'>
     <div class='panels'>
-    <div class='panel-gates'>
-      {% for op in gate_items.values() %}
-        <div class='gate-kind {{op.kind}}' id='{{op.id}}'>
-          <div class='gate-icon'>\({{op.symbol}}\)</div>
-          <div class='gate-hint'>
-            <h2>{{op.name}}</h2>
-            <p>
-            \[
-              {{op.mathjax.factor}}
-              \begin{bmatrix}{{op.mathjax.matrix}}\end{bmatrix}
-            \]
-            </p>
-            <p>{{op.description}}</p>
+      <div class='panel-gates'>
+        {% for op in gate_items.values() %}
+          <div class='gate-kind {{op.kind}}' id='{{op.id}}'>
+            <div class='gate-icon'>\({{op.symbol}}\)</div>
+            <div class='gate-hint'>
+              <h2>{{op.name}}</h2>
+              <p>
+              \[
+                {{op.mathjax.factor}}
+                \begin{bmatrix}{{op.mathjax.matrix}}\end{bmatrix}
+              \]
+              </p>
+              <p>{{op.description}}</p>
+            </div>
           </div>
-        </div>
-      {% endfor %}
-    </div>
-    <div class='panel-rest'>
-      <p>
-        Qubits: <span id='qubit-count'>0</span>
-        <button id='btn-qubit-more'>+</button>
-        <button id='btn-qubit-less'>-</button>
-      </p>
-      <p>
-        <button id='btn-save'>Save</button>
-        <input id='btn-load' type="file" accept=".in," id="myFile" size="50">
-      </p>
-      <p id='load-error' class='error'></p>
-
+        {% endfor %}
+      </div>
+      <div class='panel-rest'>
+        <p>
+          Qubits: <span id='qubit-count'>0</span>
+          <button id='btn-qubit-more'>+</button>
+          <button id='btn-qubit-less'>-</button>
+        </p>
+        <p>
+          <button id='btn-save'>Save</button>
+          <input id='btn-load' type="file" accept=".in," id="myFile" size="50">
+        </p>
+        <p id='load-error' class='error'></p>
+      </div>
     </div>
     <div class='circuit' id='circuit'>
       <div class='qubits' id='qubits'>
@@ -86,9 +86,8 @@
           <div class='ket0'>\(\ket{0}\)</div>
           <div class='line'></div>
         </div>
-        <div id='gates', class='gates'>
-
-        </div>
+      </div>
+      <div id='gates' class='gates'>
       </div>
     </div>
   </div>

@@ -99,7 +99,7 @@ The front-end allows you to build, save and load a quantum circuit with an edito
 
 While it requires the HTTP API to be launched, it is compiled to a static HTML file located at `frontend/qbuilder.html`; simply launch this to run.
 
-If you make any changes, compile them by running:
+If you make any changes to `src/qgate.json` or `frontend/template.html`, compile them by running:
 
 ```
 python -m pip install jinja2

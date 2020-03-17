@@ -1,6 +1,6 @@
 [
        {
-		"id": "id", "arity": 1,
+		"id": "id",
         "name": "Identity (no-op) gate",
         "description": "This gate has no effect.",
         "matrix": [
@@ -8,7 +8,7 @@
             "0 & 1"
         ]
     }, {
-		"id": "h", "arity": 1,
+		"id": "h",
         "name": "Hadamard gate",
         "factor": "\\frac{1}{\\sqrt{2}}",
         "matrix": [
@@ -16,7 +16,7 @@
             "1&-1"
         ]
     }, {
-        "id": "x", "arity": 1,
+        "id": "x",
         "kind": "rotation",
         "name": "Pauli-X rotation gate",
         "description": "Sometimes known as the \"bit-flip\" or \"NOT\" gate, as it transforms \\(\\ket{0}\\) to \\(\\ket{1}\\) and vice versa. On the Bloch sphere, this is a rotation of \\(\\pi\\) in the X axis.",
@@ -25,7 +25,7 @@
             "1 & 0"
         ]
     }, {
-		"id": "y", "arity": 1,
+		"id": "y",
         "kind": "rotation",
         "name": "Pauli-Y rotation gate",
         "description": "Maps \\(\\ket{0}\\) to \\(i\\ket{1}\\) and \\(\\ket{1}\\) to \\(-i\\ket{0}\\). On the Bloch sphere, this is a rotation of \\(\\pi\\) in the Y axis.",
@@ -34,7 +34,7 @@
             "1i &  1"
         ]
     }, {
-		"id": "z", "arity": 1,
+		"id": "z",
         "kind": "phase",
         "name": "Pauli-Z rotation gate",
         "description": "The same as an X gate followed by a Y, this maps \\(\\ket{0}\\) to itself and \\(\\ket{1}\\) to \\(-\\ket{1}\\). On the Bloch sphere, this is a rotation of \\(\\pi\\) in the Z axis.",
@@ -43,7 +43,7 @@
             "0 & e^{i \\pi} = -1"
         ]
     }, {
-        "id": "s", "arity": 1,
+        "id": "s",
         "kind": "phase",
         "name": "S phase-shift gate",
         "description": "Equivalent to half of the Z gate: a rotation of \\(\\pi/2\\) in the Z axis.",
@@ -52,7 +52,7 @@
             "0&e^{i \\pi/2} = i"
         ]
     }, {
-		"id": "t", "arity": 1,
+		"id": "t",
         "kind": "phase",
         "name": "T phase-shift gate",
         "description": "Equivalent to a quarter of the Z gate: a rotation of \\(\\pi/4\\) in the Z axis.",
@@ -61,7 +61,7 @@
             "0&e^{i \\pi/4} = \\frac{1+i}{\\sqrt{2}}"
         ]
     }, {
-		"id": "tinv", "arity": 1,
+		"id": "tinv",
         "kind": "phase",
         "symbol": "T^\\dagger",
         "name": "\\(T^\\dagger\\) phase-shift gate",
@@ -71,14 +71,14 @@
             "0&e^{-i \\pi/4} = \\frac{1-i}{\\sqrt{2}}"
         ]
     }, {
-		"id": "v", "arity": 1,
+		"id": "v",
         "name": "V gate",
         "matrix": [
             "1+1i& 1-1i",
             "1-1i& 1+1i"
         ]
     }, {
-		"id": "vinv", "arity": 1,
+		"id": "vinv",
         "symbol": "V^\\dagger",
         "name": "\\(V^\\dagger\\) gate",
         "matrix": [
@@ -87,11 +87,11 @@
         ]
     
     },  {
-		"id": "cnot", "arity": 2,
+		"id": "cnot", "args": ["control", "target"],
         "symbol": "cX",
         "kind": "controlled",
         "name": "Controlled X gate",
-        "description": "Also known as the controlled NOT gate. Will leave the source qubit alone if the control qubit is \\(\\ket{0}\\), and perform the X gate on the source qubit (\\(\\ket{0}\\) ↔ \\(\\ket{1}\\)) if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.",
+        "description": "Also known as the controlled NOT gate. Will leave the target qubit alone if the control qubit is \\(\\ket{0}\\), and perform the X gate on the target qubit (\\(\\ket{0}\\) ↔ \\(\\ket{1}\\)) if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.",
         "matrix": [
             "1 &0 &0 &0",
             "0 &1 &0 &0",
@@ -99,11 +99,11 @@
             "0 &0 &1 &0"
         ]
     }, {
-		"id": "cy", "arity": 2,
+		"id": "cy", "args": ["control", "target"],
         "symbol": "cY",
         "kind": "controlled",
         "name": "Controlled Y gate",
-        "description": "Will leave the source qubit alone if the control qubit is \\(\\ket{0}\\), and perform the Y gate on the source qubit if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.",
+        "description": "Will leave the target qubit alone if the control qubit is \\(\\ket{0}\\), and perform the Y gate on the target qubit if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.",
         "matrix": [
             " 1 & 0 & 0  & 0 ",
             " 0 & 1 & 0  & 0 ",
@@ -111,11 +111,11 @@
             " 0 & 0 & 1i & 0 "
         ]
     }, {
-		"id": "cz", "arity": 2,
+		"id": "cz", "args": ["control", "target"],
         "symbol": "cZ",
         "kind": "controlled",
         "name": "Controlled Z gate",
-        "description": "Will leave the source qubit alone if the control qubit is \\(\\ket{0}\\), and perform the Z gate on the source qubit if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.",
+        "description": "Will leave the target qubit alone if the control qubit is \\(\\ket{0}\\), and perform the Z gate on the target qubit if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.",
         "matrix": [
             "1 &0 &0 & 0",
             "0 &1 &0 & 0",
@@ -123,7 +123,7 @@
             "0 &0 &0 &-1"
         ]
     }, {
-		"id": "swap", "arity": 2,
+		"id": "swap", "args": ["a", "b"],
         "symbol": "↔",
         "name": "Qubit-swap gate",
         "description": "Swaps two qubit values between registers. This does not entangle.",
@@ -135,7 +135,7 @@
         ]
     
     }, {
-		"id": "ccnot", "arity": 3,
+		"id": "ccnot", "args": ["control1", "control2", "target"],
         "symbol": "ccX",
         "kind": "controlled",
         "name": "Toffoli gate (aka ccX or ccNOT)",
