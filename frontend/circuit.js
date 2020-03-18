@@ -51,6 +51,16 @@ $(function(){
     }
   })
 
+  /* PANEL */
+  let shots = 1024;
+
+  let updateSlider = function(){
+    shots = 2 ** $('#shots-slider').val()
+    $('#shots-display').text(shots)
+  }; updateSlider()
+  $('#shots-slider').change(updateSlider)
+  $('#shots-slider').mousemove(updateSlider)
+
   /* GATES */
   gates = []
 
@@ -76,7 +86,6 @@ $(function(){
     // TODO: implement form & gathering
     isSparse = false;
     doGroup = true;
-    noise = 0.0;
     shots = 1024;
     emitStates = true;
 

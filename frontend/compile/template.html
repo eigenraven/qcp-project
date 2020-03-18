@@ -59,8 +59,14 @@
           <button id='btn-qubit-less'>-</button>
         </p>
         <p>
+          Shots: <span id="shots-display">1024</span>
+        </p>
+        <p>
+          <input type="range" min="1" max="13" value="10" class="slider" id="shots-slider">
+        </p>
+        <p>
           <button id='btn-save'>Save</button>
-          <input id='btn-load' type="file" accept=".in," id="myFile" size="50">
+          <input id='btn-load' type="file" accept=".in">
         </p>
         <p id='load-error' class='error'></p>
       </div>
