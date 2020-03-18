@@ -140,7 +140,7 @@ $(function(){
 
       function error(lineno, msg){
         msg = `Error in line ${lineno}: ${msg}`
-        $('#load-error').innerText = msg
+        $('#load-error').text(msg)
         console.log(msg)
         hasError = true
       }
