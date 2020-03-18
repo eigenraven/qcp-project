@@ -68,35 +68,22 @@ nav li {
   top: calc(50% - 0.5em)
 }
 
+/* UI elements */
+
 .block {
+  display: inline-block;
   padding: 1em;
   border-radius: 5px;
+  background: #ddd;
 }
-
-.gate-hint {
-  display: none;
-  background: aliceblue;
-  max-width: 20em;
-  color: black;
-  z-index: 1000;
-  border: 2px solid rebeccapurple;
-  transform: translateY(5px);
-}
-.gate-hint h2 {
+.block h2 {
   margin-top: 0;
-}
-.gate-kind:hover .gate-hint {
-  display: block;
-  position: fixed;
 }
 
 /* CONTROL PANEL */
 
-.panel-gates, .panel-rest {
+.panel-gates {
   display: inline-block;
-}
-.panel-rest {
-  background: #ddd;
 }
 
 .slider {
@@ -150,4 +137,30 @@ nav li {
 
 .hidden {
   display: none;
+}
+
+/* UI summoner
+ * .summoner
+ *   div        (always appears, and when moused over...)
+ *   .summoned  (...will appear)
+ */ 
+
+ @keyframes hoverin{
+  from {
+    transform: translateY(25px);
+    opacity: 0;
+  }
+}
+.summoned {
+  position: fixed;
+  display: none;
+  transform: translateY(5px);
+  background: aliceblue;
+  max-width: 20em;
+  z-index: 1000;
+  border: 2px solid rebeccapurple;
+}
+.summoner:hover .summoned {
+  display: block;
+  animation: hoverin 0.2s;
 }
