@@ -68,7 +68,7 @@ nav li {
   top: calc(50% - 0.5em)
 }
 
-.gate-hint, .panel-rest {
+.block {
   padding: 1em;
   border-radius: 5px;
 }

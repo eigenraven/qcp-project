@@ -39,7 +39,7 @@
         {% for op in gate_items.values() %}
           <div class='gate-kind {{op.kind}}' id='{{op.id}}'>
             <div class='gate-icon'>\({{op.symbol}}\)</div>
-            <div class='gate-hint'>
+            <div class='block gate-hint'>
               <h2>{{op.name}}</h2>
               <p>
               \[
@@ -52,7 +52,7 @@
           </div>
         {% endfor %}
       </div>
-      <div class='panel-rest'>
+      <div class='block panel-rest'>
         <p>
           Qubits: <span id='qubit-count'>0</span>
           <button id='btn-qubit-more'>+</button>
