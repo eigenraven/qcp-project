@@ -11,7 +11,7 @@ $(function(){
     })
   });
 
-  $('#qubit-count').text(qubits.length)
+  $('.disp-qubits').text(qubits.length)
 
   let ket0;
   function get_ket0(){
@@ -32,7 +32,7 @@ $(function(){
         <div class='ket0'>${ket0}</div>
       </div>`).appendTo('#qubits')
     })
-    $('#qubit-count').text(qubits.length)
+    $('.disp-qubits').text(qubits.length)
   })
 
   $('#btn-qubit-less').click(function(){
@@ -47,7 +47,7 @@ $(function(){
       } else {
         qubits.push(line)
       }
-      $('#qubit-count').text(qubits.length)
+      $('.disp-qubits').text(qubits.length)
     }
   })
 
@@ -56,7 +56,7 @@ $(function(){
 
   let updateSlider = function(){
     shots = 2 ** $('#shots-slider').val()
-    $('#shots-display').text(shots)
+    $('.disp-shots').text(shots)
   }; updateSlider()
   $('#shots-slider').change(updateSlider)
   $('#shots-slider').mousemove(updateSlider)
@@ -86,7 +86,7 @@ $(function(){
     // TODO: implement form & gathering
     isSparse = false;
     doGroup = true;
-    shots = 1024;
+    noise = 0.0;
     emitStates = true;
 
     str = `qubits,${qubits.length}\n`

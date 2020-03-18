@@ -31,11 +31,35 @@ let GATES = {"id": {"args": ["target"], "symbol": "ID", "kind": "general", "name
 Hover the mouse over a gate to view its properties.
 Click on a gate and then an insertion point to add it to the circuit.
 </p>
-<pre>
-</pre>
 <div class='builder'>
 <div class='panels'>
-<div class='panel-gates'>
+<span class='panel summoner panel-control'>
+<div class='block'>
+Config (<span class="disp-qubits">2</span> qubits,
+<span class="disp-shots"></span> shots)
+</div>
+<div class='summoned block'>
+<h2>Configuration</h2>
+<p>
+<strong>Qubits</strong>: <span class="disp-qubits">0</span>
+<button id='btn-qubit-more'>+</button>
+<button id='btn-qubit-less'>-</button>
+</p>
+<p>
+<strong>Shots</strong>: <span class="disp-shots">1024</span>
+</p>
+<p>
+<input type="range" min="1" max="13" value="10" class="slider" id="shots-slider">
+</p>
+<h2>Save & load</h2>
+<p>
+<button id='btn-save'>Save...</button>
+<input id='btn-load' type="file" accept=".in">
+</p>
+<p id='load-error' class='error'></p>
+</div>
+</span>
+<div class='panel panel-gates'>
 
 <div class='summoner gate-kind general' id='id'>
 <div class='gate-icon'>\(ID\)</div>
@@ -248,30 +272,7 @@ Click on a gate and then an insertion point to add it to the circuit.
 </div>
 
 </div>
-<span class='summoner'>
-<div class='block'>
-Summony boi
 </div>
-<div class='summoned block panel-rest'>
-<p>
-Qubits: <span id='qubit-count'>0</span>
-<button id='btn-qubit-more'>+</button>
-<button id='btn-qubit-less'>-</button>
-</p>
-<p>
-Shots: <span id="shots-display">1024</span>
-</p>
-<p>
-<input type="range" min="1" max="13" value="10" class="slider" id="shots-slider">
-</p>
-<p>
-<button id='btn-save'>Save</button>
-<input id='btn-load' type="file" accept=".in">
-</p>
-<p id='load-error' class='error'></p>
-</div>
-</div>
-</span>
 <div class='circuit' id='circuit'>
 <div class='qubits' id='qubits'>
 <!-- TECHNICAL DEBT

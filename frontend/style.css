@@ -34,40 +34,6 @@ nav li {
   display: flex;
 }
 
-/* GATES */
-
-.panel-gates {
-  width: 55%;
-}
-
-.gate-kind {
-  display: inline-block;
-  margin: 2px;
-}
-
-.gate-icon {
-  display: inline-block;
-  color: black;
-  border-radius: 2px;
-  width: 3em;
-  height: 3em;
-  text-align: center;
-  background: thistle;
-}
-.rotation .gate-icon {
-  background: wheat;
-}
-.phase .gate-icon {
-  background: pink;
-}
-.controlled .gate-icon {
-  background: lightgreen;
-}
-
-.gate-icon .MathJax {
-  top: calc(50% - 0.5em)
-}
-
 /* UI elements */
 
 .block {
@@ -82,8 +48,17 @@ nav li {
 
 /* CONTROL PANEL */
 
-.panel-gates {
+.panels {
+  display: flex;
+}
+.panel {
+  display: flex-item;
+}
+
+.panel-control {
+  position: relative;
   display: inline-block;
+  height: 100%;
 }
 
 .slider {
@@ -114,6 +89,41 @@ nav li {
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
+}
+
+/* GATES */
+
+.panel-gates {
+  display: inline-block;
+  width: 55%;
+}
+
+.gate-kind {
+  display: inline-block;
+  margin: 2px;
+}
+
+.gate-icon {
+  display: inline-block;
+  color: black;
+  border-radius: 2px;
+  width: 3em;
+  height: 3em;
+  text-align: center;
+  background: thistle;
+}
+.rotation .gate-icon {
+  background: wheat;
+}
+.phase .gate-icon {
+  background: pink;
+}
+.controlled .gate-icon {
+  background: lightgreen;
+}
+
+.gate-icon .MathJax {
+  top: calc(50% - 0.5em)
 }
 
 /* CIRCUIT */
