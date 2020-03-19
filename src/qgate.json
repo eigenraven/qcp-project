@@ -87,7 +87,7 @@
         ]
     
     },  {
-		"id": "cnot", "args": ["control", "target"],
+		"id": "cx", "args": ["control", "target"],
         "symbol": "cX",
         "kind": "controlled",
         "name": "Controlled \\(X\\) gate",
@@ -135,7 +135,7 @@
         ]
     
     }, {
-		"id": "ccnot", "args": ["control1", "control2", "target"],
+		"id": "ccx", "args": ["control1", "control2", "target"],
         "symbol": "ccX",
         "kind": "controlled",
         "name": "Toffoli gate",

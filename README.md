@@ -24,11 +24,11 @@ The following headers may be applied; some change state, whereas some change sim
   - **Optional header**: `nogroup`. Applies the gates one-by-one instead of grouping non-overlapping ones into fewer kronecker products
   - **Optional header**: `states`. Makes the simulator output the final probabilities of each qubit state instead of evaluating them with random sampling.
 
-Gates MUST be defined in execution order; they are described in `src/qgate.json` and `src/qgate.cpp`. Their arguments all are integers, starting from 0, representing the qubit index(es) they act on. 
+Gates MUST be defined in execution order. Information on their use in circuitry can be found in the front-end. Their arguments all are integers, starting from 0, representing the qubit index(es) they act on. Some gates have multiple aliases.
 
-  - **Unary gates**: `id` (aka `nop`), `x`, `y`, `z`, `h`, (aka `hadamard`) `s`, `t`, `tinv`, `v`, `vinv`
-  - **Binary gates**: `cnot`, `cy`, `cz`, `swap`
-  - **Ternary gates**: `ccnot` (aka `toffoli`)
+  - **Unary gates**: `id`/`nop`, `x`/`not`, `y`, `z`, `h`/`hadamard` `s`, `t`, `tinv`/`tdg`, `v`, `vinv`/`vdg`
+  - **Binary gates**: `cx`/`cnot`, `cy`, `cz`, `swap`
+  - **Ternary gates**: `ccx`/`ccnot`/`toffoli`
 
 We assume that at the very end all quantum registers are measured (unless the `states` option is specified). The resulting vector returned from the backend contains the fraction of times the result was returned.
 

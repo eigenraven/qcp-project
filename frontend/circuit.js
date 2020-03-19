@@ -1,6 +1,10 @@
 $(function(){
   const GATE_ALIAS = {
-    "nop": "id", "hadamard": "h", "toffoli": "ccnot"
+    "nop": "id", "hadamard": "h",
+    "not": "x",
+    "cnot": "cx",
+    "tdg": "tinv", "vdg": "vinv",
+    "ccnot": "ccx", "toffoli": "ccx", 
   }
 
   /* PANEL */
