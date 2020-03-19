@@ -16,7 +16,7 @@ with open2("../../src/qgate.json") as f:
         assert "id" in data
         id = data["id"]
         op = dict(
-            args=['target'],
+            args=[''],
             symbol=id.upper(),
             kind="general",
             name="No name",

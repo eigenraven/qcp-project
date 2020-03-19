@@ -112,12 +112,16 @@ $(function(){
       let q = GATES[selection.gate]
       q.el.addClass('selected')
       $('#circuit').addClass('selection')
-      msg = `Adding <strong>${q.name}</strong>`
-      if( q.args.length == 1 ){
-        msg += `Select qubit to act on.`
+      msg = `Adding <strong>${q.name}</strong>. Select `
+      if( q.args.length > 1 ){
+        msg += `${ORDS[selection.arg]} `
+      }
+      msg += "qubit "
+      let qarg = q.args[selection.arg]
+      if( qarg ){
+        msg += `(<strong>${qarg}</strong>).`
       } else {
-      msg += `Select ${ORDS[selection.arg]} qubit
-        (<strong>${q.args[selection.arg]}</strong>).`
+        msg += "to act on."
       }
     } else {
       $('#circuit').removeClass('selection')

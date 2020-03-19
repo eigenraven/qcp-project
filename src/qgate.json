@@ -123,7 +123,7 @@
             "0 &0 &0 &-1"
         ]
     }, {
-		"id": "swap", "args": ["a", "b"],
+		"id": "swap", "args": ["", ""],
         "symbol": "↔",
         "name": "Qubit-swap gate",
         "description": "Swaps two qubit values between registers. This does not entangle.",
