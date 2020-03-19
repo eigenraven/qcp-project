@@ -203,7 +203,7 @@ nav li {
   border: 2px solid rebeccapurple;
   margin-top: 0;
 }
-.summoner:hover .summoned {
+.summoner:hover:not(.summon-shushed) .summoned {
   display: block;
   float: right;
   animation: hoverin 0.2s;

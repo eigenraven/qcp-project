@@ -130,7 +130,8 @@ $(function(){
   }
 
   $.each(GATES, function(id, op){
-    op.el = $('#' + id).click(function(){
+    op.el = $(`#${id}`)
+    op.el.click(function(){
       if( selection.gate == id ){
         selection.gate = null
       } else {
@@ -138,6 +139,10 @@ $(function(){
         selection.arg = 0
       }
       updateGateDisplay()
+      op.el.addClass('summon-shushed')
+    })
+    op.el.mouseout(function(){
+      op.el.removeClass('summon-shushed')
     })
   })
   updateGateDisplay();
