@@ -3,7 +3,7 @@ $(function(){
     "nop": "id", "hadamard": "h", "toffoli": "ccnot"
   }
 
-  /* Qubit elements */
+  /* PANEL */
   qubits = Array()
   $('.qubit').each((i, el) => {
     qubits.push({
@@ -11,18 +11,42 @@ $(function(){
     })
   });
 
-  $('.disp-qubits').text(qubits.length)
-
   let ket0;
-  function get_ket0(){
+  let shots = 1024;
+  let noise = 0;
+  let isSparse = false;
+  let doGroup = true;
+
+  let updateDisplay = function(){
+    shots = 2 ** $('#slider-shots').val()
+    noise = $('#slider-noise').val() / 10000
+    isSparse = $('#check-sparse').is(':checked')
+    doGroup = $('#check-group').is(':checked')
+
     if( !ket0 ){
       console.log('Initial |0> MathJax found')
       ket0 = $('.ket0')[0].innerHTML
     }
-  }
 
-  $('#btn-qubit-more').click(function(){
-    get_ket0()
+    $('.disp-qubits').text(qubits.length)
+    $('.disp-shots').text(shots)
+    let fragments = [
+      `qubits: ${qubits.length}`,
+      `shots: ${shots}`
+    ]
+    let n = (noise * 100).toLocaleString({maximumFractionDigits: 2})
+    $('.disp-noise').text(
+      noise ? `${n}%`: "disabled")
+    
+    noise ? fragments.push(`${n}% decay`) :0;
+    isSparse ? fragments.push("sparse") :0;
+    doGroup ? fragments.push("grouped") :0;
+
+    $('.disp-summary').text(`(${fragments.join(", ")})`)
+  }
+  updateDisplay()
+
+  let addQubit = function(){
     console.log('more')
     let qnum = qubits.length
     qubits.push({
@@ -32,12 +56,13 @@ $(function(){
         <div class='ket0'>${ket0}</div>
       </div>`).appendTo('#qubits')
     })
-    $('.disp-qubits').text(qubits.length)
-  })
+  };
+  $('#btn-qubit-more').click(function(){
+    addQubit()
+    updateDisplay()
+  });
 
   $('#btn-qubit-less').click(function(){
-    get_ket0()
-    let line
     console.log('fewer')
     if (qubits.length > 0) {
       let line = qubits.pop()
@@ -47,42 +72,17 @@ $(function(){
       } else {
         qubits.push(line)
       }
-      $('.disp-qubits').text(qubits.length)
+      updateDisplay()
     }
   })
 
-  /* PANEL */
-  let shots = 1024;
+  $('#slider-shots').change(updateDisplay)
+  $('#slider-shots').mousemove(updateDisplay)
+  $('#slider-noise').change(updateDisplay)
+  $('#slider-noise').mousemove(updateDisplay)
 
-  let updateSlider = function(){
-    shots = 2 ** $('#slider-shots').val()
-    $('.disp-shots').text(shots)
-  }; updateSlider()
-  $('#slider-shots').change(updateSlider)
-  $('#slider-shots').mousemove(updateSlider)
-
-  let noise = 0;
-
-  let updateNoise = function(){
-    shots = $('#slider-noise').val() / 10000
-    let s = (shots * 100).toLocaleString({maximumFractionDigits: 2})
-    $('.disp-noise-full').text(
-      shots ? `${s}%`: "disabled")
-    $('.disp-noise-short').text(
-      shots ? `, ${s}% decay` : ``)
-  }; updateNoise()
-  $('#slider-noise').change(updateNoise)
-  $('#slider-noise').mousemove(updateNoise)
-
-  let isSparse = false;
-  $('#check-sparse').change(function(){
-    isSparse = $('#check-sparse').is(':checked')
-  });
-
-  let doGroup = true;
-  $('#check-group').change(function(){
-    doGroup = $('#check-group').is(':checked')
-  });
+  $('#check-sparse').change(updateDisplay)
+  $('#check-group').change(updateDisplay)
 
   /* GATES */
   gates = []
