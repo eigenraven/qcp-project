@@ -38,9 +38,14 @@ nav li {
 
 .block {
   display: inline-block;
-  padding: 1em;
+  padding: 0.05em 0.3em 0.05em 0.3em;
   border-radius: 5px;
   background: #ddd;
+  width: 70%;
+  margin-top: 10px;
+}
+.panel-control-item:first-child .block{
+  margin-top: 0;
 }
 .block h2 {
   margin-top: 0;
@@ -55,12 +60,8 @@ nav li {
   flex-grow: 1;
 }
 
-.panel-control-summary {
-  width: 20em;
-  max-width: 100%;
-}
-
 .panel-control {
+  flex-grow: 3;
   position: relative;
   height: 100%;
 }
@@ -103,6 +104,7 @@ nav li {
 /* GATES */
 
 .panel-gates {
+  flex-grow: 4;
   display: inline-block;
   width: 55%;
 }
@@ -166,20 +168,22 @@ nav li {
 
  @keyframes hoverin{
   from {
-    transform: translateY(25px);
+    transform: translateY(20px);
     opacity: 0;
   }
 }
+
 .summoned {
   position: fixed;
   display: none;
-  transform: translateY(5px);
   background: aliceblue;
   max-width: 20em;
   z-index: 1000;
   border: 2px solid rebeccapurple;
+  margin-top: 0;
 }
 .summoner:hover .summoned {
   display: block;
+  float: right;
   animation: hoverin 0.2s;
 }

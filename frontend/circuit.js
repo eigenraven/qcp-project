@@ -16,6 +16,7 @@ $(function(){
   let noise = 0;
   let isSparse = false;
   let doGroup = true;
+  let loadingError = false;
 
   let updateDisplay = function(){
     shots = 2 ** $('#slider-shots').val()
@@ -146,10 +147,10 @@ $(function(){
   })
 
   
-  $('#btn-load').click(function(){
+  $('#btn-load').change(function(){
     $('#btn-load')[0].files[0].text()
     .then(function(str){
-      let hasError = false
+      loadingError = false
       let f_gates = [];
       let f_qubits;
       let f_noise = 0;
@@ -158,20 +159,22 @@ $(function(){
       let f_doGroup = true;
       let f_emitStates = true;
 
+      $('.disp-load-error').text("")
+
       function error(lineno, msg){
-        msg = `Error in line ${lineno}: ${msg}`
-        $('#load-error').text(msg)
-        console.log(msg)
-        hasError = true
+        errorText = `Error in line ${lineno}: ${msg}`
+        $('.disp-load-error').text(errorText)
+        console.log(errorText)
+        loadingError = true
       }
 
       $.each(str.split(/\r\n|\r|\n/), function(l, line){
-        if( !hasError ){
-          if( !line || lines.startsWith(`//`)){
+        if( !loadingError ){
+          if( !line || line.startsWith(`//`)){
             return; // strip comments
           }
-          let args = line.split(",").toLowerCase()
-          let name = args.shift()
+          let args = line.split(",")
+          let name = args.shift().toLowerCase()
           
           function numHeader(val, name, cond){
             let token = args.shift()
@@ -224,7 +227,7 @@ $(function(){
             }
           }
         })
-        if( !hasError ){
+        if( !loadingError ){
           console.log('loaded successfully!')
           console.log(f_qubits, f_shots, f_noise)
           console.log(f_doGroup, f_emitStates, f_isSparse)
@@ -233,7 +236,7 @@ $(function(){
         } else {
           console.log('loaded abysmally!')
         }
+        console.log(str)
       })
-      console.log(str)
     })
 })
