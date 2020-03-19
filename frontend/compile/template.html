@@ -76,7 +76,7 @@
               <span class="disp-noise-full">disabled</span>
               <input type="range" min="0" max="10000" value="0" class="slider" id="slider-noise">
               <span class='info'>
-                Chance to decay to \(\ket{0}\) per gate per qubit
+                Chance to decay to <span class='ket0'>\(\ket{0}\)</span> per gate per qubit
               </span>
             </p>
             <h2>Simulation flags</h2>
@@ -115,28 +115,9 @@
       </div>
     </div>
     <div class='circuit' id='circuit'>
-      <div class='qubits' id='qubits'>
-        <!-- TECHNICAL DEBT
-          -- The default qubits are manually placed
-          -- so typesetting can be done.
-          -- Adding more qubits will with 99.9% likelihood
-          -- be done by the user *after* typesetting,
-          -- so we then will be able to copy anything typeset.
-          -- This is an issue if we want to save or load
-          -- circuitry, and should be fixed with async behaviour.
-          -->
-        <div class='qubit'>
-          <div class='header'>q[0]</div>
-          <div class='ket0'>\(\ket{0}\)</div>
-          <div class='line'></div>
-        </div>
-        <div class='qubit'>
-          <div class='header'>q[1]</div>
-          <div class='ket0'>\(\ket{0}\)</div>
-          <div class='line'></div>
-        </div>
-      </div>
-      <div id='gates' class='gates'>
+      <table class='qubits' id='qubits'>
+      </table>
+      <div id='gatelist' class='gates'>
       </div>
     </div>
   </div>

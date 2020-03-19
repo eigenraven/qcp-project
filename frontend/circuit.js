@@ -5,11 +5,6 @@ $(function(){
 
   /* PANEL */
   qubits = Array()
-  $('.qubit').each((i, el) => {
-    qubits.push({
-      el: el
-    })
-  });
 
   let conf_default = function(){return {
     noise: 0,
@@ -32,8 +27,8 @@ $(function(){
     conf.doGroup = $('#check-group').is(':checked')
 
     if( !ket0 ){
-      console.log('Initial |0> MathJax found')
       ket0 = $('.ket0')[0].innerHTML
+      console.log('Initial |0> MathJax found:', ket0)
     }
 
     $('.disp-qubits').text(qubits.length)
@@ -55,24 +50,26 @@ $(function(){
   updateDisplay()
 
   let addQubit = function(){
-    console.log('more')
-    let qnum = qubits.length
+    console.log(`qubits +> ${qubits.length + 1}`)
     qubits.push({
       el: $(`
-      <div class='qubit'>
-        <div class='header'>q[${qnum}]</div>
-        <div class='ket0'>${ket0}</div>
-      </div>`).appendTo('#qubits')
+      <tr class='qubit'>
+        <div class='line'></div>
+        <td class='header'>q[${qubits.length}]</td>
+        <td>${ket0}</td>
+        <td class='fill'></td>
+      </tr>`).appendTo('#qubits')
     })
   };
+  addQubit(); addQubit();
   $('#btn-qubit-more').click(function(){
     addQubit()
     updateDisplay()
   });
 
   $('#btn-qubit-less').click(function(){
-    console.log('fewer')
     if (qubits.length > 0) {
+      console.log(`qubits -> ${qubits.length - 1}`)
       let line = qubits.pop()
       let lineIsEmpty = true
       if (lineIsEmpty) {
@@ -93,21 +90,29 @@ $(function(){
   $('#check-group').change(updateDisplay)
 
   /* GATES */
+  let selection = {
+    gate: null,
+    arg: 0
+  }
+
   gates = []
 
   $.each(GATES, function(id, op){
-    op.gate_icon = $('#' + id).click(function(){
-      gate = {
-        id: id,
-        qubits: [], // add qubits..?
-        el: $(`
-        <div class='gate ${id}'>
-          ${id}
-        </div>
-        `).appendTo('#gates')
+    op.el = $('#' + id).click(function(){
+      console.log(id, GATES[id])
+      if( selection.gate && selection.gate !== id ){
+        GATES[selection.gate].el.removeClass('selected')
       }
-      gates.push(gate)
-      /* TODO: add to qubit log; render nicely */
+      if( selection.gate == id ){
+        selection.gate = null
+        GATES[id].el.removeClass('selected')
+      } else {
+        selection.gate = id
+        selection.arg = 0
+        GATES[id].el.addClass('selected')
+      }
+      let c = $('#circuit')
+      (selection.gate ? c.addClass : c.removeClass)('selection')
     })
   })
 
