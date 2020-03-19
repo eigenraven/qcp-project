@@ -41,6 +41,15 @@ qubits, <span class="disp-shots"></span>
 shots<span class="disp-noise-short"></span>)
 </div>
 <div class='summoned block'>
+<h2>Circuit</h2>
+<p class='info'>
+Save and load circuit and settings
+</p>
+<p>
+<button id='btn-save'>Save...</button>
+<input id='btn-load' type="file" accept=".in">
+</p>
+<p id='load-error' class='error'></p>
 <h2>Configuration</h2>
 <p>
 <strong>Qubits</strong>: <span class="disp-qubits">0</span>
@@ -63,12 +72,18 @@ Amount of times simulation is ran
 Chance to decay to \(\ket{0}\) per gate per qubit
 </span>
 </p>
-<h2>Save & load</h2>
-<p>
-<button id='btn-save'>Save...</button>
-<input id='btn-load' type="file" accept=".in">
+<h2>Compiler flags</h2>
+<p class='info'>
+Generally, these flags will make simulation quicker.
 </p>
-<p id='load-error' class='error'></p>
+<p>
+<strong>Use sparse matrices</strong>
+<input type="checkbox" id='check-sparse'>
+</p>
+<p>
+<strong>Group gates</strong>
+<input type="checkbox" id='check-group' checked>
+</p>
 </div>
 </span>
 <div class='panel panel-gates'>

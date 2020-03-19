@@ -74,6 +74,16 @@ $(function(){
   $('#slider-noise').change(updateNoise)
   $('#slider-noise').mousemove(updateNoise)
 
+  let isSparse = false;
+  $('#check-sparse').change(function(){
+    isSparse = $('#check-sparse').is(':checked')
+  });
+
+  let doGroup = true;
+  $('#check-group').change(function(){
+    doGroup = $('#check-group').is(':checked')
+  });
+
   /* GATES */
   gates = []
 
@@ -97,8 +107,6 @@ $(function(){
 
   as_file = function(){
     // TODO: implement form & gathering
-    isSparse = false;
-    doGroup = true;
     emitStates = true;
 
     str = `qubits,${qubits.length}\n`
