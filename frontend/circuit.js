@@ -14,7 +14,7 @@ $(function(){
     emitStates: true,
   }}
 
-  let ket0;
+  const ket0 = $('.ket0')[0].innerHTML
   let conf = conf_default();
   let loadingError = false;
 
@@ -26,16 +26,11 @@ $(function(){
     conf.isSparse = $('#check-sparse').is(':checked')
     conf.doGroup = $('#check-group').is(':checked')
 
-    if( !ket0 ){
-      ket0 = $('.ket0')[0].innerHTML
-      console.log('Initial |0> MathJax found:', ket0)
-    }
-
     $('.disp-qubits').text(qubits.length)
     $('.disp-shots').text(conf.shots)
     let fragments = [
-      `qubits: ${qubits.length}`,
-      `shots: ${conf.shots}`
+      `${qubits.length} qubits`,
+      `${conf.shots} shots`
     ]
     let n = (conf.noise * 100).toLocaleString({maximumFractionDigits: 2})
     $('.disp-noise').text(
@@ -45,9 +40,8 @@ $(function(){
     conf.isSparse ? fragments.push("sparse") :0;
     conf.doGroup ? fragments.push("grouped") :0;
 
-    $('.disp-summary').text(`(${fragments.join(", ")})`)
+    $('.disp-summary').text(fragments.join(", "))
   }
-  updateDisplay()
 
   let addQubit = function(){
     console.log(`qubits +> ${qubits.length + 1}`)
@@ -61,11 +55,12 @@ $(function(){
       </tr>`).appendTo('#qubits')
     })
   };
-  addQubit(); addQubit();
   $('#btn-qubit-more').click(function(){
     addQubit()
     updateDisplay()
   });
+  
+  addQubit(); addQubit(); updateDisplay()
 
   $('#btn-qubit-less').click(function(){
     if (qubits.length > 0) {
@@ -112,7 +107,7 @@ $(function(){
       let q = GATES[selection.gate]
       q.el.addClass('selected')
       $('#circuit').addClass('selection')
-      msg = `Adding <strong>${q.name}</strong>. Select `
+      msg = `Adding <strong>${q.el.find('h2').html()}</strong>. Select `
       if( q.args.length > 1 ){
         msg += `${ORDS[selection.arg - 1]} `
       }

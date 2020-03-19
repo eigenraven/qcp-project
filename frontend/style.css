@@ -147,8 +147,13 @@ nav li {
 
 /* CIRCUIT */
 
+.status {
+  height: 2em;
+  text-align: center;
+}
+
 .circuit {
-  background-color: honeydew; /* just while */
+  background-color: honeydew;
   width: 100%;
 }
 .qubit {
