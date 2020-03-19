@@ -11,18 +11,25 @@ $(function(){
     })
   });
 
+  let conf_default = function(){return {
+    noise: 0,
+    shots: 1024,
+    isSparse: false,
+    doGroup: true,
+    emitStates: true,
+  }}
+
   let ket0;
-  let shots = 1024;
-  let noise = 0;
-  let isSparse = false;
-  let doGroup = true;
+  let conf = conf_default();
   let loadingError = false;
 
+  const NOISE_SIZE = 10000
+
   let updateDisplay = function(){
-    shots = 2 ** $('#slider-shots').val()
-    noise = $('#slider-noise').val() / 10000
-    isSparse = $('#check-sparse').is(':checked')
-    doGroup = $('#check-group').is(':checked')
+    conf.shots = 2 ** $('#slider-shots').val()
+    conf.noise = $('#slider-noise').val() / NOISE_SIZE
+    conf.isSparse = $('#check-sparse').is(':checked')
+    conf.doGroup = $('#check-group').is(':checked')
 
     if( !ket0 ){
       console.log('Initial |0> MathJax found')
@@ -30,18 +37,18 @@ $(function(){
     }
 
     $('.disp-qubits').text(qubits.length)
-    $('.disp-shots').text(shots)
+    $('.disp-shots').text(conf.shots)
     let fragments = [
       `qubits: ${qubits.length}`,
-      `shots: ${shots}`
+      `shots: ${conf.shots}`
     ]
-    let n = (noise * 100).toLocaleString({maximumFractionDigits: 2})
+    let n = (conf.noise * 100).toLocaleString({maximumFractionDigits: 2})
     $('.disp-noise').text(
-      noise ? `${n}%`: "disabled")
+      conf.noise ? `${n}%`: "disabled")
     
-    noise ? fragments.push(`${n}% decay`) :0;
-    isSparse ? fragments.push("sparse") :0;
-    doGroup ? fragments.push("grouped") :0;
+    conf.noise ? fragments.push(`${n}% decay`) :0;
+    conf.isSparse ? fragments.push("sparse") :0;
+    conf.doGroup ? fragments.push("grouped") :0;
 
     $('.disp-summary').text(`(${fragments.join(", ")})`)
   }
@@ -53,7 +60,7 @@ $(function(){
     qubits.push({
       el: $(`
       <div class='qubit'>
-        <div class='header'>q${String(qnum)}</div>
+        <div class='header'>q[${qnum}]</div>
         <div class='ket0'>${ket0}</div>
       </div>`).appendTo('#qubits')
     })
@@ -104,18 +111,22 @@ $(function(){
     })
   })
 
+
+
   /* FILE IO */
+
+
 
   as_file = function(){
     // TODO: implement form & gathering
     emitStates = true;
 
     str = `qubits,${qubits.length}\n`
-    if(shots != 1024) str += `shots,${shots}\n`
-    if(noise) str += `noise,${noise}\n`
-    if(isSparse) str += `sparse\n`
-    if(!doGroup) str += `nogroup\n`
-    if(emitStates) str += `states\n`
+    if(conf.shots != 1024) str += `shots,${conf.shots}\n`
+    if(conf.noise) str += `noise,${conf.noise}\n`
+    if(conf.isSparse) str += `sparse\n`
+    if(!conf.doGroup) str += `nogroup\n`
+    if(conf.emitStates) str += `states\n`
     
     $.each(gates, function(i, gate){
       console.log(gate)
@@ -142,32 +153,34 @@ $(function(){
       }, 0); 
     }
   }
+  
+  let filename = "circuit.in"
   $('#btn-save').click(function(){
-    download(as_file(), "circuit.in", "text/plaintext")
+    download(as_file(), filename, "text/plaintext")
   })
 
   
   $('#btn-load').change(function(){
-    $('#btn-load')[0].files[0].text()
-    .then(function(str){
-      loadingError = false
-      let f_gates = [];
-      let f_qubits;
-      let f_noise = 0;
-      let f_shots = 1024;
-      let f_isSparse = false;
-      let f_doGroup = true;
-      let f_emitStates = true;
+    let file = $('#btn-load')[0].files[0]
+    filename = file.name;
+    loadingError = false
 
-      $('.disp-load-error').text("")
+    console.log(`Loading file ${filename}...`)
+    $('.disp-load-name').removeClass('error')
+    $('.disp-load-error').text("")
 
-      function error(lineno, msg){
-        errorText = `Error in line ${lineno}: ${msg}`
-        $('.disp-load-error').text(errorText)
-        console.log(errorText)
-        loadingError = true
-      }
+    function error(lineno, msg){
+      msg = `Error in line ${lineno}: ${msg}`
+      $('.disp-load-error').text(msg)
+      $('.disp-load-name').addClass('error').text("file failed to load!")
+      console.log(msg)
+      loadingError = true
+    }
+    
+    let f_gates = [];
+    let f_conf = conf_default();
 
+    file.text().then(function(str){
       $.each(str.split(/\r\n|\r|\n/), function(l, line){
         if( !loadingError ){
           if( !line || line.startsWith(`//`)){
@@ -176,47 +189,42 @@ $(function(){
           let args = line.split(",")
           let name = args.shift().toLowerCase()
           
-          function numHeader(val, name, cond){
+          function numHeader(cond){
             let token = args.shift()
             if( token == undefined ){
-              error(l, `${name} requires a value`)
+              error(l, `'{desc}' requires a value`)
             }
             let numval = Number(token)
             if( cond(numval) ){
               console.log(name, "obtained", numval)
-              return numval
+              f_conf[name] = numval
             } else {
-              error(l, `${name} cannot be ${token}`)
-              return val
+              error(l, `'${name}' cannot be ${token}`)
             }
           }
           
           switch( name ){
-            case "qubits": f_qubits = numHeader(
-              f_qubits, "Qubit count",
+            case "qubits": numHeader(
               n => Number.isInteger(n) && n > 0
             ); break;
-
-            case "shots": f_shots = numHeader(
-              f_shots, "Shots",
+            case "shots": numHeader(
               n => Number.isInteger(n) && n > 0
-            );
-            case "noise": f_noise = numHeader(
-              f_noise, "Noise",
+            ); break;
+            case "noise": numHeader(
               n => 0 <= n && n <= 1
-            )
-            
-            case "sparse": f_isSparse = true; break;
-            case "nogroup": f_doGroup = false; break;
-            case "states": f_emitStates = true; break;
+            ); break;
+            case "sparse": f_conf.isSparse = true; break;
+            case "nogroup": f_conf.doGroup = false; break;
+            case "states": f_conf.emitStates = true; break;
 
             default:
               let gate = GATES[name];
               if( !gate ){
-                error(l, `Unknown operation "${name}"`)
+                error(l, `unknown operation "${name}"`)
               }
-              if( args.length <= gate.args.length ){
-                error(l, `Not enough args to ${name} (need ${arity})`)
+              console.log(args, gate.args)
+              if( args.length < gate.args.length ){
+                error(l, `not enough args to ${name} (need ${gate.args.length})`)
               } else {
                 // TODO: assert stuff with indices here
                 f_gates.push({
@@ -227,11 +235,30 @@ $(function(){
             }
           }
         })
+
         if( !loadingError ){
+          for (let i = 0; i < qubits.length; i++) {
+            qubits[i].el.remove()
+          }
+          qubits = []
+          for (let i = 0; i < f_conf.qubits; i++) {
+            addQubit()
+          }
+
+          // TODO: load gates
+          gates = []
+
+          conf = f_conf
+          $('#check-sparse').prop('checked', conf.isSparse)
+          $('#check-group').prop('checked', conf.doGroup)
+          $('#slider-shots').val(Math.floor(Math.log2(conf.shots)))
+          $('#slider-noise').val(conf.noise * NOISE_SIZE)
+
+          $('.disp-load-name').html(`<code>${file.name}</code>`)
           console.log('loaded successfully!')
-          console.log(f_qubits, f_shots, f_noise)
-          console.log(f_doGroup, f_emitStates, f_isSparse)
-          console.log(f_gates)
+          console.log(conf)
+          console.log(gates)
+          updateDisplay()
           // TODO: actually load
         } else {
           console.log('loaded abysmally!')

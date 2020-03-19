@@ -159,6 +159,9 @@ nav li {
 .hidden {
   display: none;
 }
+.error {
+  color: #a00
+}
 
 /* UI summoner
  * .summoner
