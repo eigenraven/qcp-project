@@ -52,13 +52,22 @@ nav li {
   display: flex;
 }
 .panel {
-  display: flex-item;
+  flex-grow: 1;
+}
+
+.panel-control-summary {
+  width: 20em;
+  max-width: 100%;
 }
 
 .panel-control {
   position: relative;
-  display: inline-block;
   height: 100%;
+}
+
+.info {
+  font-size: 0.8em;
+  opacity: 0.6;
 }
 
 .slider {

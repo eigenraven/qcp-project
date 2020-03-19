@@ -55,11 +55,24 @@ $(function(){
   let shots = 1024;
 
   let updateSlider = function(){
-    shots = 2 ** $('#shots-slider').val()
+    shots = 2 ** $('#slider-shots').val()
     $('.disp-shots').text(shots)
   }; updateSlider()
-  $('#shots-slider').change(updateSlider)
-  $('#shots-slider').mousemove(updateSlider)
+  $('#slider-shots').change(updateSlider)
+  $('#slider-shots').mousemove(updateSlider)
+
+  let noise = 0;
+
+  let updateNoise = function(){
+    shots = $('#slider-noise').val() / 10000
+    let s = (shots * 100).toLocaleString({maximumFractionDigits: 2})
+    $('.disp-noise-full').text(
+      shots ? `${s}%`: "disabled")
+    $('.disp-noise-short').text(
+      shots ? `, ${s}% decay` : ``)
+  }; updateNoise()
+  $('#slider-noise').change(updateNoise)
+  $('#slider-noise').mousemove(updateNoise)
 
   /* GATES */
   gates = []
@@ -86,7 +99,6 @@ $(function(){
     // TODO: implement form & gathering
     isSparse = false;
     doGroup = true;
-    noise = 0.0;
     emitStates = true;
 
     str = `qubits,${qubits.length}\n`
