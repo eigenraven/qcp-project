@@ -218,6 +218,9 @@ $(function(){
           }
           let args = line.split(",")
           let name = args.shift().toLowerCase()
+          if( GATE_ALIAS.includes(name) ){
+            name = GATE_ALIAS[name]
+          }
           
           function numHeader(cond){
             let token = args.shift()
