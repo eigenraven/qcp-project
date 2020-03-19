@@ -97,25 +97,46 @@ $(function(){
 
   gates = []
 
+  const ORDS = [
+    '1<sup>st</sup>',
+    '2<sup>nd</sup>',
+    '3<sup>rd</sup>'
+  ]
+
+  let updateGateDisplay = function(){
+    for (let [i, gate] of Object.entries(GATES)) {
+      gate.el.removeClass('selected')
+    }
+    let msg = "No gate selected. Click a gate above to add it to the circuit."
+    if( selection.gate ){
+      let q = GATES[selection.gate]
+      q.el.addClass('selected')
+      $('#circuit').addClass('selection')
+      msg = `Adding <strong>${q.name}</strong>`
+      if( q.args.length == 1 ){
+        msg += `Select qubit to act on.`
+      } else {
+      msg += `Select ${ORDS[selection.arg]} qubit
+        (<strong>${q.args[selection.arg]}</strong>).`
+      }
+    } else {
+      $('#circuit').removeClass('selection')
+    }
+    $('.status').html(msg)
+  }
+
   $.each(GATES, function(id, op){
     op.el = $('#' + id).click(function(){
-      console.log(id, GATES[id])
-      if( selection.gate && selection.gate !== id ){
-        GATES[selection.gate].el.removeClass('selected')
-      }
       if( selection.gate == id ){
         selection.gate = null
-        GATES[id].el.removeClass('selected')
       } else {
         selection.gate = id
         selection.arg = 0
-        GATES[id].el.addClass('selected')
       }
-      let c = $('#circuit')
-      (selection.gate ? c.addClass : c.removeClass)('selection')
+      updateGateDisplay()
     })
   })
-
+  updateGateDisplay();
 
 
   /* FILE IO */
