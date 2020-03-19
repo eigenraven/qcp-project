@@ -114,10 +114,10 @@ $(function(){
       $('#circuit').addClass('selection')
       msg = `Adding <strong>${q.name}</strong>. Select `
       if( q.args.length > 1 ){
-        msg += `${ORDS[selection.arg]} `
+        msg += `${ORDS[selection.arg - 1]} `
       }
       msg += "qubit "
-      let qarg = q.args[selection.arg]
+      let qarg = q.args[q.args.length - selection.arg]
       if( qarg ){
         msg += `(<strong>${qarg}</strong>).`
       } else {
@@ -136,7 +136,7 @@ $(function(){
         selection.gate = null
       } else {
         selection.gate = id
-        selection.arg = 0
+        selection.arg = 1
       }
       updateGateDisplay()
       op.el.addClass('summon-shushed')
