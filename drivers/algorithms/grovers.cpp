@@ -4,24 +4,30 @@
 using namespace qc;
 
 void oracle(std::shared_ptr<QCircuit> circuit, int search) {
-	if(1-(search>>2&1))circuit->x(0);
-	if(1-(search>>1&1))circuit->x(1);
-	if(1-(search&1))circuit->x(2);
+  if (1 - (search >> 2 & 1))
+    circuit->x(0);
+  if (1 - (search >> 1 & 1))
+    circuit->x(1);
+  if (1 - (search & 1))
+    circuit->x(2);
 
-	circuit->h(2);
-	circuit->ccnot(0,1,2);
-	circuit->h(2);
+  circuit->h(2);
+  circuit->ccnot(0, 1, 2);
+  circuit->h(2);
 
-	if(1-(search>>2&1))circuit->x(0);
-	if(1-(search>>1&1))circuit->x(1);
-	if(1-(search&1))circuit->x(2);
+  if (1 - (search >> 2 & 1))
+    circuit->x(0);
+  if (1 - (search >> 1 & 1))
+    circuit->x(1);
+  if (1 - (search & 1))
+    circuit->x(2);
 }
 
 void grovers(std::shared_ptr<QCircuit> circuit) {
   circuit->gateAll(&H);
   circuit->gateAll(&X);
   circuit->h(2);
-  circuit->ccnot(0,1,2);
+  circuit->ccnot(0, 1, 2);
   circuit->h(2);
   circuit->gateAll(&X);
   circuit->gateAll(&H);
@@ -36,7 +42,7 @@ int main(int argc, char **argv) {
 	oracle(circuit,search);
 	grovers(circuit);
   }
-  auto result = circuit->simulate(1024,false,0,true);
-  std::cout<<circuit->print(result,true);
-  return 0; 
+  auto result = circuit->simulate(1024, false, 0, true);
+  std::cout << circuit->print(result, true);
+  return 0;
 }

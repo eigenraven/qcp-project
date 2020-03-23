@@ -19,7 +19,7 @@ template <class M> M matrix_with_random_data(int rows_cols, int elements) {
   for (int el = 0; el < elements; el++) {
     int row = position_dist(rng);
     int col = position_dist(rng);
-    int pos = col + row*rows_cols;
+    int pos = col + row * rows_cols;
     while (placedElements.count(pos) > 0) {
       col++;
       if (col >= rows_cols) {
@@ -48,15 +48,16 @@ static void CustomKroneckerArguments(benchmark::internal::Benchmark *b) {
 
 static void BM_Kronecker_Dense_2(benchmark::State &state) {
   int size = state.range(0);
-  int elements = state.range(1)*size*size/100;
+  int elements = state.range(1) * size * size / 100;
   using Matrix = dmatrix;
   Matrix m1 = matrix_with_random_data<Matrix>(size, elements);
   Matrix m2 = matrix_with_random_data<Matrix>(size, elements);
-  for(auto _ : state) {
+  for (auto _ : state) {
     Matrix kp = kronecker({&m1, &m2});
     benchmark::DoNotOptimize(kp);
   }
 }
+
 static void BM_Kronecker_Sparse_2(benchmark::State &state) {
   int size = state.range(0);
   int elements = state.range(1) * size * size / 100;
@@ -68,12 +69,92 @@ static void BM_Kronecker_Sparse_2(benchmark::State &state) {
     benchmark::DoNotOptimize(kp);
   }
 }
-// Register the function as a benchmark
+
 BENCHMARK(BM_Kronecker_Dense_2)
     ->ArgNames({"size"s, "nonzero_percent"s})
     ->Apply(CustomKroneckerArguments);
 BENCHMARK(BM_Kronecker_Sparse_2)
     ->ArgNames({"size"s, "nonzero_percent"s})
     ->Apply(CustomKroneckerArguments);
+
+static void BM_Matmul_Dense_2(benchmark::State &state) {
+  int size = state.range(0);
+  int elements = state.range(1) * size * size / 100;
+  using Matrix = dmatrix;
+  Matrix m1 = matrix_with_random_data<Matrix>(size, elements);
+  Matrix m2 = matrix_with_random_data<Matrix>(size, elements);
+  for (auto _ : state) {
+    Matrix kp = m1 * m2;
+    benchmark::DoNotOptimize(kp);
+  }
+}
+
+static void BM_Matmul_Sparse_2(benchmark::State &state) {
+  int size = state.range(0);
+  int elements = state.range(1) * size * size / 100;
+  using Matrix = smatrix;
+  Matrix m1 = matrix_with_random_data<Matrix>(size, elements);
+  Matrix m2 = matrix_with_random_data<Matrix>(size, elements);
+  for (auto _ : state) {
+    Matrix kp = m1 * m2;
+    benchmark::DoNotOptimize(kp);
+  }
+}
+
+BENCHMARK(BM_Matmul_Dense_2)
+    ->ArgNames({"size"s, "nonzero_percent"s})
+    ->Apply(CustomKroneckerArguments);
+BENCHMARK(BM_Matmul_Sparse_2)
+    ->ArgNames({"size"s, "nonzero_percent"s})
+    ->Apply(CustomKroneckerArguments);
+
+static void CustomKroneckerN2Arguments(benchmark::internal::Benchmark *b) {
+  for (int count = 2; count <= 12; count += 1) {
+    for (int elements : {2, 3, 4}) {
+      b->Args({count, elements});
+    }
+  }
+}
+
+static void BM_Kronecker_Dense_N2(benchmark::State &state) {
+  int count = state.range(0);
+  int elements = state.range(1);
+  using Matrix = dmatrix;
+  std::vector<Matrix> matrices;
+  std::vector<const Matrix *> matrixPtrs;
+  matrices.reserve(count);
+  for (int i = 0; i < count; i++) {
+    matrices.emplace_back(matrix_with_random_data<Matrix>(2, elements));
+    matrixPtrs.emplace_back(&matrices[i]);
+  }
+  for (auto _ : state) {
+    Matrix kp = kronecker(gsl::make_span(matrixPtrs));
+    benchmark::DoNotOptimize(kp);
+  }
+}
+
+static void BM_Kronecker_Sparse_N2(benchmark::State &state) {
+  int count = state.range(0);
+  int elements = state.range(1);
+  using Matrix = smatrix;
+  std::vector<Matrix> matrices;
+  std::vector<const Matrix *> matrixPtrs;
+  matrices.reserve(count);
+  for (int i = 0; i < count; i++) {
+    matrices.emplace_back(matrix_with_random_data<Matrix>(2, elements));
+    matrixPtrs.emplace_back(&matrices[i]);
+  }
+  for (auto _ : state) {
+    Matrix kp = kronecker(gsl::make_span(matrixPtrs));
+    benchmark::DoNotOptimize(kp);
+  }
+}
+
+BENCHMARK(BM_Kronecker_Dense_N2)
+    ->ArgNames({"count"s, "nonzero_percent"s})
+    ->Apply(CustomKroneckerN2Arguments);
+BENCHMARK(BM_Kronecker_Sparse_N2)
+    ->ArgNames({"count"s, "nonzero_percent"s})
+    ->Apply(CustomKroneckerN2Arguments);
 
 BENCHMARK_MAIN();

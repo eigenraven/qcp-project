@@ -1,96 +1,154 @@
-{
-    "runs": {"kind": "meta", "arity": "1"},
-    "qubits": {"kind": "meta", "arity": "1"},
-
-    "id": {"kind": "gate", "arity": 1, "matrix": [
-        "1 & 0",
-        "0 & 1"
-    ],  "name": "Identity (no-op) gate",
-        "description": "This gate has no effect."
-    },
-    "x": {"kind": "gate", "arity": 1, "matrix": [
-        "0 & 1",
-        "1 & 0"
-    ],  "name": "X-rotation gate"},
-    "y": {"kind": "gate", "arity": 1, "matrix": [
-        "0  & -1i",
-        "1i &  1"
-    ],  "name": "Y-rotation gate"},
-    "z": {"kind": "gate", "arity": 1, "matrix": [
-        "1 &  0",
-        "0 & -1"
-    ],  "name": "Z-rotation gate"},
-    "h": {"kind": "gate", "arity": 1, "matrix": [
-        "1& 1",
-        "1&-1"
-    ],  "factor": "\\frac{1}{\\sqrt{2}}",
-        "name": "Hadamard gate"},
-    "s": {"kind": "gate", "arity": 1, "matrix": [
-        "1& 0",
-        "0&1i"
-    ],  "name": "S phase-shift gate"},
-    "t": {"kind": "gate", "arity": 1, "matrix": [
-        "1& 0",
-        "0&e^{i pi/4}"
-    ],  "name": "T phase-shift gate"},
-    "tinv": {"kind": "gate", "arity": 1, "matrix": [
-        "1& 0",
-        "0&e^{-i pi/4}"
-    ],  "factor": "\\frac{1}{\\sqrt{2}}",
-        "name": "T† phase-shift gate"},
-    "v": {"kind": "gate", "arity": 1, "matrix": [
-        "1+1i& 1-1i",
-        "1-1i&1+1i"
-    ],  "factor": "\\frac{1}{\\2}",
-        "name": "V gate"},
-    "vinv": {"kind": "gate", "arity": 1, "matrix": [
-        "1-1i& 1+1i",
-        "1+1i&1-1i"
-    ],  "factor": "\\frac{1}{\\2}",
-        "name": "V† gate"},
-
-    "cnot": {"kind": "gate", "arity": 2, "matrix": [
-        "1 &0 &0 &0",
-        "0 &1 &0 &0",
-        "0 &0 &0 &1",
-        "0 &0 &1 &0"
-    ],  "name": "Controlled NOT gate"},
-    "cy": {"kind": "gate", "arity": 2, "matrix": [
-        " 1 & 0 & 0  & 0 ",
-        " 0 & 1 & 0  & 0 ",
-        " 0 & 0 & 0  &-1i",
-        " 0 & 0 & 1i & 0 "
-    ],  "name": "CY gate"},
-    "cz": {"kind": "gate", "arity": 2, "matrix": [
-        "1 &0 &0 & 0",
-        "0 &1 &0 & 0",
-        "0 &0 &1 & 0",
-        "0 &0 &0 &-1"
-    ],  "name": "CZ gate"},
-    "swap": {"kind": "gate", "arity": 2, "matrix": [
-        "1 &0 &0 &0",
-        "0 &0 &1 &0",
-        "0 &1 &0 &0",
-        "0 &0 &0 &1"
-    ],  "name": "Qubit-swap gate"},
-    "cswap": {"kind": "gate", "arity": 3, "matrix": [
-        "1 &0 &0 &0 &0 &0 &0 &0",
-        "0 &1 &0 &0 &0 &0 &0 &0",
-        "0 &0 &1 &0 &0 &0 &0 &0",
-        "0 &0 &0 &1 &0 &0 &0 &0",
-        "0 &0 &0 &0 &1 &0 &0 &0",
-        "0 &0 &0 &0 &0 &0 &1 &0",
-        "0 &0 &0 &0 &0 &1 &0 &0",
-        "0 &0 &0 &0 &0 &0 &0 &1",
-    ],  "name": "Controlled Qubit-swap gate"},
-    "ccnot": {"kind": "gate", "arity": 3, "matrix": [
-        "1 &0 &0 &0 &0 &0 &0 &0",
-        "0 &1 &0 &0 &0 &0 &0 &0",
-        "0 &0 &1 &0 &0 &0 &0 &0",
-        "0 &0 &0 &1 &0 &0 &0 &0",
-        "0 &0 &0 &0 &1 &0 &0 &0",
-        "0 &0 &0 &0 &0 &1 &0 &0",
-        "0 &0 &0 &0 &0 &0 &0 &1",
-        "0 &0 &0 &0 &0 &0 &1 &0"
-    ],  "name": "CCNot gate"}
-}
+[
+       {
+		"id": "id",
+        "name": "Identity gate",
+        "description": "This gate has no effect. It is sometimes used for timing.",
+        "matrix": [
+            "1 & 0",
+            "0 & 1"
+        ]
+    }, {
+		"id": "h",
+        "name": "Hadamard gate",
+        "factor": "\\frac{1}{\\sqrt{2}}",
+        "matrix": [
+            "1& 1",
+            "1&-1"
+        ]
+    }, {
+        "id": "x",
+        "kind": "rotation",
+        "name": "Pauli-\\(X\\) rotation gate",
+        "description": "Also known as the \"bit-flip\" or \"NOT\" gate, as it transforms \\(\\ket{0}\\) to \\(\\ket{1}\\) and vice versa. On the Bloch sphere, this is a rotation of \\(\\pi\\) in the X axis.",
+        "matrix": [
+            "0 & 1",
+            "1 & 0"
+        ]
+    }, {
+		"id": "y",
+        "kind": "rotation",
+        "name": "Pauli-\\(Y\\) rotation gate",
+        "description": "Maps \\(\\ket{0}\\) to \\(i\\ket{1}\\) and \\(\\ket{1}\\) to \\(-i\\ket{0}\\). On the Bloch sphere, this is a rotation of \\(\\pi\\) in the Y axis.",
+        "matrix": [
+            "0  & -1i",
+            "1i &  1"
+        ]
+    }, {
+		"id": "z",
+        "kind": "phase",
+        "name": "Pauli-\\(Z\\) rotation gate",
+        "description": "The same as an \\(X\\) gate followed by a \\(Y\\), this maps \\(\\ket{0}\\) to itself and \\(\\ket{1}\\) to \\(-\\ket{1}\\). On the Bloch sphere, this is a rotation of \\(\\pi\\) in the Z axis.",
+        "matrix": [
+            "1 &  0",
+            "0 & -1"
+        ]
+    }, {
+        "id": "s",
+        "kind": "phase",
+        "name": "\\(S\\) phase-shift gate",
+        "description": "Equivalent to half of the \\(Z\\) gate: a rotation of \\(\\pi/2\\) in the Z axis.",
+        "matrix": [
+            "1& 0",
+            "0&e^{i \\pi/2} = i"
+        ]
+    }, {
+		"id": "t",
+        "kind": "phase",
+        "name": "\\(T\\) phase-shift gate",
+        "description": "Equivalent to a quarter of the \\(Z\\) gate: a rotation of \\(\\pi/4\\) in the Z axis.",
+        "matrix": [
+            "1& 0",
+            "0&e^{i \\pi/4} = \\frac{1+i}{\\sqrt{2}}"
+        ]
+    }, {
+		"id": "tinv",
+        "kind": "phase",
+        "symbol": "T^\\dagger",
+        "name": "\\(T^\\dagger\\) phase-shift gate",
+        "description": "The opposite of the T gate: a rotation of \\(-\\pi/4\\) in the Z axis.",
+        "matrix": [
+            "1& 0",
+            "0&e^{-i \\pi/4} = \\frac{1-i}{\\sqrt{2}}"
+        ]
+    }, {
+		"id": "v",
+        "name": "\\(V\\) gate",
+        "matrix": [
+            "1+1i& 1-1i",
+            "1-1i& 1+1i"
+        ]
+    }, {
+		"id": "vinv",
+        "symbol": "V^\\dagger",
+        "name": "\\(V^\\dagger\\) gate",
+        "matrix": [
+            "1-1i& 1+1i",
+            "1+1i &1-1i"
+        ]
+    
+    },  {
+		"id": "cx", "args": ["control", "target"],
+        "symbol": "cX",
+        "kind": "controlled",
+        "name": "Controlled \\(X\\) gate",
+        "description": "Also known as the controlled NOT gate. Will leave the target qubit alone if the control qubit is \\(\\ket{0}\\), and perform the X gate on the target qubit (\\(\\ket{0}\\) ↔ \\(\\ket{1}\\)) if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.",
+        "matrix": [
+            "1 &0 &0 &0",
+            "0 &1 &0 &0",
+            "0 &0 &0 &1",
+            "0 &0 &1 &0"
+        ]
+    }, {
+		"id": "cy", "args": ["control", "target"],
+        "symbol": "cY",
+        "kind": "controlled",
+        "name": "Controlled \\(Y\\) gate",
+        "description": "Will leave the target qubit alone if the control qubit is \\(\\ket{0}\\), and perform the Y gate on the target qubit if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.",
+        "matrix": [
+            " 1 & 0 & 0  & 0 ",
+            " 0 & 1 & 0  & 0 ",
+            " 0 & 0 & 0  &-1i",
+            " 0 & 0 & 1i & 0 "
+        ]
+    }, {
+		"id": "cz", "args": ["control", "target"],
+        "symbol": "cZ",
+        "kind": "controlled",
+        "name": "Controlled \\(Z\\) gate",
+        "description": "Will leave the target qubit alone if the control qubit is \\(\\ket{0}\\), and perform the Z gate on the target qubit if the control qubit is \\(\\ket{1}\\). If the control qubit is another state, this causes entanglement.",
+        "matrix": [
+            "1 &0 &0 & 0",
+            "0 &1 &0 & 0",
+            "0 &0 &1 & 0",
+            "0 &0 &0 &-1"
+        ]
+    }, {
+		"id": "swap", "args": ["", ""],
+        "symbol": "↔",
+        "name": "Qubit-swap gate",
+        "description": "Swaps two qubit values between registers. This does not entangle.",
+        "matrix": [
+            "1 &0 &0 &0",
+            "0 &0 &1 &0",
+            "0 &1 &0 &0",
+            "0 &0 &0 &1"
+        ]
+    
+    }, {
+		"id": "ccx", "args": ["control1", "control2", "target"],
+        "symbol": "ccX",
+        "kind": "controlled",
+        "name": "Toffoli gate",
+        "description": "Also known as \\(ccX\\) or \\(ccNOT\\). Much like the \\(cX\\) gate, will apply the \\(X\\) (aka \\(NOT\\)) gate if both control qubits are \\(\\ket{1}\\), with entanglement for qubits neither \\(\\ket{0}\\) nor \\(\\ket{1}\\)",
+        "matrix": [
+            "1 &0 &0 &0 &0 &0 &0 &0",
+            "0 &1 &0 &0 &0 &0 &0 &0",
+            "0 &0 &1 &0 &0 &0 &0 &0",
+            "0 &0 &0 &1 &0 &0 &0 &0",
+            "0 &0 &0 &0 &1 &0 &0 &0",
+            "0 &0 &0 &0 &0 &1 &0 &0",
+            "0 &0 &0 &0 &0 &0 &0 &1",
+            "0 &0 &0 &0 &0 &0 &1 &0"
+        ]
+    }
+]

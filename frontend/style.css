@@ -1,0 +1,215 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  text-align: center;
+}
+.content, .header-anchor {
+  text-align: initial;
+  display: inline-block;
+  height: 100%;
+  width: 90%;
+  margin: 0 auto;
+  max-width: 1000px;
+}
+header, .header-anchor {
+  height: 60px;
+}
+header {
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+  position: fixed;
+  background: thistle;
+}
+.title {
+  font-size: 32px;
+  font-style: italic;
+}
+nav {
+  display: inline;
+  right: 0;
+}
+nav li {
+  display: flex;
+}
+
+/* UI elements */
+
+.block {
+  display: inline-block;
+  padding: 0.05em 0.3em 0.05em 0.3em;
+  border-radius: 5px;
+  background: #ddd;
+  width: 70%;
+  margin-top: 10px;
+}
+.panel-control-item:first-child .block{
+  margin-top: 0;
+}
+.block h2 {
+  margin-top: 0;
+}
+
+/* CONTROL PANEL */
+
+.panels {
+  display: flex;
+}
+.panel {
+  flex-grow: 1;
+}
+
+.panel-control {
+  flex-grow: 3;
+  position: relative;
+  height: 100%;
+}
+
+.info {
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 22px;
+  padding: 1px;
+  background: #eee;
+  outline: none;
+  border-radius: 3px;
+}
+.slider:hover {
+  background: #fff;
+}
+
+.slider::-webkit-slider-thumb,
+.slider::-moz-range-thumb {
+  width: 10px;
+  height: 20px;
+  background: rgb(69, 201, 91);
+  cursor: pointer;
+  border-radius: 3px;    
+}
+.slider:hover()::-webkit-slider-thumb,
+.slider:hover()::-moz-range-thumb {
+  background: rgb(49, 230, 79);
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* GATES */
+
+.panel-gates {
+  flex-grow: 4;
+  display: inline-block;
+  width: 55%;
+}
+
+.gate-kind {
+  display: inline-block;
+  margin: 2px;
+}
+
+.gate-icon {
+  display: inline-block;
+  color: black;
+  border-radius: 2px;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  border: 3px solid transparent;
+}
+
+.selected .gate-icon {
+  border-color: hotpink;
+}
+
+.gate-icon{
+  background: thistle;
+}
+.rotation .gate-icon {
+  background: wheat;
+}
+.phase .gate-icon {
+  background: pink;
+}
+.controlled .gate-icon {
+  background: lightgreen;
+}
+
+.gate-icon .MathJax {
+  top: calc(50% - 0.5em)
+}
+
+/* CIRCUIT */
+
+.status {
+  height: 2em;
+  text-align: center;
+}
+
+.circuit {
+  background-color: honeydew;
+  width: 100%;
+}
+.qubit {
+  width: 100%;
+  height: 5em;
+  margin-bottom: 10px;
+}
+.qubit td:not(.header){
+  padding: 0;
+  background-image: linear-gradient(
+    to bottom,
+    transparent 48%,
+    #e8dddd 48%,
+    #e8dddd 52%,
+    transparent 52%
+    );
+}
+.qubit .header {
+  font-family: "Fantasque Sans Mono", Consolas;
+  z-index: 10;
+}
+.qubit .fill {
+  width: 100%;
+}
+
+.hidden {
+  display: none;
+}
+.error {
+  color: #a00
+}
+
+/* UI summoner
+ * .summoner
+ *   div        (always appears, and when moused over...)
+ *   .summoned  (...will appear)
+ */ 
+
+ @keyframes hoverin{
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+
+.summoned {
+  position: fixed;
+  display: none;
+  background: aliceblue;
+  max-width: 20em;
+  z-index: 1000;
+  border: 2px solid rebeccapurple;
+  margin-top: 0;
+}
+.summoner:hover:not(.summon-shushed) .summoned {
+  display: block;
+  float: right;
+  animation: hoverin 0.2s;
+}
