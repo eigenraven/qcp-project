@@ -18,20 +18,20 @@ void oracle(std::shared_ptr<QCircuit> circuit, int search) {
 }
 
 void grovers(std::shared_ptr<QCircuit> circuit) {
-  circuit->applyAll(&H);
-  circuit->applyAll(&X);
+  circuit->gateAll(&H);
+  circuit->gateAll(&X);
   circuit->h(2);
   circuit->ccnot(0,1,2);
   circuit->h(2);
-  circuit->applyAll(&X);
-  circuit->applyAll(&H);
+  circuit->gateAll(&X);
+  circuit->gateAll(&H);
 }
 
 int main(int argc, char **argv) {
   int search = 6;
 
   std::shared_ptr<QCircuit> circuit = QCircuit::make<smatrix>(3);
-  circuit->applyAll(&H);
+  circuit->gateAll(&H);
   for(int i = 0; i < 2; i++) {
 	oracle(circuit,search);
 	grovers(circuit);

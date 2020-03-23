@@ -3,17 +3,15 @@
 #include <iostream>
 #include <qreg.hpp>
 #include <vector>
-#include <string>
 #include <sstream>
-#include <algorithm>
 
 namespace qc {
 
 class QCircuit {
   std::unique_ptr<QRegister> qreg;
-  std::vector<std::pair<int, QGate*>> gates;
 
 public:
+  std::vector<std::pair<int, QGate*>> gates;
   template <class M> inline static std::unique_ptr<QCircuit> make(int qubits) {
     std::unique_ptr<QCircuit> r = std::make_unique<QCircuit>();
     r->qreg = std::make_unique<QRegisterImpl<M>>(qubits);
@@ -43,6 +41,8 @@ public:
   void cnot(int qubit1, int qubit2) { doubleGate(&CNOT, qubit1, qubit2); }
 
   void swap(int qubit1, int qubit2) { doubleGate(&SWAP, qubit1, qubit2); }
+
+  void cswap(int qubit1, int qubit2, int qubit3) { multipleGate(&CSWAP,{qubit1,qubit2,qubit3}); }
 
   void cv(int qubit1, int qubit2) {
 	tinv(qubit1);
@@ -74,7 +74,7 @@ void singleGate(QGate *gate, int qubit) {
     gates.push_back(std::make_pair(qubit, gate));
   }
 
-  void applyAll(QGate *gate) {
+  void gateAll(QGate *gate) {
 	for(int i = 0; i < qreg->nqubits; i++) {
 	  singleGate(gate,i);
 	}
@@ -140,16 +140,6 @@ void singleGate(QGate *gate, int qubit) {
 
   std::vector<double> simulate(int shots, bool disableGrouping = false, double noise = 0.0, bool states = false) {
 	return qreg->simulate(gsl::make_span(gates),shots,disableGrouping,noise,states);
-  }
-
-  std::string binary(unsigned x, int size) {
-    std::string s;
-    do {
-        s.push_back('0'+(x&1));
-    } while (x>>=1);
-    std::reverse(s.begin(), s.end());
-	s=std::string(size-s.size(),'0')+s;
-    return s;
   }
 
   std::string print(std::vector<double> result, bool states) {

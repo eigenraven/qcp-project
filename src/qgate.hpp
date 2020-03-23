@@ -42,5 +42,17 @@ extern QGate CNOT;
 extern QGate CY;
 extern QGate CZ;
 extern QGate SWAP;
+extern QGate CSWAP;
 extern QGate CCNOT;
+
+extern std::vector<QGate *> uGates;
+
+extern void deleteGates();
+
+extern QGate* U1(double lambda);
+extern QGate* U2(double phi, double lambda);
+extern QGate* U3(double theta, double phi, double lambda);
+extern QGate* CCU1(double lambda);
+extern QGate* CCU2(double phi, double lambda);
+extern QGate* CCU3(double theta, double phi, double lambda);
 } // namespace qc
