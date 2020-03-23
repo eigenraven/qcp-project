@@ -48,14 +48,16 @@ public:
 
   inline void swap(int qubit1, int qubit2) { doubleGate(&SWAP, qubit1, qubit2); }
 
-  inline void cv(int qubit1, int qubit2) {
-    tinv(qubit1);
-    h(qubit2);
-    cnot(qubit2, qubit1);
-    t(qubit1);
-    tinv(qubit2);
-    cnot(qubit2, qubit1);
-    h(qubit2);
+  void cswap(int qubit1, int qubit2, int qubit3) { multipleGate(&CSWAP,{qubit1,qubit2,qubit3}); }
+
+  void cv(int qubit1, int qubit2) {
+	tinv(qubit1);
+	h(qubit2);
+	cnot(qubit2,qubit1);
+	t(qubit1);
+	tinv(qubit2);
+	cnot(qubit2,qubit1);
+	h(qubit2);
   }
 
   inline void cvinv(int qubit1, int qubit2) {
@@ -78,10 +80,10 @@ public:
     gates.push_back(std::make_pair(qubit, gate));
   }
 
-  inline void applyAll(QGate *gate) {
-    for (int i = 0; i < qreg->nqubits; i++) {
-      singleGate(gate, i);
-    }
+  void gateAll(QGate *gate) {
+	for(int i = 0; i < qreg->nqubits; i++) {
+	  singleGate(gate,i);
+	}
   }
 
   // So far only gates that operate on single or multiple consecutive qubits
@@ -148,26 +150,16 @@ public:
                           states);
   }
 
-  inline std::string binary(unsigned x, int size) {
-    std::string s;
-    do {
-      s.push_back('0' + (x & 1));
-    } while (x >>= 1);
-    std::reverse(s.begin(), s.end());
-    s = std::string(size - s.size(), '0') + s;
-    return s;
-  }
-
-  inline std::string print(std::vector<double> result, bool states) {
-    std::ostringstream s;
-    for (int i = 0; i < result.size(); i++) {
-      if (states) {
-        s << "|" << binary(i, qreg->nqubits) << ">: " << result[i] << "\n";
-      } else {
-        s << "QBit " << i << ": " << result[i] << "\n";
-      }
-    }
-    return s.str();
+  std::string print(std::vector<double> result, bool states) {
+	std::ostringstream s;
+	for (int i = 0; i < result.size(); i++) {
+	  if(states) {
+		s<<"|"<<binary(i,qreg->nqubits)<<">: "<<result[i]<<"\n";
+	  } else {
+		s<<"QBit "<<i<<": "<<result[i]<<"\n";
+	  }
+	}
+	return s.str();
   }
 };
 } // namespace qc

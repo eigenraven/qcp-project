@@ -77,8 +77,7 @@ void QRegisterImpl<M>::applyOperators(
         nonOverlappingEnd = it;
         break;
       }
-      std::fill(covered.begin() + qbit, covered.begin() + qbit + gate->qubits,
-                true);
+      std::fill(covered.begin() + qbit, covered.begin() + qbit + gate->qubits,true);
       grouped++;
     }
     matrices.clear();

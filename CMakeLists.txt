@@ -37,6 +37,7 @@ file(GLOB_RECURSE driver_cmd_files CONFIGURE_DEPENDS LIST_DIRECTORIES false driv
 file(GLOB_RECURSE driver_http_files CONFIGURE_DEPENDS LIST_DIRECTORIES false drivers/http/*.cpp)
 file(GLOB_RECURSE driver_grovers_files CONFIGURE_DEPENDS LIST_DIRECTORIES false drivers/algorithms/grovers.cpp)
 file(GLOB_RECURSE driver_qec_files CONFIGURE_DEPENDS LIST_DIRECTORIES false drivers/algorithms/qec.cpp)
+file(GLOB_RECURSE driver_shors_files CONFIGURE_DEPENDS LIST_DIRECTORIES false drivers/algorithms/shors.cpp)
 file(GLOB_RECURSE test_files CONFIGURE_DEPENDS LIST_DIRECTORIES false tests/*.cpp)
 file(GLOB_RECURSE benchmark_files CONFIGURE_DEPENDS LIST_DIRECTORIES false benchmarks/*.cpp)
 
@@ -67,6 +68,9 @@ target_link_libraries(qcsim_grovers qcsim_common)
 
 add_executable(qcsim_qec ${driver_qec_files})
 target_link_libraries(qcsim_qec qcsim_common)
+
+add_executable(qcsim_shors ${driver_shors_files})
+target_link_libraries(qcsim_shors qcsim_common)
 
 if(CMAKE_COMMAND MATCHES "msys64")
   message(INFO "MSYS detected")
