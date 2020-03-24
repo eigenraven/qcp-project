@@ -162,6 +162,10 @@ nav li {
 .status {
   height: 2em;
   text-align: center;
+  opacity: 0.3;
+}
+.selection .status {
+  opacity: 1;
 }
 
 .circuit {
