@@ -68,7 +68,11 @@ $(function(){
   $.getScript(MATHJAX_URL, function(){
     setTimeout(function(){
       ket0 = $('.ket0')[0].innerHTML
-      addQubit(); addQubit(); updateDisplay()
+      addQubit(); addQubit()
+      $('.no_mathjax').addClass('hidden')
+      $('.symbol').removeClass('hidden')
+      updateDisplay()
+      updateGateDisplay();
     }, 100)
   })
   
@@ -160,7 +164,6 @@ $(function(){
       op.el.removeClass('summon-shushed')
     })
   })
-  updateGateDisplay();
 
   /* Selecting a qubit (for now) adds the gate to the end of that qubit. */
   /* This is naturally temporary to bootstrap the rest of functionality. */

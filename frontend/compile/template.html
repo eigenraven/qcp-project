@@ -36,8 +36,8 @@
               {% if op.control_modes %}
               <div class='gate-hint top left'>{{op.control_modes}}</div>
               {% endif %}
-
-              \({{op.symbol}}\)
+              <code class='no_mathjax'>{{op.id}}</code>
+              <span class='symbol hidden'>\({{op.symbol}}\)</span>
             </div>
             <div class='summoned block gate-hint'>
               <h2>{{op.name}}</h2>

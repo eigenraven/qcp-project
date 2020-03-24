@@ -26,14 +26,9 @@ header {
   font-size: 32px;
   font-style: italic;
 }
-nav {
-  display: inline;
-  right: 0;
+code {
+  font-family: "Fantasque Sans Mono", Consolas, monospace;
 }
-nav li {
-  display: flex;
-}
-
 /* UI elements */
 
 .block {
@@ -123,6 +118,10 @@ nav li {
   text-align: center;
   border: 3px solid transparent;
   position: relative;
+}
+.gate-icon .no_mathjax{
+  position: relative;
+  top: 9px;
 }
 
 .selected .gate-icon {
