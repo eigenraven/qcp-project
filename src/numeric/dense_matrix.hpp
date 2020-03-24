@@ -1,5 +1,6 @@
 /**
- * @file Dense (contiguous array) matrix representation implementation.
+ * @file dense_matrix.hpp
+ * @brief Dense (contiguous array) matrix representation implementation.
  */
 #pragma once
 #include "common.hpp"
@@ -56,19 +57,24 @@ struct dmatrix {
     verify_in_bounds(col, 0, cols);
     return data[element_offset(row, col)];
   }
+  /// Read-only access to matrix elements
   inline const complex &operator()(int row, int col) const {
     verify_in_bounds(row, 0, rows);
     verify_in_bounds(col, 0, cols);
     return data[element_offset(row, col)];
   }
 
+  /// Access to elements without bounds checking
   inline complex &unchecked_at(int row, int col) {
     return data[element_offset(row, col)];
   }
+  /// Access to elements without bounds checking
   inline const complex &unchecked_at(int row, int col) const {
     return data[element_offset(row, col)];
   }
 
+  /// Converts the matrix to a vector of elements in row-major order (creates a
+  /// copy of the data)
   inline std::vector<complex> to_std_vector() const { return this->data; }
 
   /// Creates the transpose of the matrix
@@ -134,8 +140,10 @@ struct dmatrix {
     return r;
   }
 
+  /// Checks if this is a column vector
   inline bool is_vector() const { return cols == 1; }
 
+  /// Checks if this is a row vector
   inline bool is_covector() const { return rows == 1; }
 };
 
@@ -275,7 +283,7 @@ inline dmatrix kronecker<dmatrix, gsl::dynamic_extent>(
       // calculate product for the element
       complex P = 1.0;
       for (int mi = 0; P != 0.0 && mi < mats.size(); mi++) {
-        const dmatrix& mat = *(mats.at(mi));
+        const dmatrix &mat = *(mats.at(mi));
         P *= mat(row_idx[mi], col_idx[mi]);
       }
       kp(r, c) = P;

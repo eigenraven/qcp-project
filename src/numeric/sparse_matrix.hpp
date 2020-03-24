@@ -1,5 +1,6 @@
 /**
- * @file Sparse (array of rows, rows being arrays of row elements) matrix
+ * @file sparse_matrix.hpp
+ * @brief Sparse (array of rows, rows being arrays of row elements) matrix
  * representation implementation.
  */
 #pragma once
@@ -20,6 +21,7 @@ struct sparse_entry_ref {
   int column;
   int index;
 
+  /// Finds the entry if it's present in the matrix (non-zero)
   inline std::optional<sparse_entry *> find_entry() {
     if (index >= row.size()) {
       return std::nullopt;
@@ -32,6 +34,7 @@ struct sparse_entry_ref {
     }
   }
 
+  /// Accesses the value of the entry, or zero if it's not present
   inline complex value() {
     auto en = find_entry();
     if (en.has_value()) {
@@ -41,6 +44,7 @@ struct sparse_entry_ref {
     }
   }
 
+  /// Updates the sparse matrix with the appropriate value
   inline void set_value(complex newVal) {
     auto en = find_entry();
     if (en.has_value()) {
@@ -62,11 +66,13 @@ struct sparse_entry_ref {
     }
   }
 
+  /// set_value() shorthand
   inline sparse_entry_ref &operator=(complex newVal) {
     this->set_value(newVal);
     return *this;
   }
 
+  /// value() shorthand
   inline operator complex() { return this->value(); }
 };
 
@@ -132,6 +138,8 @@ struct smatrix {
     return smatrix(Dim, 1, cdata);
   }
 
+  /// Converts the matrix to a vector of elements in row-major order (creates a
+  /// copy of the data)
   inline std::vector<complex> to_std_vector() const {
     std::vector<complex> v;
     v.resize(this->rows * this->cols, 0.0 + 0.0_i);
@@ -144,6 +152,7 @@ struct smatrix {
     return v;
   }
 
+  /// Finds an element position in the sparse array
   inline sparse_entry_ref find_ref(int row, int col) {
     auto &vrow = this->row_data.at(row);
     return sparse_entry_ref{
@@ -155,10 +164,13 @@ struct smatrix {
             vrow.begin())};
   }
 
+  /// Accesses an element in the sparse matrix (read and write through the
+  /// sparse_entry_ref wrapper object)
   inline sparse_entry_ref operator()(int row, int col) {
     return find_ref(row, col);
   }
 
+  /// Creates a transpose of the matrix
   inline smatrix T() const {
     smatrix r{this->cols, this->rows};
     if (this->rows > 0) {
@@ -175,6 +187,7 @@ struct smatrix {
     return r;
   }
 
+  /// Sorts the elements by column id in case of manual construction of the data array
   inline void fix_column_order() {
     for (int row = 0; row < this->rows; row++) {
       auto &rdata = this->row_data.at(row);
@@ -185,6 +198,7 @@ struct smatrix {
     }
   }
 
+  /// Creates a hermitian transpose of the matrix
   inline smatrix H() const {
     smatrix r{this->T()};
     for (auto &row : r.row_data) {
@@ -195,10 +209,13 @@ struct smatrix {
     return r;
   }
 
+  /// Checks if this is a column vector
   inline bool is_vector() const { return cols == 1; }
 
+  /// Checks if this is a row vector
   inline bool is_covector() const { return rows == 1; }
 
+  /// Returns the number of non-zero elements in this matrix
   inline int64_t count_nonzero() const {
     int64_t count{0};
     for (const auto &row : this->row_data) {
@@ -208,6 +225,7 @@ struct smatrix {
   }
 };
 
+/// Utility iterator over all non-zero elements of the matrix, use like any C++ standard iterator
 struct sparse_iterator {
   typedef sparse_nonzero_element &reference;
   typedef sparse_nonzero_element value_type;
@@ -278,6 +296,7 @@ struct sparse_iterator {
   }
 };
 
+/// Construct a sparse_iterator for a given smatrix
 inline sparse_iterator begin(const smatrix &m) {
   auto it = sparse_iterator{false,
                             &m,
@@ -290,6 +309,7 @@ inline sparse_iterator begin(const smatrix &m) {
   return it;
 }
 
+/// Constructs an end iterator for a given smatrix
 inline sparse_iterator end(const smatrix &m) {
   return sparse_iterator{true, &m, m.rows};
 }

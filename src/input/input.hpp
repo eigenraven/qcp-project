@@ -1,3 +1,7 @@
+/**
+ * @file input.hpp
+ * @brief Input format parsing into circuit descriptions
+ */
 #pragma once
 
 #include <algorithm>
@@ -11,6 +15,7 @@
 
 namespace qc {
 
+/// All the parameters parsed from the input file/string
 struct ParsedCircuit {
   std::unique_ptr<QCircuit> circuit;
   int shots;
@@ -20,6 +25,7 @@ struct ParsedCircuit {
   int benchmark;
 };
 
+/// Parses a given input stream into a circuit object
 inline ParsedCircuit parseCircuit(std::istream &input) {
   using std::getline;
   using std::string;
