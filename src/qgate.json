@@ -18,20 +18,20 @@
             "1&-1"
         ]
     }, {
-        "id": "x", "controls": [0, 1, 2],
+        "id": "x", "control_arities": [0, 1, 2],
         "kind": "rotation",
         "name": "Pauli-\\(X\\) rotation gate",
         "description": [
-            "Also known as the \"bit-flip\" or \"NOT\" gate, as it transforms \\(\\ket{0}\\) to \\(\\ket{1}\\) and vice versa.",
+            "Also known as the \"bit-flip\" or <strong>NOT</strong> gate, as it transforms \\(\\ket{0}\\) to \\(\\ket{1}\\) and vice versa.",
             "On the Bloch sphere, this is a rotation of \\(\\pi\\) in the X axis.",
-            "This may be given one or two control qubits. If given two control qubits, it is known as the Toffoli gate."
+            "This may be given one or two control qubits. If given two control qubits, it is known as the <strong>Toffoli</strong> gate."
         ],
         "matrix": [
             "0 & 1",
             "1 & 0"
         ]
     }, {
-		"id": "y", "controls": [0, 1],
+		"id": "y", "control_arities": [0, 1],
         "kind": "rotation",
         "name": "Pauli-\\(Y\\) rotation gate",
         "description": [
@@ -44,7 +44,7 @@
             "1i &  1"
         ]
     }, {
-		"id": "z", "controls": [0, 1],
+		"id": "z", "control_arities": [0, 1],
         "kind": "phase",
         "name": "Pauli-\\(Z\\) rotation gate",
         "description": [
@@ -106,13 +106,13 @@
             "1+1i &1-1i"
         ]
     }, {
-		"id": "swap", "arity": 2, "controls": [0, 1],
+		"id": "swap", "arity": 2, "control_arities": [0, 1],
         "symbol": "↔",
         "kind": "swap",
         "name": "Qubit-swap gate",
         "description": [
             "Swaps two qubit values between registers.",
-            "This may be given one control qubit, where it is sometimes known as the Fredkin gate."
+            "This may be given one control qubit, where it is sometimes known as the <strong>Fredkin</strong> gate."
         ],
         "matrix": [
             "1 &0 &0 &0",

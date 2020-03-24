@@ -36,11 +36,8 @@
               {% if op.arity > 1 %}
               <div class='gate-hint bottom right'>{{op.arity}}</div>
               {% endif %}
-              {% if 1 in op.controls %}
-              <div class='gate-hint top left'>c</div>
-              {% endif %}
-              {% if 2 in op.controls %}
-              <div class='gate-hint top right'>cc</div>
+              {% if op.control_modes %}
+              <div class='gate-hint top left'>{{op.control_modes}}</div>
               {% endif %}
 
               \({{op.symbol}}\)
@@ -126,6 +123,9 @@
     </div>
     <p class='status'>
       Loading...
+      <span class='hidden' id='circuit-add-gate'>
+        or <button>add the gate</button>.
+      </span>
     </p>
     <div class='circuit' id='circuit'>
       <table class='qubits' id='qubits'>

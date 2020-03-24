@@ -16,7 +16,7 @@ with open2("../../src/qgate.json") as f:
         assert "id" in data
         id = data["id"]
         op = dict(
-            controls=[0],
+            control_arities=[0],
             arity=1,
             symbol=id.upper(),
             kind="general",
@@ -27,6 +27,7 @@ with open2("../../src/qgate.json") as f:
                 "matrix": "\\\\".join(data.pop("matrix", ["\\text{Not a gate}"]))
         })
         op.update(data)
+        op['control_modes'] = ", ".join('c' * i for i in op['control_arities'][1:])
         OPERATIONS[id] = op
 
 with open2("template.html") as f:

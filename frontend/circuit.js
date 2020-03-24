@@ -1,11 +1,4 @@
 $(function(){
-  const GATE_ALIAS = {
-    "nop": "id", "hadamard": "h",
-    "not": "x",
-    "cnot": "cx",
-    "tdg": "tinv", "vdg": "vinv",
-    "ccnot": "ccx", "toffoli": "ccx", 
-  }
 
   /* PANEL */
   qubits = Array()
@@ -20,7 +13,6 @@ $(function(){
 
   const ket0 = $('.ket0')[0].innerHTML
   let conf = conf_default();
-  let loadingError = false;
 
   const NOISE_SIZE = 10000
 
@@ -48,15 +40,20 @@ $(function(){
   }
 
   let addQubit = function(){
-    console.log(`qubits +> ${qubits.length + 1}`)
+    let n = qubits.length
+    console.log(`qubits +> ${n+1}`)
     qubits.push({
       el: $(`
       <tr class='qubit'>
         <div class='line'></div>
-        <td class='header'>q[${qubits.length}]</td>
+        <td class='header'>q[${n}]</td>
         <td>${ket0}</td>
         <td class='fill'></td>
-      </tr>`).appendTo('#qubits')
+      </tr>`)
+      .appendTo('#qubits')
+      .children('.header').click(function(){
+        qubit_clicked(n)
+      })
     })
   };
   $('#btn-qubit-more').click(function(){
@@ -94,7 +91,7 @@ $(function(){
     circuit_gates = [];
   }
 
-  let selection = {
+  let sel = {
     gate: null,
     args: [],
     cargs: []
@@ -110,30 +107,44 @@ $(function(){
       gate.el.removeClass('selected')
     }
     let msg = "No gate selected. Click a gate above to add it to the circuit."
-    if( selection.gate ){
-      let q = GATES[selection.gate]
+    $('#circuit').removeClass('selection')
+    $('#circuit-add-gate').addClass('hidden')
+
+    if( sel.gate ){
+      let q = GATES[sel.gate]
       q.el.addClass('selected')
       $('#circuit').addClass('selection')
       msg = `Adding <strong>${q.el.find('h2').html()}</strong>. Select `
-      if( q.arity > 1 ){
-        msg += `${ORDS[selection.args.length]} `
+      if( sel.args.length < q.arity ){
+        /* gate qubits */
+        if( q.arity > 1 ){
+          msg += `${ORDS[sel.args.length]} `
+        }
+        msg += "qubit to act on."
+      } else {
+        /* control qubits */
+        if( sel.cargs.length in q.control_arities ){
+          /* amount of control qubits acceptable, may break out early */
+          $('#circuit-add-gate').removeClass('hidden')
+          
+        }
       }
-      msg += "qubit to act on."
+      
     } else {
-      $('#circuit').removeClass('selection')
     }
     $('.status').html(msg)
   }
 
+  /* First click selects (or resets) adding a gate. */
   $.each(GATES, function(id, op){
     op.el = $(`#${id}`)
     op.el.click(function(){
-      if( selection.gate == id ){
-        selection.gate = null
+      if( sel.gate == id ){
+        sel.gate = null
       } else {
-        selection.gate = id
-        selection.args = []
-        selection.cargs = []
+        sel.gate = id
+        sel.args = []
+        sel.cargs = []
       }
       updateGateDisplay()
       op.el.addClass('summon-shushed')
@@ -144,9 +155,49 @@ $(function(){
   })
   updateGateDisplay();
 
+  /* Selecting a qubit (for now) adds the gate to the end of that qubit. */
+  /* This is naturally temporary to bootstrap the rest of functionality. */
+  let qubit_clicked = function(index){
+    if( !sel.gate ){ return; }
+    if( index in sel.args || index in sel.cargs ){
+      console.log(`Attempted to add index ${index} (already added)`)
+      return
+    }
+    let q = GATES[sel.gate]
+    let c = q.control_arities
 
-  /* FILE IO */
+    if( sel.args.length < q.arity ){
+      sel.args.push(index)
+    } else {
+      sel.cargs.push(index)
+    }
 
+    tryAddGate()
+    console.log(sel)
+    updateGateDisplay()
+  }
+
+  let tryAddGate = function(){
+    if( sel.gate ){
+      let q = GATES[sel.gate]
+      if (sel.args.length == q.arity && sel.cargs.length in q.control_arities){
+        /* add gate to circuit */
+        console.log('Gate added:', sel)
+        sel.gate = null
+        updateGateDisplay()
+      } else {
+        console.log('The gate is not complete so it was not added.')
+      }
+    } else {
+      console.log('Gate not added (no gate selected)')
+    }
+  }
+  $('#circuit-add-gate button').click(tryAddGate)
+
+
+  /* 
+   * FILE FORMAT AND OPERATIONS 
+   */
 
 
   as_file = function(){
@@ -191,6 +242,15 @@ $(function(){
     download(as_file(), filename, "text/plaintext")
   })
 
+  const GATE_ALIAS = {
+    "nop": "id", "hadamard": "h",
+    "not": "x",
+    "cnot": "cx",
+    "tdg": "tinv", "vdg": "vinv",
+    "ccnot": "ccx", "toffoli": "ccx", 
+  }
+  
+  let loadingError = false;
   
   $('#btn-load').change(function(){
     let file = $('#btn-load')[0].files[0]
@@ -281,8 +341,9 @@ $(function(){
           }
 
           // TODO: load gates
-          gates = []
+          let f_gates = []
 
+          circuit_gates = f_gates
           conf = f_conf
           $('#check-sparse').prop('checked', conf.isSparse)
           $('#check-group').prop('checked', conf.doGroup)
