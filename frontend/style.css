@@ -138,7 +138,7 @@ nav li {
 .phase .gate-icon {
   background: pink;
 }
-.controlled .gate-icon {
+.swap .gate-icon {
   background: lightgreen;
 }
 

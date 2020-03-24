@@ -108,10 +108,11 @@
     }, {
 		"id": "swap", "args": ["", ""], "controls": [0, 1],
         "symbol": "↔",
+        "kind": "swap",
         "name": "Qubit-swap gate",
         "description": [
             "Swaps two qubit values between registers.",
-            "If not controlled, this does not entangle."
+            "This may be given one control qubit, where it is sometimes known as the Fredkin gate."
         ],
         "matrix": [
             "1 &0 &0 &0",
