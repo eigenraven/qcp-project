@@ -1,3 +1,6 @@
+let qubits
+let circuit_gates
+
 $(function(){
 
   /* PANEL */
@@ -86,16 +89,14 @@ $(function(){
   $('#check-group').change(updateDisplay)
 
   /* GATES */
-  let circuit_gates;
-  let resetGates = function(){
-    circuit_gates = [];
-  }
+  circuit_gates = []
 
-  let sel = {
+  let newSel = ()=>Object({
     gate: null,
     args: [],
     cargs: []
-  }
+  })
+  sel = newSel()
 
   const ORDS = [
     '1<sup>st</sup>',
@@ -132,20 +133,15 @@ $(function(){
       
     } else {
     }
-    $('.status').html(msg)
+    $('#status-1').html(msg)
   }
 
   /* First click selects (or resets) adding a gate. */
   $.each(GATES, function(id, op){
     op.el = $(`#${id}`)
     op.el.click(function(){
-      if( sel.gate == id ){
-        sel.gate = null
-      } else {
-        sel.gate = id
-        sel.args = []
-        sel.cargs = []
-      }
+      sel = newSel()
+      sel.gate = sel.gate == id ? null : id
       updateGateDisplay()
       op.el.addClass('summon-shushed')
     })
@@ -159,7 +155,7 @@ $(function(){
   /* This is naturally temporary to bootstrap the rest of functionality. */
   let qubit_clicked = function(index){
     if( !sel.gate ){ return; }
-    if( index in sel.args || index in sel.cargs ){
+    if( sel.args.includes(index) || sel.cargs.includes(index) ){
       console.log(`Attempted to add index ${index} (already added)`)
       return
     }
@@ -173,23 +169,19 @@ $(function(){
     }
 
     tryAddGate()
-    console.log(sel)
     updateGateDisplay()
   }
 
   let tryAddGate = function(){
+    /* Try to add the working gate. Will fail gracefully if not complete. */
     if( sel.gate ){
       let q = GATES[sel.gate]
       if (sel.args.length == q.arity && sel.cargs.length in q.control_arities){
-        /* add gate to circuit */
         console.log('Gate added:', sel)
-        sel.gate = null
+        circuit_gates.push(sel)
+        sel = newSel()
         updateGateDisplay()
-      } else {
-        console.log('The gate is not complete so it was not added.')
       }
-    } else {
-      console.log('Gate not added (no gate selected)')
     }
   }
   $('#circuit-add-gate button').click(tryAddGate)
@@ -211,15 +203,15 @@ $(function(){
     if(!conf.doGroup) str += `nogroup\n`
     if(conf.emitStates) str += `states\n`
     
-    $.each(gates, function(i, gate){
-      console.log(gate)
-      str += `${gate.id}`
-      $.each(gate.qubits, (i,q) => str+= `,${q}`)
-      str += `\n`
-    })
+    for (let i = 0; i < circuit_gates.length; i++) {
+      const gate = circuit_gates[i];
+      const id = gate.gate
+      const args = gate.cargs.concat(gate.args)
+      str += `${id},${args.join(",")}\n`
+    }
     return str
   }
-  function download(data, filename, type) {
+  let download = function(data, filename, type) {
     let file = new Blob([data], {type: type});
     if (window.navigator.msSaveOrOpenBlob) // IE10+
         window.navigator.msSaveOrOpenBlob(file, filename);
