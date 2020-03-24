@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
       res.set_content("ERROR "s + e.what(), "text/plain");
     }
   });
+  std::cout << "QCSim backend server running at localhost:12345" << std::endl;
   server.listen("localhost", 12345);
-  std::cerr << "QCSim backend server running at localhost:12345" << std::endl;
   return 0;
 }
