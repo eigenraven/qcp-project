@@ -40,23 +40,66 @@ QGate CY(2,{1,0,0,0,
             0,0,0,-1_i,
             0,0,1_i,0});
 QGate CZ(2,{1,0,0,0,
-            0,1,0,0,
-            0,0,1,0,
-            0,0,0,-1});
-QGate SWAP(2,{1,0,0,0,
-              0,0,1,0,
-              0,1,0,0,
-              0,0,0,1});
+			0,1,0,0,
+			0,0,1,0,
+			0,0,0,-1});
+QGate SWAP(2,{	1,0,0,0,
+				0,0,1,0,
+				0,1,0,0,
+				0,0,0,1});
+QGate CSWAP(3,{	1,0,0,0,0,0,0,0,
+				0,1,0,0,0,0,0,0,
+				0,0,1,0,0,0,0,0,
+				0,0,0,1,0,0,0,0,
+				0,0,0,0,1,0,0,0,
+				0,0,0,0,0,0,1,0,
+				0,0,0,0,0,1,0,0,
+				0,0,0,0,0,0,0,1});
 
+QGate CCNOT(3,{	1,0,0,0,0,0,0,0,
+				0,1,0,0,0,0,0,0,
+				0,0,1,0,0,0,0,0,
+				0,0,0,1,0,0,0,0,
+				0,0,0,0,1,0,0,0,
+				0,0,0,0,0,1,0,0,
+				0,0,0,0,0,0,0,1,
+				0,0,0,0,0,0,1,0});
 
-QGate CCNOT(3,{ 1,0,0,0,0,0,0,0,
-                0,1,0,0,0,0,0,0,
-                0,0,1,0,0,0,0,0,
-                0,0,0,1,0,0,0,0,
-                0,0,0,0,1,0,0,0,
-                0,0,0,0,0,1,0,0,
-                0,0,0,0,0,0,0,1,
-                0,0,0,0,0,0,1,0});
+std::vector<QGate *> uGates;
+
+QGate* U1(double lambda) {return U3(0,0,lambda);}
+QGate* U2(double phi, double lambda) {return U3(M_PI*0.5,phi,lambda);}
+QGate* U3(double theta, double phi, double lambda) {
+	uGates.push_back(new QGate(1,{
+cos(theta*0.5)*complex{cos(0.5*(phi+lambda)),-sin(0.5*(phi+lambda))},
+-sin(theta*0.5)*complex{cos(0.5*(phi-lambda)),-sin(0.5*(phi-lambda))},
+sin(theta*0.5)*complex{cos(0.5*(phi-lambda)),sin(0.5*(phi-lambda))},
+cos(theta*0.5)*complex{cos(0.5*(phi+lambda)),sin(0.5*(phi+lambda))}}));
+	return uGates[uGates.size()-1];
+}
+
+void deleteGates() {
+  for(QGate* q : uGates)delete q;
+}
+
+QGate* CCU1(double lambda) {return CCU3(0,0,lambda);}
+QGate* CCU2(double phi, double lambda) {return CCU3(M_PI*0.5,phi,lambda);}
+QGate* CCU3(double theta, double phi, double lambda) {
+	uGates.push_back(new QGate(3,{1,0,0,0,0,0,0,0,
+					0,1,0,0,0,0,0,0,
+					0,0,1,0,0,0,0,0,
+					0,0,0,1,0,0,0,0,
+					0,0,0,0,1,0,0,0,
+					0,0,0,0,0,1,0,0,
+					0,0,0,0,0,0,
+cos(theta*0.5)*complex{cos(0.5*(phi+lambda)),-sin(0.5*(phi+lambda))},
+-sin(theta*0.5)*complex{cos(0.5*(phi-lambda)),-sin(0.5*(phi-lambda))},
+					0,0,0,0,0,0,
+sin(theta*0.5)*complex{cos(0.5*(phi-lambda)),sin(0.5*(phi-lambda))},
+cos(theta*0.5)*complex{cos(0.5*(phi+lambda)),sin(0.5*(phi+lambda))}}));
+	return uGates[uGates.size()-1];
+}
+
 // clang-format on
 
 std::optional<QGate *> getGate(std::string gate) {
@@ -88,6 +131,8 @@ std::optional<QGate *> getGate(std::string gate) {
     return &CZ;
   } else if (gate == "swap") {
     return &SWAP;
+  } else if (gate == "cswap") {
+    return &CSWAP;
   } else if (gate == "ccnot" || gate == "ccx" || gate == "toffoli") {
     return &CCNOT;
   } else
