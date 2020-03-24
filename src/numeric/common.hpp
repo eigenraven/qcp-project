@@ -1,5 +1,6 @@
 /**
- * @file This header contains the definitions of base types for numbers used by
+ * @file common.hpp
+ * @brief This header contains the definitions of base types for numbers used by
  * the simulator, and includes used supporting libraries
  */
 #pragma once
@@ -21,20 +22,29 @@ namespace qc {
 /** @{
  * The basic data types for numbers used in the simulator
  */
+
+/// Real number type
 using real = double;
+/// Complex number type
 using complex = std::complex<real>;
 
+/// Shorthand for writing complex numbers in C++
 complex operator""_i(unsigned long long val);
+
+/// Shorthand for writing complex numbers in C++
 complex operator""_i(long double val);
 /// @}
 
+/// Throws an exception if val is not in the range [min, max_m1)
 inline void verify_in_bounds(int val, int min, int max_m1) {
   if (val < min || val >= max_m1) {
     throw std::out_of_range("Out of range access");
   }
 }
 
+/// Matrix type-parametrized vector constructor
 template <class M> inline M make_vector(std::initializer_list<complex> cdata);
+/// Matrix type-parametrized covector constructor
 template <class M> inline M make_covector(std::initializer_list<complex> cdata);
 
 /// Kronecker product for a given span of matrices

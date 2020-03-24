@@ -1,3 +1,7 @@
+/**
+ * @file qreg.hpp
+ * @brief Quantum register implementation.
+ */
 #pragma once
 
 #include "numeric/numeric.hpp"
@@ -10,24 +14,33 @@
 
 namespace qc {
 
+/// A quantum register interface (QRegisterImpl is the implementation parametrized by matrix type)
 class QRegister {
 public:
+  /// Number of qubits in the register
   int nqubits;
 
   inline QRegister() : QRegister(1) {}
   inline QRegister(int nqubits) : nqubits(nqubits) {}
 
+  /// Applies a given span of operators to the paired qubits
   virtual void applyOperators(gsl::span<std::pair<int, QGate *>> operators,
                               bool disableGrouping, double noise) = 0;
+  /// Applies quantum noise to the register
   virtual void applyNoise(double noise) = 0;
+  /// Resets the state to |00..0>
   virtual void reset() = 0;
+  /// Measures the qubit probabilities randomly
   virtual std::vector<int> measureQubits() = 0;
+  /// Measures the state of the register
   virtual int measureState() = 0;
+  /// Performs a full simulation
   virtual std::vector<double>
   simulate(gsl::span<std::pair<int, QGate *>> operators, int shots,
            bool disableGrouping, double noise, bool states) = 0;
 };
 
+/// Implementation of QRegister for a given matrix type
 template <class M> class QRegisterImpl : public QRegister {
 public:
   M state;
