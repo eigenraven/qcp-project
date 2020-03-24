@@ -38,9 +38,9 @@ int main(int argc, char **argv) {
 
   std::shared_ptr<QCircuit> circuit = QCircuit::make<smatrix>(3);
   circuit->gateAll(&H);
-  for(int i = 0; i < 2; i++) {
-	oracle(circuit,search);
-	grovers(circuit);
+  for (int i = 0; i < 2; i++) {
+    oracle(circuit, search);
+    grovers(circuit);
   }
   auto result = circuit->simulate(1024, false, 0, true);
   std::cout << circuit->print(result, true);
