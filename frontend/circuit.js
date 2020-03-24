@@ -126,7 +126,7 @@ $(function(){
 
     if( sel.gate ){
       let q = GATES[sel.gate]
-      msg = `Adding <strong>${q.el.find('h2').html()}</strong>.`
+      msg = `<strong>${q.el.find('h2').html()}</strong>:`
       q.el.addClass('selected')
       $('#circuit').addClass('selection')
 
@@ -197,7 +197,7 @@ $(function(){
     if( sel.gate ){
       let q = GATES[sel.gate]
       if (sel.args.length == q.arity && sel.cargs.length in q.control_arities){
-        console.log('Gate added:', sel.gate, sel.args, self.cargs)
+        console.log('Gate added:', sel.gate, sel.args, sel.cargs)
         circuit_gates.push(sel)
         sel = newSel()
         updateGateDisplay()
