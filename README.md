@@ -26,12 +26,15 @@ The following headers may be applied; some change state, whereas some change sim
 
 Gates MUST be defined in execution order. (Some gates have multiple aliases.)Information on their use in circuitry can be found in the front-end.
 
-Unless specified, gate arguments are integers, starting from 0, representing the qubit index(es) they act on. For controlled gates, the target qubit is the final argument.
+Unless specified, gate arguments are integers, starting from 0, representing the qubit index(es) they act on.
 
   - **Unary gates**: `id`/`nop`, `x`/`not`, `y`, `z`, `h`/`hadamard` `s`, `t`, `tinv`/`tdg`, `v`, `vinv`/`vdg`
   - **Binary gates**: `swap` (order unimportant)
+  
+For controlled gates, the target qubit is the final argument.
+
   - **Binary controlled gates**: `cx`/`cnot`, `cy`, `cz`
-  - **Ternary controlled gates**: `ccx`/`ccnot`/`toffoli`
+  - **Ternary controlled gates**: `cswap`, `ccx`/`ccnot`/`toffoli`
 
 We assume that at the very end all quantum registers are measured (unless the `states` option is specified). The resulting vector returned from the backend contains the fraction of times the result was returned.
 

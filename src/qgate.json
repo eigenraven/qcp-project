@@ -135,6 +135,22 @@
         ]
     
     }, {
+		"id": "cswap", "args": ["control", "", ""],
+        "symbol": "c↔",
+        "name": "Controlled swap gate",
+        "description": "Swaps two qubit values between registers, if the control qubit is \\(\\ket{0}\\). May entangle.",
+        "matrix": [
+            "1 &0 &0 &0 &0 &0 &0 &0",
+            "0 &1 &0 &0 &0 &0 &0 &0",
+            "0 &0 &1 &0 &0 &0 &0 &0",
+            "0 &0 &0 &1 &0 &0 &0 &0",
+            "0 &0 &0 &0 &1 &0 &0 &0",
+            "0 &0 &0 &0 &0 &0 &1 &0",
+            "0 &0 &0 &0 &0 &1 &0 &0",
+            "0 &0 &0 &0 &0 &0 &0 &1"
+        ]
+    
+    }, {
 		"id": "ccx", "args": ["control1", "control2", "target"],
         "symbol": "ccX",
         "kind": "controlled",
