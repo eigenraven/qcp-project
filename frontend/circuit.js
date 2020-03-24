@@ -29,12 +29,9 @@ $(function(){
     let fragments = [
       `${conf.shots} shots`
     ]
-    let n = (conf.noise * 100).toLocaleString({maximumFractionDigits: 2})
-    $('.disp-noise-full').text(conf.noise ? n + "%" : "disabled")
-    
-    conf.noise ? fragments.push(`${n}% decay`) :0;
-    conf.isSparse ? fragments.push("sparse") :0;
-    conf.doGroup ? fragments.push("grouped") :0;
+    let N = x => String(Math.floor(conf.noise*100 * 10**x)/10**x)+"%"
+    $('.disp-noise-full').text(conf.noise ? "a " + N(2) : "no") // chance for...
+    conf.noise ? fragments.push(N(0) +" decay") :0;
 
     $('.disp-summary').text(fragments.join(", "))
     $('#btn-qubit-less')[0].disabled = qubits.length <3

@@ -26,6 +26,20 @@ header {
   font-size: 32px;
   font-style: italic;
 }
+.ketpsi {
+  color: hsl(80, 100%, 20%);
+  filter: hue-rotate(0deg);
+}
+.ketpsi:hover{
+  animation: rainbow 3s infinite;
+}
+@keyframes rainbow {
+  from {
+    filter: hue-rotate(0deg)
+  } to {
+    filter: hue-rotate(360deg)
+  }
+}
 code {
   font-family: "Fantasque Sans Mono", Consolas, monospace;
 }
