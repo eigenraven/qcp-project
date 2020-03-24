@@ -171,6 +171,12 @@ code {
   background-color: honeydew;
   width: 100%;
 }
+.qubits {
+  border-collapse: collapse;
+}
+.qubits, .qubits tr, .qubits td {
+  border: none;
+}
 .qubit {
   width: 100%;
   height: 5em;
