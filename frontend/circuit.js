@@ -152,7 +152,6 @@ $(function(){
   $.each(GATES, function(id, op){
     op.el = $(`#${id}`)
     op.el.click(function(){
-      sel = newSel()
       sel.gate = sel.gate == id ? null : id
       updateGateDisplay()
       op.el.addClass('summon-shushed')
@@ -192,7 +191,7 @@ $(function(){
     if( sel.gate ){
       let q = GATES[sel.gate]
       if (sel.args.length == q.arity && sel.cargs.length in q.control_arities){
-        console.log('Gate added:', sel)
+        console.log('Gate added:', sel.gate, sel.args, self.cargs)
         circuit_gates.push(sel)
         sel = newSel()
         updateGateDisplay()
