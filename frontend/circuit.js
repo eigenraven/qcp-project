@@ -14,7 +14,6 @@ $(function(){
     emitStates: true,
   }}
 
-  const ket0 = $('.ket0')[0].innerHTML
   let conf = conf_default();
 
   const NOISE_SIZE = 10000
@@ -63,8 +62,16 @@ $(function(){
     addQubit()
     updateDisplay()
   });
+
+  const MATHJAX_URL = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+  let ket0
+  $.getScript(MATHJAX_URL, function(){
+    setTimeout(function(){
+      ket0 = $('.ket0')[0].innerHTML
+      addQubit(); addQubit(); updateDisplay()
+    }, 100)
+  })
   
-  addQubit(); addQubit(); updateDisplay()
 
   $('#btn-qubit-less').click(function(){
     if (qubits.length > 0) {
