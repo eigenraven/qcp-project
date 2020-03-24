@@ -45,20 +45,19 @@ $(function(){
   let addQubit = function(){
     let n = qubits.length
     console.log(`qubits +> ${n+1}`)
-    qubits.push({
+    let qubit = {
       gates_used: [],
       el: $(`
       <tr class='qubit'>
         <div class='line'></div>
         <td class='header'>q[${n}]</td>
         <td>${ket0}</td>
-        <td class='fill'></td>
       </tr>`)
       .appendTo('#qubits')
-      .children('.header').click(function(){
-        qubit_clicked(n)
-      })
-    })
+    }
+    qubit.el.children('.header').click(()=>qubit_clicked(n))
+    qubits.push(qubit)
+    refreshGates()
   };
   $('#btn-qubit-more').click(function(){
     addQubit()
@@ -199,12 +198,12 @@ $(function(){
       let q = GATES[sel.gate]
       if (sel.args.length == q.arity && sel.cargs.length in q.control_arities){
         circuit_gates.push(sel)
-        const args = sel.cargs.concat(sel.args)
-        for (let i = 0; i < args.length; i++) {
-          const qindex = args[i];
+        sel.all_args = sel.cargs.concat(sel.args)
+        for (let i = 0; i < sel.all_args.length; i++) {
+          const qindex = sel.all_args[i];
           qubits[qindex].gates_used.push(sel)
         }
-        console.log('Gate added:', sel.gate, args)
+        console.log('Gate added:', sel.gate, sel.all_args)
         sel = newSel()
         refreshSelector()
         refreshGates()
@@ -215,6 +214,25 @@ $(function(){
 
   let refreshGates = function(){
     console.log(as_file())
+    $('.gate').remove()
+    for (let g = 0; g < circuit_gates.length; g++) {
+      const gate = circuit_gates[g];
+      const top    = Math.min.apply(0, gate.all_args)
+      const bottom = Math.max.apply(0, gate.all_args)
+      gate.elements = []
+      for (let q = 0; q < qubits.length; q++) {
+        const qubit = qubits[q];
+        let cls = ['gate']
+        let content = ""
+        if( gate.args.includes(q) ){
+          content += gate.gate
+        } else if( gate.cargs.includes(q) ){
+          content += "o"
+        }
+        gate.elements.push($(`<td class='${cls.join(' ')}'>${content}</td>`)
+          .appendTo(qubit.el))
+      }
+    }
   }
 
 
@@ -237,8 +255,7 @@ $(function(){
     for (let i = 0; i < circuit_gates.length; i++) {
       const gate = circuit_gates[i];
       const id = "c".repeat(gate.cargs.length) + gate.gate
-      const args = gate.cargs.concat(gate.args)
-      str += `${id},${args.join(",")}\n`
+      str += `${id},${gate.all_args.join(",")}\n`
     }
     return str
   }
