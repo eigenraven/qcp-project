@@ -186,6 +186,8 @@ $(function(){
     /* allow optional extra control qubits */
     if( sel.cargs.length == c[c.length - 1] ){
       tryAddGate()
+    } else if( sel.args.length + sel.cargs.length == qubits.length ){
+      tryAddGate()
     }
     updateGateDisplay()
   }
