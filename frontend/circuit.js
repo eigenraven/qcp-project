@@ -70,8 +70,7 @@ $(function(){
     setTimeout(function(){
       ket0 = $('.ket0')[0].innerHTML
       addQubit(); addQubit()
-      $('.no_mathjax').addClass('hidden')
-      $('.symbol').removeClass('hidden')
+      $('html').addClass('mathjax-loaded')
       refreshConf()
       refreshSelector();
     }, 100)
