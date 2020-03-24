@@ -27,12 +27,10 @@ $(function(){
     $('.disp-qubits').text(qubits.length)
     $('.disp-shots').text(conf.shots)
     let fragments = [
-      `${qubits.length} qubits`,
       `${conf.shots} shots`
     ]
     let n = (conf.noise * 100).toLocaleString({maximumFractionDigits: 2})
-    $('.disp-noise').text(
-      conf.noise ? `${n}%`: "disabled")
+    $('.disp-noise-full').text(conf.noise ? n + "%" : "disabled")
     
     conf.noise ? fragments.push(`${n}% decay`) :0;
     conf.isSparse ? fragments.push("sparse") :0;
