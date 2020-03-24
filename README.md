@@ -108,8 +108,8 @@ While it requires the HTTP API to be launched, it is compiled to a static HTML f
 If you make any changes to `src/qgate.json` or `frontend/template.html`, compile them by running:
 
 ```
-python -m pip install jinja2
-python frontend/compile/compile.py
+python3 -m pip install jinja2
+python3 frontend/compile/compile.py
 ```
 
 ### Running unit tests
