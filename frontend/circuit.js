@@ -18,7 +18,7 @@ $(function(){
 
   const NOISE_SIZE = 10000
 
-  let updateDisplay = function(){
+  let refreshConf = function(){
     conf.shots = 2 ** $('#slider-shots').val()
     conf.noise = $('#slider-noise').val() / NOISE_SIZE
     conf.isSparse = $('#check-sparse').is(':checked')
@@ -46,6 +46,7 @@ $(function(){
     let n = qubits.length
     console.log(`qubits +> ${n+1}`)
     qubits.push({
+      gates_used: [],
       el: $(`
       <tr class='qubit'>
         <div class='line'></div>
@@ -61,7 +62,7 @@ $(function(){
   };
   $('#btn-qubit-more').click(function(){
     addQubit()
-    updateDisplay()
+    refreshConf()
   });
 
   const MATHJAX_URL = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
@@ -72,8 +73,8 @@ $(function(){
       addQubit(); addQubit()
       $('.no_mathjax').addClass('hidden')
       $('.symbol').removeClass('hidden')
-      updateDisplay()
-      updateGateDisplay();
+      refreshConf()
+      refreshSelector();
     }, 100)
   })
   
@@ -88,17 +89,17 @@ $(function(){
       } else {
         qubits.push(line)
       }
-      updateDisplay()
+      refreshConf()
     }
   })
 
-  $('#slider-shots').change(updateDisplay)
-  $('#slider-shots').mousemove(updateDisplay)
-  $('#slider-noise').change(updateDisplay)
-  $('#slider-noise').mousemove(updateDisplay)
+  $('#slider-shots').change(refreshConf)
+  $('#slider-shots').mousemove(refreshConf)
+  $('#slider-noise').change(refreshConf)
+  $('#slider-noise').mousemove(refreshConf)
 
-  $('#check-sparse').change(updateDisplay)
-  $('#check-group').change(updateDisplay)
+  $('#check-sparse').change(refreshConf)
+  $('#check-group').change(refreshConf)
 
   /* GATES */
   circuit_gates = []
@@ -115,7 +116,7 @@ $(function(){
     '2<sup>nd</sup>'
   ]
 
-  let updateGateDisplay = function(){
+  let refreshSelector = function(){
     for (let [i, gate] of Object.entries(GATES)) {
       gate.el.removeClass('selected')
     }
@@ -158,7 +159,7 @@ $(function(){
     op.el = $(`#${id}`)
     op.el.click(function(){
       sel.gate = sel.gate == id ? null : id
-      updateGateDisplay()
+      refreshSelector()
       op.el.addClass('summon-shushed')
     })
     op.el.mouseout(function(){
@@ -189,7 +190,7 @@ $(function(){
     } else if( sel.args.length + sel.cargs.length == qubits.length ){
       tryAddGate()
     }
-    updateGateDisplay()
+    refreshSelector()
   }
 
   let tryAddGate = function(){
@@ -197,14 +198,24 @@ $(function(){
     if( sel.gate ){
       let q = GATES[sel.gate]
       if (sel.args.length == q.arity && sel.cargs.length in q.control_arities){
-        console.log('Gate added:', sel.gate, sel.args, sel.cargs)
         circuit_gates.push(sel)
+        const args = sel.cargs.concat(sel.args)
+        for (let i = 0; i < args.length; i++) {
+          const qindex = args[i];
+          qubits[qindex].gates_used.push(sel)
+        }
+        console.log('Gate added:', sel.gate, args)
         sel = newSel()
-        updateGateDisplay()
+        refreshSelector()
+        refreshGates()
       }
     }
   }
   $('#circuit-add-gate button').click(tryAddGate)
+
+  let refreshGates = function(){
+    console.log(as_file())
+  }
 
 
   /* 
@@ -366,7 +377,9 @@ $(function(){
           console.log('loaded successfully!')
           console.log(conf)
           console.log(f_gates)
-          updateDisplay()
+          refreshConf()
+          refreshSelector()
+          refreshGates()
           // TODO: actually load
         } else {
           console.log('loaded abysmally!')
