@@ -59,18 +59,27 @@ brew install cmake
 brew install doxygen
 ```
 
-### Building
+All instructions below assume you are in the `build` folder:
 
 ```
 mkdir build
 cd build
+```
+
+### Building
+
+```
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make
 ```
 
-Build type can be changed to Release (best performance) or Debug (slow, generates debugger symbols) or RelWithDebInfo (optimized like Release, but has symbols for e.g. profiling).
+Build type can be changed to Release (best performance) or Debug (slow, generates debugger symbols) or RelWithDebInfo (optimized like Release, but has symbols for e.g. profiling.
 
-Below instructions assume you are in the `src` directory for instructions.
+Test the build's success with unit tests:
+
+```
+make test
+```
 
 ### Simulating via command line
 
@@ -105,17 +114,12 @@ The front-end allows you to build, save and load a quantum circuit with an edito
 
 While it requires the HTTP API to be launched, it is compiled to a static HTML file located at `frontend/qbuilder.html`; simply launch this to run.
 
-If you make any changes to `src/qgate.json` or `frontend/template.html`, compile them by running:
+If you make any changes to `src/qgate.json` or `frontend/template.html`, compile them with Python 3.7:
 
 ```
 python -m pip install jinja2
-python frontend/compile/compile.py
-```
-
-### Running unit tests
-
-```
-make test
+# every time you change things, run:
+python ../frontend/compile/compile.py
 ```
 
 ### Building HTML docs
