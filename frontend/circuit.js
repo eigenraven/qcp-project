@@ -107,33 +107,38 @@ $(function(){
     for (let [i, gate] of Object.entries(GATES)) {
       gate.el.removeClass('selected')
     }
-    let msg = "No gate selected. Click a gate above to add it to the circuit."
+    let msg = "No gate selected."
+    let msg_qubit = "Click a gate above to add it to the circuit."
     $('#circuit').removeClass('selection')
     $('#circuit-add-gate').addClass('hidden')
 
     if( sel.gate ){
       let q = GATES[sel.gate]
+      msg = `Adding <strong>${q.el.find('h2').html()}</strong>.`
       q.el.addClass('selected')
       $('#circuit').addClass('selection')
-      msg = `Adding <strong>${q.el.find('h2').html()}</strong>. Select `
-      if( sel.args.length < q.arity ){
-        /* gate qubits */
-        if( q.arity > 1 ){
-          msg += `${ORDS[sel.args.length]} `
-        }
-        msg += "qubit to act on."
-      } else {
-        /* control qubits */
-        if( sel.cargs.length in q.control_arities ){
-          /* amount of control qubits acceptable, may break out early */
+
+      const selecting_control_qubit = sel.args.length == q.arity
+      if( selecting_control_qubit ){
+        const can_add_now = q.control_arities.includes(sel.cargs.length)
+        if( can_add_now ){
           $('#circuit-add-gate').removeClass('hidden')
-          
         }
+        msg_qubit = (can_add_now ? "or s" : "S") + "elect the "
+        if ( String(q.control_arities) != "0,1" ){
+          msg_qubit += `${ORDS[sel.cargs.length]} `
+        }
+        msg_qubit += "control qubit."
+      } else {
+        msg_qubit = "Select the "
+        if( q.arity > 1 ){
+          msg_qubit += `${ORDS[sel.args.length]} `
+        }
+        msg_qubit += "qubit to act on."
       }
-      
-    } else {
     }
-    $('#status-1').html(msg)
+    $('#status').html(msg)
+    $('#status-qubit').html(msg_qubit)
   }
 
   /* First click selects (or resets) adding a gate. */
@@ -168,7 +173,10 @@ $(function(){
       sel.cargs.push(index)
     }
 
-    tryAddGate()
+    /* allow optional extra control qubits */
+    if( sel.cargs.length == c[c.length - 1] ){
+      tryAddGate()
+    }
     updateGateDisplay()
   }
 
@@ -205,7 +213,7 @@ $(function(){
     
     for (let i = 0; i < circuit_gates.length; i++) {
       const gate = circuit_gates[i];
-      const id = gate.gate
+      const id = "c".repeat(gate.cargs.length) + gate.gate
       const args = gate.cargs.concat(gate.args)
       str += `${id},${args.join(",")}\n`
     }
