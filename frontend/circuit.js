@@ -39,6 +39,7 @@ $(function(){
     conf.doGroup ? fragments.push("grouped") :0;
 
     $('.disp-summary').text(fragments.join(", "))
+    $('#btn-qubit-less')[0].disabled = qubits.length <3
   }
 
   let addQubit = function(){
@@ -78,7 +79,7 @@ $(function(){
   
 
   $('#btn-qubit-less').click(function(){
-    if (qubits.length > 0) {
+    if (qubits.length > 2) {
       console.log(`qubits -> ${qubits.length - 1}`)
       let line = qubits.pop()
       let lineIsEmpty = true
