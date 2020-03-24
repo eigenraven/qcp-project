@@ -106,7 +106,7 @@
             "1+1i &1-1i"
         ]
     }, {
-		"id": "swap", "args": ["", ""], "controls": [0, 1],
+		"id": "swap", "arity": 2, "controls": [0, 1],
         "symbol": "↔",
         "kind": "swap",
         "name": "Qubit-swap gate",

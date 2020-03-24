@@ -89,17 +89,20 @@ $(function(){
   $('#check-group').change(updateDisplay)
 
   /* GATES */
-  let selection = {
-    gate: null,
-    arg: 0
+  let circuit_gates;
+  let resetGates = function(){
+    circuit_gates = [];
   }
 
-  gates = []
+  let selection = {
+    gate: null,
+    args: [],
+    cargs: []
+  }
 
   const ORDS = [
     '1<sup>st</sup>',
-    '2<sup>nd</sup>',
-    '3<sup>rd</sup>'
+    '2<sup>nd</sup>'
   ]
 
   let updateGateDisplay = function(){
@@ -112,16 +115,10 @@ $(function(){
       q.el.addClass('selected')
       $('#circuit').addClass('selection')
       msg = `Adding <strong>${q.el.find('h2').html()}</strong>. Select `
-      if( q.args.length > 1 ){
-        msg += `${ORDS[selection.arg - 1]} `
+      if( q.arity > 1 ){
+        msg += `${ORDS[selection.args.length]} `
       }
-      msg += "qubit "
-      let qarg = q.args[q.args.length - selection.arg]
-      if( qarg ){
-        msg += `(<strong>${qarg}</strong>).`
-      } else {
-        msg += "to act on."
-      }
+      msg += "qubit to act on."
     } else {
       $('#circuit').removeClass('selection')
     }
@@ -135,7 +132,8 @@ $(function(){
         selection.gate = null
       } else {
         selection.gate = id
-        selection.arg = 1
+        selection.args = []
+        selection.cargs = []
       }
       updateGateDisplay()
       op.el.addClass('summon-shushed')
@@ -294,7 +292,7 @@ $(function(){
           $('.disp-load-name').html(`<code>${file.name}</code>`)
           console.log('loaded successfully!')
           console.log(conf)
-          console.log(gates)
+          console.log(f_gates)
           updateDisplay()
           // TODO: actually load
         } else {

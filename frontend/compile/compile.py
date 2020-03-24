@@ -17,7 +17,7 @@ with open2("../../src/qgate.json") as f:
         id = data["id"]
         op = dict(
             controls=[0],
-            args=[''],
+            arity=1,
             symbol=id.upper(),
             kind="general",
             name="No name",
@@ -27,7 +27,6 @@ with open2("../../src/qgate.json") as f:
                 "matrix": "\\\\".join(data.pop("matrix", ["\\text{Not a gate}"]))
         })
         op.update(data)
-        op['arity'] = len(op['args'])
         OPERATIONS[id] = op
 
 with open2("template.html") as f:
