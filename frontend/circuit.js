@@ -208,8 +208,7 @@ $(function(){
   }
   $('#circuit-add-gate button').click(tryAddGate)
 
-  let refreshGates = function(){
-    console.log(as_file())
+  let refreshGates = function(){    
     $('.gate').remove()
     for (let g = 0; g < circuit_gates.length; g++) {
       const gate = circuit_gates[g];
@@ -229,9 +228,11 @@ $(function(){
           .appendTo(qubit.el))
       }
     }
+    
     $('.state').remove()
     simulate().then(function(states){
-      console.log(states)
+      $('.states-error').addClass('hidden')
+      $('.states').removeClass('hidden')
       for (let i = 0; i < states.length; i++) {
         const s = states[i];
         s.el = $(`
@@ -249,11 +250,9 @@ $(function(){
       }
       MathJax.typeset()
     }).catch(function(a){
+      $('.states-error').removeClass('hidden')
+      $('.states').addClass('hidden')
       console.log(a)
-      $(`
-        <p class='state error'>
-          The simulator could not be found.
-        </p>`).appendTo('#states')
     })
   }
 
