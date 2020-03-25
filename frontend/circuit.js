@@ -3,6 +3,22 @@ let circuit_gates
 
 $(function(){
 
+  /* DISPLAY NICETIES */
+
+  /* Ensure right-column panels don't overlap */
+  $('.panel-control .summoner').mouseover(function(){
+    let anchor = $(this).children('.summon-anchor')
+    let anchor_right = $(window).width() - anchor.offset().left
+    let right = anchor_right - anchor.width() - 10
+    $(this).children('.summoned').css("right", `${right}px`)
+  })
+
+  let percent = (x, d) => String(Math.floor(x*100 * 10**d)/10**d)+"%"
+  let fadeAt = function(x, limit, min){
+    /* If x is above the limit, return 1; if below, fade linearly to the minimum. */
+    return x > limit ? 1 : min + (x/limit)*(1-min)
+  }
+
   /* PANEL */
   qubits = Array()
 
@@ -29,9 +45,10 @@ $(function(){
     let fragments = [
       `${conf.shots} shots`
     ]
-    let N = x => String(Math.floor(conf.noise*100 * 10**x)/10**x)+"%"
-    $('.disp-noise-full').text(conf.noise ? "a " + N(2) : "no") // chance for...
-    conf.noise ? fragments.push(N(0) +" decay") :0;
+    $('.disp-noise-full').text(
+      conf.noise ? "a " + percent(conf.noise, 2)
+                 : "no") // chance for...
+    conf.noise ? fragments.push(percent(conf.noise, 0) +" decay") :0;
 
     $('.disp-summary').text(fragments.join(", "))
     $('#btn-qubit-less')[0].disabled = qubits.length <3
@@ -60,10 +77,10 @@ $(function(){
   });
 
   const MATHJAX_URL = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-  let ket0
+  let ket0;
   $.getScript(MATHJAX_URL, function(){
     setTimeout(function(){
-      ket0 = $('.ket0')[0].innerHTML
+      ket0 = $('.ket0').html()
       addQubit(); addQubit()
       $('html').addClass('mathjax-loaded')
       refreshConf()
@@ -84,6 +101,7 @@ $(function(){
         qubits.push(line)
       }
       refreshConf()
+      refreshGates()
     }
   })
 
@@ -105,6 +123,15 @@ $(function(){
   })
   sel = newSel()
 
+  $('#btn-reset').click(function(){
+    sel = newSel()
+    circuit_gates = [];
+    conf = conf_default();
+    refreshConf();
+    refreshGates();
+    refreshSelector();
+  })
+
   const ORDS = [
     '1<sup>st</sup>',
     '2<sup>nd</sup>'
@@ -115,15 +142,15 @@ $(function(){
       gate.el.removeClass('selected')
     }
     let msg = "No gate selected."
-    let msg_qubit = "Click a gate above to add it to the circuit."
-    $('#circuit').removeClass('selection')
+    let msg_qubit = "Click one to start."
+    $('.panel-gates').removeClass('selection')
     $('#circuit-add-gate').addClass('hidden')
 
     if( sel.gate ){
       let q = GATES[sel.gate]
       msg = `<strong>${q.el.find('h2').html()}</strong>:`
-      q.el.addClass('selected')
-      $('#circuit').addClass('selection')
+      q.el.addClass('selected');
+      $('.panel-gates').addClass('selection');
 
       const selecting_control_qubit = sel.args.length == q.arity
       if( selecting_control_qubit ){
@@ -166,8 +193,10 @@ $(function(){
   let qubit_clicked = function(index){
     if( !sel.gate ){ return; }
     if( sel.args.includes(index) || sel.cargs.includes(index) ){
-      console.log(`Attempted to add index ${index} (already added)`)
-      return
+      if( !tryAddGate() ){
+        console.log(`Attempted to add index ${index} (already added)`)
+      }
+      return;
     }
     let q = GATES[sel.gate]
     let c = q.control_arities
@@ -202,13 +231,14 @@ $(function(){
         sel = newSel()
         refreshSelector()
         refreshGates()
+        return true
       }
     }
+    return false;
   }
   $('#circuit-add-gate button').click(tryAddGate)
 
-  let refreshGates = function(){
-    console.log(as_file())
+  let refreshGates = function(){    
     $('.gate').remove()
     for (let g = 0; g < circuit_gates.length; g++) {
       const gate = circuit_gates[g];
@@ -217,29 +247,65 @@ $(function(){
       gate.elements = []
       for (let q = 0; q < qubits.length; q++) {
         const qubit = qubits[q];
-        let cls = ['gate']
-        let content = ""
-        if( gate.args.includes(q) ){
-          content += gate.gate
-        } else if( gate.cargs.includes(q) ){
-          content += "o"
+        let g = GATES[gate.gate]
+
+        let cls = ['gate', g.kind]
+        let clsIcon = ['gate-icon']
+        let symbol = ""
+
+        if( q >= top && q <= bottom ){
+          if( q != top ){cls.push('up')}
+          if( q != bottom){cls.push('down')}
         }
-        gate.elements.push($(`<td class='${cls.join(' ')}'>${content}</td>`)
+
+        if( gate.args.includes(q) ){
+          symbol = g.kind == "swap"
+            ? "×" : `\\(${g.symbol}\\)`
+        } else if( gate.cargs.includes(q) ){
+          clsIcon.push("control-dot")
+        } else {
+          clsIcon.push("empty")
+        }
+        gate.elements.push($(`
+          <td class="${cls.join(' ')}">
+            <div class="${clsIcon.join(' ')}">${symbol}</div>
+          </td>`)
           .appendTo(qubit.el))
       }
     }
+    MathJax.typeset()
+    
     $('.state').remove()
     simulate().then(function(states){
-      console.log(states)
+      $('.states-error').addClass('hidden')
+      $('.states').removeClass('hidden')
       for (let i = 0; i < states.length; i++) {
         const s = states[i];
-        s.el = $(`<li class='state'>
-            |${s.state}&gt;: ${s.likelihood}
+        let li = percent(s.likelihood, 2)
+        let col = fadeAt(s.likelihood, 0.05, 0.3) * 100
+        s.el = $(`
+          <li class='state'>
+            <span class='state-ket'>
+              \\(\\ket{${s.state}}\\):
+            </span>
+            <div class='bar'>
+              <div class='fill'
+                  style="width: ${li}; color: rgba(0,0,0,${col}%)">
+                ${li}
+              </div>
+            </div>
           </li>`)
           .appendTo('#states')
       }
+      MathJax.typeset()
+    }).catch(function(a){
+      $('.states-error').removeClass('hidden')
+      $('.states').addClass('hidden')
+      console.log(a)
     })
   }
+
+  $('#refresh').click(refreshGates)
 
   /*
    * SIMULATION
@@ -249,8 +315,9 @@ $(function(){
 
   simulate = function(){
     const q = qubits.length
-    return new Promise(function(then, error){
+    return new Promise(function(fThen, fError){
       $.post(ENDPOINT + "/simulate", {circuit: as_file()})
+      .catch(fError)
       .done(function(data){
         const lines = data.split("\n");
         let states = []
@@ -264,7 +331,7 @@ $(function(){
             })
           }
         }
-        then(states)
+        fThen(states)
       })
     })
   }
@@ -329,6 +396,10 @@ $(function(){
   $('#btn-load').change(function(){
     let file = $('#btn-load')[0].files[0]
     filename = file.name;
+
+    /* Alas, Safari doesn't support File API */
+    let fr = new FileReader()
+    fr.readAsText(file)
     loadingError = false
 
     console.log(`Loading file ${filename}...`)
@@ -346,96 +417,107 @@ $(function(){
     let f_gates = [];
     let f_conf = conf_default();
 
-    file.text().then(function(str){
-      $.each(str.split(/\r\n|\r|\n/), function(l, line){
-        if( !loadingError ){
-          if( !line || line.startsWith(`//`)){
-            return; // strip comments
-          }
-          let args = line.split(",")
-          let name = args.shift().toLowerCase()
-          if( GATE_ALIAS.includes(name) ){
-            name = GATE_ALIAS[name]
-          }
-          
-          function numHeader(cond){
-            let token = args.shift()
-            if( token == undefined ){
-              error(l, `'{desc}' requires a value`)
-            }
-            let numval = Number(token)
-            if( cond(numval) ){
-              console.log(name, "obtained", numval)
-              f_conf[name] = numval
-            } else {
-              error(l, `'${name}' cannot be ${token}`)
-            }
-          }
-          
-          switch( name ){
-            case "qubits": numHeader(
-              n => Number.isInteger(n) && n > 0
-            ); break;
-            case "shots": numHeader(
-              n => Number.isInteger(n) && n > 0
-            ); break;
-            case "noise": numHeader(
-              n => 0 <= n && n <= 1
-            ); break;
-            case "sparse": f_conf.isSparse = true; break;
-            case "nogroup": f_conf.doGroup = false; break;
-            case "states": f_conf.emitStates = true; break;
-
-            default:
-              let gate = GATES[name];
-              if( !gate ){
-                error(l, `unknown operation "${name}"`)
-              }
-              console.log(args, gate.args)
-              if( args.length < gate.args.length ){
-                error(l, `not enough args to ${name} (need ${gate.args.length})`)
-              } else {
-                // TODO: assert stuff with indices here
-                f_gates.push({
-                  id: name
-                })
-              }
-              break;
-            }
-          }
-        })
-
-        if( !loadingError ){
-          for (let i = 0; i < qubits.length; i++) {
-            qubits[i].el.remove()
-          }
-          qubits = []
-          for (let i = 0; i < f_conf.qubits; i++) {
-            addQubit()
-          }
-
-          // TODO: load gates
-          let f_gates = []
-
-          circuit_gates = f_gates
-          conf = f_conf
-          $('#check-sparse').prop('checked', conf.isSparse)
-          $('#check-group').prop('checked', conf.doGroup)
-          $('#slider-shots').val(Math.floor(Math.log2(conf.shots)))
-          $('#slider-noise').val(conf.noise * NOISE_SIZE)
-
-          $('.disp-load-name').html(`<code>${file.name}</code>`)
-          console.log('loaded successfully!')
-          console.log(conf)
-          console.log(f_gates)
-          refreshConf()
-          refreshSelector()
-          refreshGates()
-          // TODO: actually load
-        } else {
-          console.log('loaded abysmally!')
+    const FILE_LOAD_TIMEOUT = 200;
+    setTimeout(function(){
+      lines = fr.result.split(/\r\n|\r|\n/)
+      for (let l = 0; l < lines.length; l++) {
+        const line = lines[l];
+        console.log(line)
+        if( !line || line.startsWith(`//`)){
+          continue; // strip comments
         }
-        console.log(str)
-      })
-    })
+        let args = line.split(",")
+        let name = args.shift().toLowerCase()
+        name = GATE_ALIAS[name] || name
+        
+        function numHeader(cond){
+          let token = args.shift()
+          if( token == undefined ){
+            error(l, `'{desc}' requires a value`)
+          }
+          let numval = Number(token)
+          if( cond(numval) ){
+            console.log(name, "obtained", numval)
+            f_conf[name] = numval
+          } else {
+            error(l, `'${name}' cannot be ${token}`)
+          }
+        }
+        
+        switch( name ){
+          case "qubits": numHeader(
+            n => Number.isInteger(n) && n > 0
+          ); break;
+          case "shots": numHeader(
+            n => Number.isInteger(n) && n > 0
+          ); break;
+          case "noise": numHeader(
+            n => 0 <= n && n <= 1
+          ); break;
+          case "sparse": f_conf.isSparse = true; break;
+          case "nogroup": f_conf.doGroup = false; break;
+          case "states": f_conf.emitStates = true; break;
+
+          default:
+            for (let i = 0; i < args.length; i++) {
+              const a = args[i];
+              if( isNaN(a) ){
+                return error(l, `argument "${a}" not a number`)
+              }
+              args[i] = Number(a)
+            }
+            let cargs = []
+            while (name.startsWith("c")) {
+              cargs.push(args.shift())
+              name = name.slice(1)
+            }
+            let gate = GATES[name];
+            if( !gate ){
+              return error(l, `unknown operation "${name}"`)
+            }
+            console.log(name, args, gate)
+            if( args.length < gate.arity ){
+              return error(l, `not enough args to ${name} (need ${gate.arity})`)
+            } else {
+              // TODO: assert stuff with indices here
+              f_gates.push({
+                gate: name,
+                args: args,
+                cargs: cargs,
+                all_args: cargs.concat(args)
+              })
+            }
+            break;
+        }
+      }
+      /* end for loop */
+      if( !loadingError ){
+        for (let i = 0; i < qubits.length; i++) {
+          qubits[i].el.remove()
+        }
+        qubits = []
+        for (let i = 0; i < f_conf.qubits; i++) {
+          addQubit()
+        }
+  
+        circuit_gates = f_gates
+        conf = f_conf
+        $('#check-sparse').prop('checked', conf.isSparse)
+        $('#check-group').prop('checked', conf.doGroup)
+        $('#slider-shots').val(Math.floor(Math.log2(conf.shots)))
+        $('#slider-noise').val(conf.noise * NOISE_SIZE)
+  
+        $('.disp-load-name').html(`<code>${file.name}</code>`)
+        console.log('loaded successfully!')
+        console.log(conf)
+        console.log(f_gates)
+        refreshConf()
+        refreshSelector()
+        refreshGates()
+        // TODO: actually load
+      } else {
+        console.log('loaded abysmally!')
+      }
+    }, FILE_LOAD_TIMEOUT)
+  })
 })

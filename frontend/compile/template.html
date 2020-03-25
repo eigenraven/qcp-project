@@ -39,7 +39,7 @@
       <div class='panel panel-gates'>
         {% for op in gate_items.values() %}
           <div class='summoner gate-kind {{op.kind}}' id='{{op.id}}'>
-            <div class='gate-icon'>
+            <div class='summon-anchor gate-icon'>
               {% if op.arity > 1 %}
               <div class='gate-hint bottom right'>{{op.arity}}</div>
               {% endif %}
@@ -63,10 +63,17 @@
             </div>
           </div>
         {% endfor %}
+        <p class='status'>
+          <span id='status'>Loading...</span>
+          <span id='circuit-add-gate' class='hidden'>
+            <button>Add the gate</button>,
+          </span>
+          <span id='status-qubit'></span>
+        </p>
       </div>
       <div class='panel panel-control'>
         <span class='panel-control-item summoner'>
-          <div class='block'>
+          <div class='summon-anchor block'>
             <p>
               <strong>Config</strong>: <span class="disp-summary">1024 shots</span>
             </p>
@@ -102,7 +109,7 @@
           </div>
         </span>
         <span class='panel-control-item summoner'>
-          <div class='block'>
+          <div class='summon-anchor block'>
             <p>
               <strong>File</strong>: <span class="disp-load-name">none loaded</span>
             </p>
@@ -110,31 +117,31 @@
           <div class='summoned block'>
             <p class='info'>
               A <code>.in</code> file contains a circuit and settings.
+              They may be saved and loaded for convenience.
             </p>
             <p>
+              <button id='btn-reset'>Reset...</button>
+              <button id='btn-save'>Save...</button>
               <input id='btn-load' type="file" accept=".in">
             </p>
             <p class='disp-load-error error'></p>
-            <p>
-              <button id='btn-save'>Save...</button>
-            </p>
           </div>
         </span>
       </div>
     </div>
     <div class='circuit' id='circuit'>
-      <p class='status'>
-        <span id='status'>Loading...</span>
-        <span id='circuit-add-gate' class='hidden'>
-          <button>Add the gate</button>,
-        </span>
-        <span id='status-qubit'></span>
-      </p>
       <table class='qubits' id='qubits'>
       </table>
     </div>
-    <div class='states'>
-      <h2>Results</h2>
+    <p class='states-error info'>
+      An error occured while attempting to contact the simulator.
+      Please ensure that it is running.
+    </p>
+    <div class='states hidden'>
+      <h2>Results
+        <span class='info'>
+          (<a href="#refresh" id='refresh'>refresh</a>)
+        </span></h2> 
       <ul id='states'>
       </ul>
     </div>

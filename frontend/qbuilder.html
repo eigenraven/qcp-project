@@ -39,7 +39,7 @@ Quantum Builder
 <div class='panel panel-gates'>
 
 <div class='summoner gate-kind general' id='id'>
-<div class='gate-icon'>
+<div class='summon-anchor gate-icon'>
 
 
 <code class='no_mathjax'>id</code>
@@ -60,7 +60,7 @@ Quantum Builder
 </div>
 
 <div class='summoner gate-kind general' id='h'>
-<div class='gate-icon'>
+<div class='summon-anchor gate-icon'>
 
 
 <code class='no_mathjax'>h</code>
@@ -79,7 +79,7 @@ Quantum Builder
 </div>
 
 <div class='summoner gate-kind rotation' id='x'>
-<div class='gate-icon'>
+<div class='summon-anchor gate-icon'>
 
 
 <div class='gate-hint top left'>c, cc</div>
@@ -106,7 +106,7 @@ Quantum Builder
 </div>
 
 <div class='summoner gate-kind rotation' id='y'>
-<div class='gate-icon'>
+<div class='summon-anchor gate-icon'>
 
 
 <div class='gate-hint top left'>c</div>
@@ -133,7 +133,7 @@ Quantum Builder
 </div>
 
 <div class='summoner gate-kind phase' id='z'>
-<div class='gate-icon'>
+<div class='summon-anchor gate-icon'>
 
 
 <div class='gate-hint top left'>c</div>
@@ -160,7 +160,7 @@ Quantum Builder
 </div>
 
 <div class='summoner gate-kind phase' id='s'>
-<div class='gate-icon'>
+<div class='summon-anchor gate-icon'>
 
 
 <code class='no_mathjax'>s</code>
@@ -181,7 +181,7 @@ Quantum Builder
 </div>
 
 <div class='summoner gate-kind phase' id='t'>
-<div class='gate-icon'>
+<div class='summon-anchor gate-icon'>
 
 
 <code class='no_mathjax'>t</code>
@@ -202,7 +202,7 @@ Quantum Builder
 </div>
 
 <div class='summoner gate-kind phase' id='tinv'>
-<div class='gate-icon'>
+<div class='summon-anchor gate-icon'>
 
 
 <code class='no_mathjax'>tinv</code>
@@ -223,7 +223,7 @@ Quantum Builder
 </div>
 
 <div class='summoner gate-kind general' id='v'>
-<div class='gate-icon'>
+<div class='summon-anchor gate-icon'>
 
 
 <code class='no_mathjax'>v</code>
@@ -242,7 +242,7 @@ Quantum Builder
 </div>
 
 <div class='summoner gate-kind general' id='vinv'>
-<div class='gate-icon'>
+<div class='summon-anchor gate-icon'>
 
 
 <code class='no_mathjax'>vinv</code>
@@ -261,7 +261,7 @@ Quantum Builder
 </div>
 
 <div class='summoner gate-kind swap' id='swap'>
-<div class='gate-icon'>
+<div class='summon-anchor gate-icon'>
 
 <div class='gate-hint bottom right'>2</div>
 
@@ -287,10 +287,17 @@ Quantum Builder
 </div>
 </div>
 
+<p class='status'>
+<span id='status'>Loading...</span>
+<span id='circuit-add-gate' class='hidden'>
+<button>Add the gate</button>,
+</span>
+<span id='status-qubit'></span>
+</p>
 </div>
 <div class='panel panel-control'>
 <span class='panel-control-item summoner'>
-<div class='block'>
+<div class='summon-anchor block'>
 <p>
 <strong>Config</strong>: <span class="disp-summary">1024 shots</span>
 </p>
@@ -326,7 +333,7 @@ Generally, these flags will make simulation quicker.
 </div>
 </span>
 <span class='panel-control-item summoner'>
-<div class='block'>
+<div class='summon-anchor block'>
 <p>
 <strong>File</strong>: <span class="disp-load-name">none loaded</span>
 </p>
@@ -334,31 +341,31 @@ Generally, these flags will make simulation quicker.
 <div class='summoned block'>
 <p class='info'>
 A <code>.in</code> file contains a circuit and settings.
+They may be saved and loaded for convenience.
 </p>
 <p>
+<button id='btn-reset'>Reset...</button>
+<button id='btn-save'>Save...</button>
 <input id='btn-load' type="file" accept=".in">
 </p>
 <p class='disp-load-error error'></p>
-<p>
-<button id='btn-save'>Save...</button>
-</p>
 </div>
 </span>
 </div>
 </div>
 <div class='circuit' id='circuit'>
-<p class='status'>
-<span id='status'>Loading...</span>
-<span id='circuit-add-gate' class='hidden'>
-<button>Add the gate</button>,
-</span>
-<span id='status-qubit'></span>
-</p>
 <table class='qubits' id='qubits'>
 </table>
 </div>
-<div class='states'>
-<h2>Results</h2>
+<p class='states-error info'>
+An error occured while attempting to contact the simulator.
+Please ensure that it is running.
+</p>
+<div class='states hidden'>
+<h2>Results
+<span class='info'>
+(<a href="#refresh" id='refresh'>refresh</a>)
+</span></h2> 
 <ul id='states'>
 </ul>
 </div>
