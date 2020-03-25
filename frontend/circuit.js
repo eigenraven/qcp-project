@@ -346,6 +346,10 @@ $(function(){
   $('#btn-load').change(function(){
     let file = $('#btn-load')[0].files[0]
     filename = file.name;
+
+    /* Alas, Safari doesn't support File API */
+    let fr = new FileReader()
+    fr.readAsText(file)
     loadingError = false
 
     console.log(`Loading file ${filename}...`)
@@ -363,96 +367,101 @@ $(function(){
     let f_gates = [];
     let f_conf = conf_default();
 
-    file.text().then(function(str){
-      $.each(str.split(/\r\n|\r|\n/), function(l, line){
-        if( !loadingError ){
-          if( !line || line.startsWith(`//`)){
-            return; // strip comments
-          }
-          let args = line.split(",")
-          let name = args.shift().toLowerCase()
-          if( GATE_ALIAS.includes(name) ){
-            name = GATE_ALIAS[name]
-          }
-          
-          function numHeader(cond){
-            let token = args.shift()
-            if( token == undefined ){
-              error(l, `'{desc}' requires a value`)
-            }
-            let numval = Number(token)
-            if( cond(numval) ){
-              console.log(name, "obtained", numval)
-              f_conf[name] = numval
-            } else {
-              error(l, `'${name}' cannot be ${token}`)
-            }
-          }
-          
-          switch( name ){
-            case "qubits": numHeader(
-              n => Number.isInteger(n) && n > 0
-            ); break;
-            case "shots": numHeader(
-              n => Number.isInteger(n) && n > 0
-            ); break;
-            case "noise": numHeader(
-              n => 0 <= n && n <= 1
-            ); break;
-            case "sparse": f_conf.isSparse = true; break;
-            case "nogroup": f_conf.doGroup = false; break;
-            case "states": f_conf.emitStates = true; break;
-
-            default:
-              let gate = GATES[name];
-              if( !gate ){
-                error(l, `unknown operation "${name}"`)
-              }
-              console.log(args, gate.args)
-              if( args.length < gate.args.length ){
-                error(l, `not enough args to ${name} (need ${gate.args.length})`)
-              } else {
-                // TODO: assert stuff with indices here
-                f_gates.push({
-                  id: name
-                })
-              }
-              break;
-            }
-          }
-        })
-
-        if( !loadingError ){
-          for (let i = 0; i < qubits.length; i++) {
-            qubits[i].el.remove()
-          }
-          qubits = []
-          for (let i = 0; i < f_conf.qubits; i++) {
-            addQubit()
-          }
-
-          // TODO: load gates
-          let f_gates = []
-
-          circuit_gates = f_gates
-          conf = f_conf
-          $('#check-sparse').prop('checked', conf.isSparse)
-          $('#check-group').prop('checked', conf.doGroup)
-          $('#slider-shots').val(Math.floor(Math.log2(conf.shots)))
-          $('#slider-noise').val(conf.noise * NOISE_SIZE)
-
-          $('.disp-load-name').html(`<code>${file.name}</code>`)
-          console.log('loaded successfully!')
-          console.log(conf)
-          console.log(f_gates)
-          refreshConf()
-          refreshSelector()
-          refreshGates()
-          // TODO: actually load
-        } else {
-          console.log('loaded abysmally!')
+    const FILE_LOAD_TIMEOUT = 200;
+    setTimeout(function(){
+      lines = fr.result.split(/\r\n|\r|\n/)
+      for (let l = 0; l < lines.length; l++) {
+        const line = lines[l];
+        console.log(line)
+        if( !line || line.startsWith(`//`)){
+          continue; // strip comments
         }
-        console.log(str)
-      })
-    })
+        let args = line.split(",")
+        let name = args.shift().toLowerCase()
+        name = GATE_ALIAS[name] || name
+        
+        function numHeader(cond){
+          let token = args.shift()
+          if( token == undefined ){
+            error(l, `'{desc}' requires a value`)
+          }
+          let numval = Number(token)
+          if( cond(numval) ){
+            console.log(name, "obtained", numval)
+            f_conf[name] = numval
+          } else {
+            error(l, `'${name}' cannot be ${token}`)
+          }
+        }
+        
+        switch( name ){
+          case "qubits": numHeader(
+            n => Number.isInteger(n) && n > 0
+          ); break;
+          case "shots": numHeader(
+            n => Number.isInteger(n) && n > 0
+          ); break;
+          case "noise": numHeader(
+            n => 0 <= n && n <= 1
+          ); break;
+          case "sparse": f_conf.isSparse = true; break;
+          case "nogroup": f_conf.doGroup = false; break;
+          case "states": f_conf.emitStates = true; break;
+
+          default:
+            let cargs = []
+            while (name.startsWith("c")) {
+              cargs.push(args.shift())
+              name = name.slice(1)
+            }
+            let gate = GATES[name];
+            if( !gate ){
+              error(l, `unknown operation "${name}"`)
+            }
+            console.log(name, args, gate)
+            if( args.length < gate.arity ){
+              error(l, `not enough args to ${name} (need ${gate.arity})`)
+            } else {
+              // TODO: assert stuff with indices here
+              f_gates.push({
+                gate: name
+              })
+            }
+            break;
+        }
+      }
+      /* end for loop */
+      if( !loadingError ){
+        for (let i = 0; i < qubits.length; i++) {
+          qubits[i].el.remove()
+        }
+        qubits = []
+        for (let i = 0; i < f_conf.qubits; i++) {
+          addQubit()
+        }
+  
+        // TODO: load gates
+        let f_gates = []
+  
+        circuit_gates = f_gates
+        conf = f_conf
+        $('#check-sparse').prop('checked', conf.isSparse)
+        $('#check-group').prop('checked', conf.doGroup)
+        $('#slider-shots').val(Math.floor(Math.log2(conf.shots)))
+        $('#slider-noise').val(conf.noise * NOISE_SIZE)
+  
+        $('.disp-load-name').html(`<code>${file.name}</code>`)
+        console.log('loaded successfully!')
+        console.log(conf)
+        console.log(f_gates)
+        refreshConf()
+        refreshSelector()
+        refreshGates()
+        // TODO: actually load
+      } else {
+        console.log('loaded abysmally!')
+      }
+      console.log(str)
+    }, FILE_LOAD_TIMEOUT)
+  })
 })
