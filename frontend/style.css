@@ -137,6 +137,10 @@ code {
 .swap .gate-icon {
   background: lightgreen;
 }
+.gate-icon.control-dot {
+  border-radius: 50%;
+  transform: scale(0.3);
+}
 
 .gate-icon .MathJax {
   top: calc(50% - 0.5em)
