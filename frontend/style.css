@@ -211,13 +211,14 @@ code {
 .bar{
   display: inline-block;
   width: 30em;
-  height: 10px;
-  background-color: silver;
+  max-width: calc(100% - 5em);
+  background-color: honeydew;
+  transform: translateY(0.333em);
 }
 .bar .fill {
   position: relative;
   overflow: hidden;
-  background-color: red;
+  background-color: thistle;
 }
 
 .hidden {
