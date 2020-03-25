@@ -234,11 +234,20 @@ $(function(){
       console.log(states)
       for (let i = 0; i < states.length; i++) {
         const s = states[i];
-        s.el = $(`<li class='state'>
-            |${s.state}&gt;: ${s.likelihood}
+        s.el = $(`
+          <li class='state'>
+            <span class='state-ket'>
+              \\(\\ket{${s.state}}\\):
+            </span>
+            <div class='bar'>
+              <div class='fill' style="width: ${s.likelihood*100}%">
+                ${s.likelihood*100}%
+              </div>
+            </div>
           </li>`)
           .appendTo('#states')
       }
+      MathJax.typeset()
     }).catch(function(a){
       console.log(a)
       $(`

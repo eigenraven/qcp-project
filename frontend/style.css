@@ -208,6 +208,18 @@ code {
     );
 }
 
+.bar{
+  display: inline-block;
+  width: 30em;
+  height: 10px;
+  background-color: silver;
+}
+.bar .fill {
+  position: relative;
+  overflow: hidden;
+  background-color: red;
+}
+
 .hidden {
   display: none;
 }
