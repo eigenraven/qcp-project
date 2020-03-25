@@ -1,7 +1,18 @@
 # qcp-project
 Quantum Computing Project 2019/20 group 2
 
-## Protocol used
+### Directory structure
+
+ - benchmarks: source for the performance benchmarks
+ - demo: example quantum circuits for the simulator
+ - docs: HTML documentation for the C++ API
+ - drivers: source of the command-line and HTTP interfaces to the simulator
+ - external: source of the external C++ libraries we have used in this project
+ - frontend: the web GUI for the simulator (requires the HTTP backend to be running in the background)
+ - src: source for the simulator and linear algebra library
+ - tests: unit tests for the linear algebra library
+
+### Protocol used
 
 The frontend and backend communicate using a simple format specifically designed for ease of use rather than formality.
 
