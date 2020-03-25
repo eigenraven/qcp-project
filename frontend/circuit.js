@@ -418,6 +418,13 @@ $(function(){
           case "states": f_conf.emitStates = true; break;
 
           default:
+            for (let i = 0; i < args.length; i++) {
+              const a = args[i];
+              if( isNaN(a) ){
+                return error(l, `argument "${a}" not a number`)
+              }
+              args[i] = Number(a)
+            }
             let cargs = []
             while (name.startsWith("c")) {
               cargs.push(args.shift())
@@ -425,15 +432,17 @@ $(function(){
             }
             let gate = GATES[name];
             if( !gate ){
-              error(l, `unknown operation "${name}"`)
+              return error(l, `unknown operation "${name}"`)
             }
             console.log(name, args, gate)
             if( args.length < gate.arity ){
-              error(l, `not enough args to ${name} (need ${gate.arity})`)
+              return error(l, `not enough args to ${name} (need ${gate.arity})`)
             } else {
               // TODO: assert stuff with indices here
               f_gates.push({
-                gate: name
+                gate: name,
+                args: args,
+                cargs: cargs
               })
             }
             break;
@@ -448,9 +457,6 @@ $(function(){
         for (let i = 0; i < f_conf.qubits; i++) {
           addQubit()
         }
-  
-        // TODO: load gates
-        let f_gates = []
   
         circuit_gates = f_gates
         conf = f_conf
@@ -470,7 +476,6 @@ $(function(){
       } else {
         console.log('loaded abysmally!')
       }
-      console.log(str)
     }, FILE_LOAD_TIMEOUT)
   })
 })
