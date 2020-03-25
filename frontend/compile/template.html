@@ -20,7 +20,17 @@
 <div class='header-anchor'></div>
 <header>
 <div class='content'>
-  <div class="title">Quantum Builder</div>
+  <div class="title">
+    Quantum Builder
+    <span class='no_mathjax'>
+      0 → ψ
+    </span>
+    <span class='mathjax'>
+      <span class='ket0'>\(\ket{0}\)</span>
+      \(\rightarrow\)
+      <span class='ketpsi'>\(\ket{\psi}\)</span>
+    </span>
+  </div>
 </div>
 </header>
 <div class='content'>
@@ -37,7 +47,7 @@
               <div class='gate-hint top left'>{{op.control_modes}}</div>
               {% endif %}
               <code class='no_mathjax'>{{op.id}}</code>
-              <span class='symbol hidden'>\({{op.symbol}}\)</span>
+              <span class='mathjax symbol'>\({{op.symbol}}\)</span>
             </div>
             <div class='summoned block gate-hint'>
               <h2>{{op.name}}</h2>
@@ -58,7 +68,7 @@
         <span class='panel-control-item summoner'>
           <div class='block'>
             <p>
-              <strong>Config</strong>: <span class="disp-summary"></span>
+              <strong>Config</strong>: <span class="disp-summary">1024 shots</span>
             </p>
           </div>
           <div class='summoned block'>
@@ -68,20 +78,14 @@
               <button id='btn-qubit-less'>-</button>
             </p>
             <p>
-              <strong>Shots</strong>:
-              <span class="disp-shots">1024</span>
-              <input type="range" min="1" max="13" value="10" class="slider" id="slider-shots">
-              <span class='info'>
-                Amount of times simulation is ran
-              </span>
+              The simulation will run <strong class="disp-shots">1024</strong> times
+              <input type="range" min="2" max="16" value="10" class="slider" id="slider-shots">
             </p>
             <p>
-              <strong>Decay</strong>:
-              <span class="disp-noise-full">disabled</span>
+              There is
+              <strong><span class="disp-noise-full">no</span> chance of decay</strong>
               <input type="range" min="0" max="10000" value="0" class="slider" id="slider-noise">
-              <span class='info'>
-                Chance to decay to <span class='ket0'>\(\ket{0}\)</span> per gate per qubit
-              </span>
+              per gate per qubit to \(\ket{0}\)</span>
             </p>
             <h2>Simulation flags</h2>
             <p class='info'>
@@ -128,6 +132,11 @@
       </p>
       <table class='qubits' id='qubits'>
       </table>
+    </div>
+    <div class='states'>
+      <h2>Results</h2>
+      <ul id='states'>
+      </ul>
     </div>
   </div>
 </div>

@@ -8,12 +8,22 @@ using namespace qc;
 using namespace httplib;
 using namespace std::string_literals;
 
+/*
+ * Allow Cross-Origin Resource Sharing (CORS) 
+ */
+void allow_cors(Response &res, std::string method) {
+  res.set_header("Access-Control-Allow-Origin", "*");
+  res.set_header("Access-Control-Allow-Methods", method);
+}
+
 int main(int argc, char **argv) {
   Server server;
   server.Get("/version", [](const Request &req, Response &res) {
+    allow_cors(res, "GET");
     res.set_content("QCP Simulator - version 1.0", "text/plain");
   });
   server.Post("/simulate", [](const Request &req, Response &res) {
+    allow_cors(res, "POST");
     if (!req.has_param("circuit")) {
       res.set_content("ERROR no circuit provided", "text/plain");
       return;

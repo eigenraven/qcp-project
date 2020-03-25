@@ -27,16 +27,11 @@ $(function(){
     $('.disp-qubits').text(qubits.length)
     $('.disp-shots').text(conf.shots)
     let fragments = [
-      `${qubits.length} qubits`,
       `${conf.shots} shots`
     ]
-    let n = (conf.noise * 100).toLocaleString({maximumFractionDigits: 2})
-    $('.disp-noise').text(
-      conf.noise ? `${n}%`: "disabled")
-    
-    conf.noise ? fragments.push(`${n}% decay`) :0;
-    conf.isSparse ? fragments.push("sparse") :0;
-    conf.doGroup ? fragments.push("grouped") :0;
+    let N = x => String(Math.floor(conf.noise*100 * 10**x)/10**x)+"%"
+    $('.disp-noise-full').text(conf.noise ? "a " + N(2) : "no") // chance for...
+    conf.noise ? fragments.push(N(0) +" decay") :0;
 
     $('.disp-summary').text(fragments.join(", "))
     $('#btn-qubit-less')[0].disabled = qubits.length <3
@@ -57,11 +52,11 @@ $(function(){
     }
     qubit.el.children('.header').click(()=>qubit_clicked(n))
     qubits.push(qubit)
-    refreshGates()
   };
   $('#btn-qubit-more').click(function(){
     addQubit()
     refreshConf()
+    refreshGates()
   });
 
   const MATHJAX_URL = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
@@ -70,9 +65,9 @@ $(function(){
     setTimeout(function(){
       ket0 = $('.ket0')[0].innerHTML
       addQubit(); addQubit()
-      $('.no_mathjax').addClass('hidden')
-      $('.symbol').removeClass('hidden')
+      $('html').addClass('mathjax-loaded')
       refreshConf()
+      refreshGates()
       refreshSelector();
     }, 100)
   })
@@ -233,6 +228,45 @@ $(function(){
           .appendTo(qubit.el))
       }
     }
+    $('.state').remove()
+    simulate().then(function(states){
+      console.log(states)
+      for (let i = 0; i < states.length; i++) {
+        const s = states[i];
+        s.el = $(`<li class='state'>
+            |${s.state}&gt;: ${s.likelihood}
+          </li>`)
+          .appendTo('#states')
+      }
+    })
+  }
+
+  /*
+   * SIMULATION
+   */
+
+  const ENDPOINT = "http://localhost:12345"
+
+  simulate = function(){
+    const q = qubits.length
+    return new Promise(function(then, error){
+      $.post(ENDPOINT + "/simulate", {circuit: as_file()})
+      .done(function(data){
+        const lines = data.split("\n");
+        let states = []
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if( line && !isNaN(line) ){
+            let x = states.length
+            states.push({
+              state: ("0".repeat(q) + x.toString(2)).slice(-q),
+              likelihood: Number(line)
+            })
+          }
+        }
+        then(states)
+      })
+    })
   }
 
 
