@@ -234,10 +234,10 @@ $(function(){
       gate.elements = []
       for (let q = 0; q < qubits.length; q++) {
         const qubit = qubits[q];
+        let g = GATES[gate.gate]
         let cls = ['gate']
         let content = ""
         if( gate.args.includes(q) ){
-          let g = GATES[gate.gate]
           cls.push(g.kind)
           content += `
             <div class='gate-icon'>
