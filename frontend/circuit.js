@@ -52,11 +52,11 @@ $(function(){
     }
     qubit.el.children('.header').click(()=>qubit_clicked(n))
     qubits.push(qubit)
-    refreshGates()
   };
   $('#btn-qubit-more').click(function(){
     addQubit()
     refreshConf()
+    refreshGates()
   });
 
   const MATHJAX_URL = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
@@ -67,6 +67,7 @@ $(function(){
       addQubit(); addQubit()
       $('html').addClass('mathjax-loaded')
       refreshConf()
+      refreshGates()
       refreshSelector();
     }, 100)
   })
@@ -227,6 +228,17 @@ $(function(){
           .appendTo(qubit.el))
       }
     }
+    $('.state').remove()
+    simulate().then(function(states){
+      console.log(states)
+      for (let i = 0; i < states.length; i++) {
+        const s = states[i];
+        s.el = $(`<li class='state'>
+            |${s.state}&gt;: ${s.likelihood}
+          </li>`)
+          .appendTo('#states')
+      }
+    })
   }
 
   /*
@@ -236,18 +248,25 @@ $(function(){
   const ENDPOINT = "http://localhost:12345"
 
   simulate = function(){
-    $.post(ENDPOINT + "/simulate", {circuit: as_file()})
+    const q = qubits.length
+    return new Promise(function(then, error){
+      $.post(ENDPOINT + "/simulate", {circuit: as_file()})
       .done(function(data){
         const lines = data.split("\n");
-        states = []
+        let states = []
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
-          if( !isNaN(line) ){
-            states.push(Number(line))
+          if( line && !isNaN(line) ){
+            let x = states.length
+            states.push({
+              state: ("0".repeat(q) + x.toString(2)).slice(-q),
+              likelihood: Number(line)
+            })
           }
         }
-        console.log(states)
+        then(states)
       })
+    })
   }
 
 
