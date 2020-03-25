@@ -141,18 +141,28 @@ code {
 .qubit .phase::after {
   background: pink;
 }
-.swap .gate-icon,
+.swap .gate-icon{
+  background: lightskyblue;
+}
+.qubit .swap .gate-icon,
 .qubit .swap::before,
 .qubit .swap::after {
-  background: lightgreen;
+  background: lightskyblue;
 }
-.gate-icon.control-dot {
+.qubit .swap .gate-icon:not(.control-dot) {
+  background: transparent;
+  transform: scale(1.8) translateY(7px);
+  color: lightskyblue;
+}
+
+.qubit .gate-icon.control-dot {
   border-radius: 50%;
   transform: scale(0.3);
 }
-.gate-icon .empty {
-  background: transparent !important;
+.gate-icon.empty {
+  background: transparent;
 }
+/* up and down indicate connections in a gate*/
 .gate.up::before,
 .gate.down::after{
   content: "";
@@ -163,10 +173,10 @@ code {
   z-index: 0;
 }
 .gate.down::after {
-  transform: translate(-24px, 20px);
+  transform: translate(-24px, 23px);
 }
 .gate.up::before {
-  transform: translate(22px, -22px);
+  transform: translate(22px, -18px);
 }
 
 .gate-icon .MathJax {
@@ -196,7 +206,6 @@ code {
 }
 
 .circuit {
-  background-color: honeydew;
   width: 100%;
 }
 
@@ -228,15 +237,17 @@ code {
   width: 100%;
 }
 
-.qubits tr::after,
-.qubits tr:not(.header){
+.qubits tr{
   background-image: linear-gradient(
     to bottom,
     transparent 48%,
-    #e8dddd 48%,
-    #e8dddd 52%,
+    thistle 48%,
+    thistle 52%,
     transparent 52%
     );
+}
+.qubits .header {
+  background-color: white;
 }
 
 .bar{
