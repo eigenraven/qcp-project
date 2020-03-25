@@ -230,6 +230,18 @@ code {
   z-index: 10;
   width: unset;
 }
+.qubit .header .plus {
+  color: transparent;
+}
+.selection .qubit .header,
+.selection .qubit .header .plus {
+  cursor: pointer;
+  color: lightcoral;
+}
+.selection .qubit .header:hover {
+  text-decoration: underline;
+}
+
 .qubits tr::after{
   content: "";
   position: relative;
