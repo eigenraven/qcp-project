@@ -16,6 +16,8 @@ The circuit MUST begin with the instruction:
 
   - **Mandatory header**: `qubits`. One argument: the number of qubits.
 
+### Headers and gates
+
 The following headers may be applied; some change state, whereas some change simulation behaviour. Headers MAY be defined any where but SHOULD be defined before gates.
 
   - **Optional header**: `shots`. One argument, default `1024`: the number of times the circuit is evaluated.
@@ -36,7 +38,15 @@ For controlled gates, the target qubit is the final argument.
   - **Binary controlled gates**: `cx`/`cnot`, `cy`, `cz`
   - **Ternary controlled gates**: `cswap`, `ccx`/`ccnot`/`toffoli`
 
-We assume that at the very end all quantum registers are measured (unless the `states` option is specified). The resulting vector returned from the backend contains the fraction of times the result was returned.
+### Simulation output
+
+At the moment, the simulation will definably measure the result of each simulation to a classical bit. Unless `shots` is set to 1, the output therefore represents a probability over the amount of simulations – that is to say, there is no flag set to return a predicted result. 
+
+The result from the simulation may format the output in varying formats. For *q* qubits, we will receive the following:
+
+ - If `states` is set, *2^q* lines are returned corresponding to the individual probabilities of each state: |0⋯00>, |0⋯01>, |0⋯10>, and so on.
+ - If `states` is **not** set, *q* lines are returned corresponding to the overall probability of each qubit being measured as zero or one. This is useful for individual tests, but will not capture entanglement of qubits. 
+
 
 ### Demo programs
 Two demo programs are written and located in `PROJECT_DIR/demo`
