@@ -1,0 +1,6 @@
+<map id="/home/kubasz/qcp&#45;project/src/qgate.hpp" name="/home/kubasz/qcp&#45;project/src/qgate.hpp">
+<area shape="rect" id="node2" href="$numeric_8hpp.html" title="This header contains the definitions of all numeric primitives used by the simulator, like vectors, matrices; and operations on them. " alt="" coords="390,95,533,121"/>
+<area shape="rect" id="node3" href="$common_8hpp.html" title="This header contains the definitions of base types for numbers used by the simulator, and includes used supporting libraries. " alt="" coords="413,244,510,271"/>
+<area shape="rect" id="node15" href="$dense__matrix_8hpp.html" title="Dense (contiguous array) matrix representation implementation. " alt="" coords="448,169,573,196"/>
+<area shape="rect" id="node16" href="$sparse__matrix_8hpp.html" title="Sparse (array of rows, rows being arrays of row elements) matrix representation implementation. " alt="" coords="243,169,373,196"/>
+</map>

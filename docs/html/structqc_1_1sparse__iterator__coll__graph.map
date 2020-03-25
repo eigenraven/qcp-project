@@ -1,0 +1,4 @@
+<map id="qc::sparse_iterator" name="qc::sparse_iterator">
+<area shape="rect" id="node2" href="$structqc_1_1smatrix.html" title="A dense complex matrix type (stores fields in a contiguous row&#45;major array) " alt="" coords="5,13,92,39"/>
+<area shape="rect" id="node3" href="$structqc_1_1sparse__nonzero__element.html" title="Element of a sparse matrix as returned by an iterator. " alt="" coords="117,5,253,47"/>
+</map>

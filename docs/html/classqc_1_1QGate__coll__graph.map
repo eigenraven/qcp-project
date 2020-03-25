@@ -1,0 +1,4 @@
+<map id="qc::QGate" name="qc::QGate">
+<area shape="rect" id="node2" href="$structqc_1_1smatrix.html" title="A dense complex matrix type (stores fields in a contiguous row&#45;major array) " alt="" coords="5,5,92,32"/>
+<area shape="rect" id="node3" href="$structqc_1_1dmatrix.html" title="A dense complex matrix type (stores fields in a contiguous row&#45;major array) " alt="" coords="123,5,209,32"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="/home/kubasz/qcp&#45;project/src/numeric/sparse_matrix.hpp" name="/home/kubasz/qcp&#45;project/src/numeric/sparse_matrix.hpp">
+<area shape="rect" id="node2" href="$numeric_8hpp.html" title="This header contains the definitions of all numeric primitives used by the simulator, like vectors, matrices; and operations on them. " alt="" coords="67,95,239,136"/>
+<area shape="rect" id="node3" href="$qgate_8hpp.html" title="Standard quantum gate definitions. " alt="" coords="5,184,177,225"/>
+<area shape="rect" id="node4" href="$qreg_8hpp.html" title="Quantum register implementation. " alt="" coords="67,273,239,315"/>
+<area shape="rect" id="node5" href="$qcircuit_8hpp.html" title="Quantum circuit model. " alt="" coords="67,363,239,404"/>
+<area shape="rect" id="node6" href="$input_8hpp.html" title="Input format parsing into circuit descriptions. " alt="" coords="67,452,239,493"/>
+</map>
