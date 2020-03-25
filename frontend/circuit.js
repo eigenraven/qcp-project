@@ -3,6 +3,16 @@ let circuit_gates
 
 $(function(){
 
+  /* DISPLAY NICETIES */
+
+  /* Ensure right-column panels don't overlap */
+  $('.panel-control .summoner').mouseover(function(){
+    let anchor = $(this).children('.summon-anchor')
+    let anchor_right = $(window).width() - anchor.offset().left
+    let right = anchor_right - anchor.width() - 10
+    $(this).children('.summoned').css("right", `${right}px`)
+  })
+
   /* PANEL */
   qubits = Array()
 
