@@ -184,8 +184,10 @@ $(function(){
   let qubit_clicked = function(index){
     if( !sel.gate ){ return; }
     if( sel.args.includes(index) || sel.cargs.includes(index) ){
-      console.log(`Attempted to add index ${index} (already added)`)
-      return
+      if( !tryAddGate() ){
+        console.log(`Attempted to add index ${index} (already added)`)
+      }
+      return;
     }
     let q = GATES[sel.gate]
     let c = q.control_arities
@@ -220,8 +222,10 @@ $(function(){
         sel = newSel()
         refreshSelector()
         refreshGates()
+        return true
       }
     }
+    return false;
   }
   $('#circuit-add-gate button').click(tryAddGate)
 
