@@ -269,6 +269,10 @@ code {
   color: #a00
 }
 
+input[type=file]{
+  color: transparent;
+}
+
 /* UI summoner
  * .summoner
  *   div        (always appears, and when moused over...)
@@ -281,7 +285,6 @@ code {
     opacity: 0;
   }
 }
-
 .summoned {
   position: fixed;
   display: none;

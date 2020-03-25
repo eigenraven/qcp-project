@@ -123,6 +123,15 @@ $(function(){
   })
   sel = newSel()
 
+  $('#btn-reset').click(function(){
+    sel = newSel()
+    circuit_gates = [];
+    conf = conf_default();
+    refreshConf();
+    refreshGates();
+    refreshSelector();
+  })
+
   const ORDS = [
     '1<sup>st</sup>',
     '2<sup>nd</sup>'
@@ -249,7 +258,6 @@ $(function(){
           if( q != bottom){cls.push('down')}
         }
 
-        let content = ""
         if( gate.args.includes(q) ){
           symbol = g.kind == "swap"
             ? "×" : `\\(${g.symbol}\\)`
