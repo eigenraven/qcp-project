@@ -229,6 +229,27 @@ $(function(){
     }
   }
 
+  /*
+   * SIMULATION
+   */
+
+  const ENDPOINT = "http://localhost:12345"
+
+  simulate = function(){
+    $.post(ENDPOINT + "/simulate", {circuit: as_file()})
+      .done(function(data){
+        const lines = data.split("\n");
+        states = []
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if( !isNaN(line) ){
+            states.push(Number(line))
+          }
+        }
+        console.log(states)
+      })
+  }
+
 
   /* 
    * FILE FORMAT AND OPERATIONS 
