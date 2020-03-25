@@ -238,6 +238,12 @@ $(function(){
           </li>`)
           .appendTo('#states')
       }
+    }).catch(function(a){
+      console.log(a)
+      $(`
+        <p class='state error'>
+          The simulator could not be found.
+        </p>`).appendTo('#states')
     })
   }
 
@@ -249,8 +255,9 @@ $(function(){
 
   simulate = function(){
     const q = qubits.length
-    return new Promise(function(then, error){
+    return new Promise(function(fThen, fError){
       $.post(ENDPOINT + "/simulate", {circuit: as_file()})
+      .catch(fError)
       .done(function(data){
         const lines = data.split("\n");
         let states = []
@@ -264,7 +271,7 @@ $(function(){
             })
           }
         }
-        then(states)
+        fThen(states)
       })
     })
   }
