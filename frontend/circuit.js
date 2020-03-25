@@ -230,7 +230,12 @@ $(function(){
         let cls = ['gate']
         let content = ""
         if( gate.args.includes(q) ){
-          content += gate.gate
+          let g = GATES[gate.gate]
+          cls.push(g.kind)
+          content += `
+            <div class='gate-icon'>
+              \\(${g.symbol}\\)
+            </div>`
         } else if( gate.cargs.includes(q) ){
           content += "o"
         }
@@ -238,6 +243,7 @@ $(function(){
           .appendTo(qubit.el))
       }
     }
+    MathJax.typeset()
     
     $('.state').remove()
     simulate().then(function(states){
@@ -444,7 +450,8 @@ $(function(){
               f_gates.push({
                 gate: name,
                 args: args,
-                cargs: cargs
+                cargs: cargs,
+                all_args: cargs.concat(args)
               })
             }
             break;
