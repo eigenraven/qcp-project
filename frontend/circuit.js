@@ -62,7 +62,7 @@ $(function(){
       el: $(`
       <tr class='qubit'>
         <div class='line'></div>
-        <td class='header'>q[${n}]</td>
+        <td class='header'>q[${n}]<span class='plus'>+</span></td>
         <td>${ket0}</td>
       </tr>`)
       .appendTo('#qubits')
@@ -143,14 +143,14 @@ $(function(){
     }
     let msg = "No gate selected."
     let msg_qubit = "Click one to start."
-    $('.panel-gates').removeClass('selection')
+    $('.builder').removeClass('selection')
     $('#circuit-add-gate').addClass('hidden')
 
     if( sel.gate ){
       let q = GATES[sel.gate]
       msg = `<strong>${q.el.find('h2').html()}</strong>:`
       q.el.addClass('selected');
-      $('.panel-gates').addClass('selection');
+      $('.builder').addClass('selection');
 
       const selecting_control_qubit = sel.args.length == q.arity
       if( selecting_control_qubit ){
@@ -335,6 +335,7 @@ $(function(){
       })
     })
   }
+
 
 
   /* 
