@@ -107,6 +107,7 @@ code {
   text-align: center;
   border: 3px solid transparent;
   position: relative;
+  z-index: 2;
 }
 .gate-icon .no_mathjax{
   position: relative;
@@ -125,7 +126,7 @@ code {
   border-color: hotpink;
 }
 
-.gate-icon{
+.general .gate-icon{
   background: thistle;
 }
 .rotation .gate-icon {
@@ -140,6 +141,25 @@ code {
 .gate-icon.control-dot {
   border-radius: 50%;
   transform: scale(0.3);
+}
+.gate-icon .empty {
+  background: transparent !important;
+}
+.gate.up::before,
+.gate.down::after{
+  content: "";
+  width: 2px;
+  background-color: #e8dddd;
+  display: inline-block;
+  position: absolute;
+  height: 42px;
+  z-index: 0;
+}
+.gate.down::after {
+  transform: translate(-24px, 20px);
+}
+.gate.up::before {
+  transform: translate(22px, -22px);
 }
 
 .gate-icon .MathJax {
@@ -187,7 +207,7 @@ code {
   margin-bottom: 10px;
 }
 .qubits td{
-  padding-right: 1em;
+  padding-right: 0.4em;
 }
 .qubit .header {
   font-family: "Fantasque Sans Mono", Consolas, monospace;

@@ -235,16 +235,27 @@ $(function(){
       for (let q = 0; q < qubits.length; q++) {
         const qubit = qubits[q];
         let g = GATES[gate.gate]
-        let cls = ['gate', g.kind]
+        let cls = ['gate']
+        if( q >= top && q <= bottom ){
+          if( q != top ){cls.push('up')}
+          if( q != bottom){cls.push('down')}
+        }
+
         let content = ""
         if( gate.args.includes(q) ){
+          cls.push(g.kind)
           content += `
             <div class='gate-icon'>
               \\(${g.symbol}\\)
             </div>`
         } else if( gate.cargs.includes(q) ){
+          cls.push(g.kind)
           content += `
             <div class='gate-icon control-dot'>
+            </div>`
+        } else {
+          content += `
+            <div class='gate-icon empty'>
             </div>`
         }
         gate.elements.push($(`<td class='${cls.join(' ')}'>${content}</td>`)
