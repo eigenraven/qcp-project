@@ -60,10 +60,10 @@ $(function(){
   });
 
   const MATHJAX_URL = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-  let ket0
+  let ket0;
   $.getScript(MATHJAX_URL, function(){
     setTimeout(function(){
-      ket0 = $('.ket0')[0].innerHTML
+      ket0 = $('.ket0').html()
       addQubit(); addQubit()
       $('html').addClass('mathjax-loaded')
       refreshConf()
@@ -115,15 +115,15 @@ $(function(){
       gate.el.removeClass('selected')
     }
     let msg = "No gate selected."
-    let msg_qubit = "Click a gate above to add it to the circuit."
-    $('#circuit').removeClass('selection')
+    let msg_qubit = "Click one to start."
+    $('.panel-gates').removeClass('selection')
     $('#circuit-add-gate').addClass('hidden')
 
     if( sel.gate ){
       let q = GATES[sel.gate]
       msg = `<strong>${q.el.find('h2').html()}</strong>:`
-      q.el.addClass('selected')
-      $('#circuit').addClass('selection')
+      q.el.addClass('selected');
+      $('.panel-gates').addClass('selection');
 
       const selecting_control_qubit = sel.args.length == q.arity
       if( selecting_control_qubit ){

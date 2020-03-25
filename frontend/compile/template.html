@@ -63,6 +63,13 @@
             </div>
           </div>
         {% endfor %}
+        <p class='status'>
+          <span id='status'>Loading...</span>
+          <span id='circuit-add-gate' class='hidden'>
+            <button>Add the gate</button>,
+          </span>
+          <span id='status-qubit'></span>
+        </p>
       </div>
       <div class='panel panel-control'>
         <span class='panel-control-item summoner'>
@@ -123,13 +130,6 @@
       </div>
     </div>
     <div class='circuit' id='circuit'>
-      <p class='status'>
-        <span id='status'>Loading...</span>
-        <span id='circuit-add-gate' class='hidden'>
-          <button>Add the gate</button>,
-        </span>
-        <span id='status-qubit'></span>
-      </p>
       <table class='qubits' id='qubits'>
       </table>
     </div>
