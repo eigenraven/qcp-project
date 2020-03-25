@@ -84,6 +84,7 @@ $(function(){
         qubits.push(line)
       }
       refreshConf()
+      refreshGates()
     }
   })
 
