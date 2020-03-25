@@ -266,6 +266,8 @@ $(function(){
     })
   }
 
+  $('#refresh').click(refreshGates)
+
   /*
    * SIMULATION
    */
