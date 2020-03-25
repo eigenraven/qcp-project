@@ -126,16 +126,24 @@ code {
   border-color: hotpink;
 }
 
-.general .gate-icon{
+.general .gate-icon,
+.qubit .general::before,
+.qubit .general::after {
   background: thistle;
 }
-.rotation .gate-icon {
+.rotation .gate-icon,
+.rotation::before,
+.rotation::after {
   background: wheat;
 }
-.phase .gate-icon {
+.phase .gate-icon,
+.qubit .phase::before,
+.qubit .phase::after {
   background: pink;
 }
-.swap .gate-icon {
+.swap .gate-icon,
+.qubit .swap::before,
+.qubit .swap::after {
   background: lightgreen;
 }
 .gate-icon.control-dot {
@@ -149,7 +157,6 @@ code {
 .gate.down::after{
   content: "";
   width: 2px;
-  background-color: #e8dddd;
   display: inline-block;
   position: absolute;
   height: 42px;
