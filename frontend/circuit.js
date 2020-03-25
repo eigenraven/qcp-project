@@ -13,6 +13,12 @@ $(function(){
     $(this).children('.summoned').css("right", `${right}px`)
   })
 
+  let percent = (x, d) => String(Math.floor(x*100 * 10**d)/10**d)+"%"
+  let fadeAt = function(x, limit, min){
+    /* If x is above the limit, return 1; if below, fade linearly to the minimum. */
+    return x > limit ? 1 : min + (x/limit)*(1-min)
+  }
+
   /* PANEL */
   qubits = Array()
 
@@ -39,9 +45,10 @@ $(function(){
     let fragments = [
       `${conf.shots} shots`
     ]
-    let N = x => String(Math.floor(conf.noise*100 * 10**x)/10**x)+"%"
-    $('.disp-noise-full').text(conf.noise ? "a " + N(2) : "no") // chance for...
-    conf.noise ? fragments.push(N(0) +" decay") :0;
+    $('.disp-noise-full').text(
+      conf.noise ? "a " + percent(conf.noise, 2)
+                 : "no") // chance for...
+    conf.noise ? fragments.push(percent(conf.noise, 0) +" decay") :0;
 
     $('.disp-summary').text(fragments.join(", "))
     $('#btn-qubit-less')[0].disabled = qubits.length <3
@@ -251,14 +258,17 @@ $(function(){
       $('.states').removeClass('hidden')
       for (let i = 0; i < states.length; i++) {
         const s = states[i];
+        let li = percent(s.likelihood, 2)
+        let col = fadeAt(s.likelihood, 0.05, 0.3) * 100
         s.el = $(`
           <li class='state'>
             <span class='state-ket'>
               \\(\\ket{${s.state}}\\):
             </span>
             <div class='bar'>
-              <div class='fill' style="width: ${s.likelihood*100}%">
-                ${s.likelihood*100}%
+              <div class='fill'
+                  style="width: ${li}; color: rgba(0,0,0,${col}%)">
+                ${li}
               </div>
             </div>
           </li>`)
