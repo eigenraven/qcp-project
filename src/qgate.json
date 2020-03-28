@@ -3,13 +3,13 @@
         "id": "id",
         "kind": "timing",
         "name": "Identity gate",
-        "description": [
-            "This gate has no theoretical effect.",
-            "However, it is useful in physical quantum computers (and as visual aid) to maintain timing."
-        ],
         "matrix": [
             "1 & 0",
             "0 & 1"
+        ],
+        "description": [
+            "This gate has no theoretical effect.",
+            "However, it is useful in physical quantum computers (and as visual aid) to maintain timing."
         ]
     }, {
 		"id": "h",
@@ -18,6 +18,10 @@
         "matrix": [
             "1& 1",
             "1&-1"
+        ],
+        "description": [
+            "Turns \\(\\ket{0}\\) to \\(\\ket{+}\\), a superposition of both states - and therefore rather good for initialising a string of zero-qubits. More formally:",
+            "\\[\\ket{+}\\bra{0} {\\color{gray}+} \\ket{-}\\bra{1},    \\qquad    \\ket{\\pm}=\\frac{\\ket{0}\\pm\\ket{1}}{\\sqrt{2}}\\]"
         ]
     }, {
         "id": "x", "control_arities": [0, 1, 2],
@@ -26,6 +30,7 @@
         "description": [
             "Also known as the \"bit-flip\" or <strong>NOT</strong> gate, as it transforms \\(\\ket{0}\\) to \\(\\ket{1}\\) and vice versa.",
             "On the Bloch sphere, this is a rotation of \\(\\pi\\) in the X axis.",
+            "If applied to \\(n\\) qubits, this can be expressed as transforming the qubit-string \\(\\ket{x}\\) to \\(\\ket{2^n-1-x}\\)",
             "This may be given one or two control qubits. If given two control qubits, it is known as the <strong>Toffoli</strong> gate."
         ],
         "matrix": [
