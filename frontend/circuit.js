@@ -255,9 +255,18 @@ $(function(){
     }
     for (let g = 0; g < circuit_gates.length; g++) {
       const gate = circuit_gates[g];
-      const top    = Math.min.apply(0, gate.all_args)
-      const bottom = Math.max.apply(0, gate.all_args)
-      gate.elements = []
+      const g_min_q = Math.min.apply(0, gate.all_args)
+      const g_max_q = Math.max.apply(0, gate.all_args)
+
+      for (let q = g_min_q; q <= g_max_q; q++) {
+        if( column[q] ){
+          /* would overlap with previous column! */
+          colFinished()
+          break;
+        }
+      }
+
+      
       for (let q = 0; q < qubits.length; q++) {
         const qubit = qubits[q];
         let g = GATES[gate.gate]
@@ -268,9 +277,9 @@ $(function(){
           symbol: ""
         }
 
-        if( q >= top && q <= bottom ){
-          if( q != top ){ico.clsOuter.push('up')}
-          if( q != bottom){ico.clsOuter.push('down')}
+        if( g_min_q <= q && q <= g_max_q ){
+          if( q != g_min_q ){ico.clsOuter.push('up')}
+          if( q != g_max_q ){ico.clsOuter.push('down')}
         }
 
         if( gate.args.includes(q) ){
@@ -282,8 +291,8 @@ $(function(){
           column[q] = ico
         }
       }
-      colFinished()
     }
+    colFinished()
     MathJax.typeset()
     
     $('.state').remove()
