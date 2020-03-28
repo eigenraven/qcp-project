@@ -61,12 +61,14 @@ $(function(){
       gates_used: [],
       el: $(`
       <tr class='qubit'>
-        <div class='line'></div>
-        <td class='header'>q[${n}]<span class='plus'>+</span></td>
-        <td>${ket0}</td>
+        <td class='header'>
+          q[${n}]<span class='plus'>+</span>
+        </td>
+        <td>\\(\\ket{0}\\)</td>
       </tr>`)
       .appendTo('#qubits')
     }
+    MathJax.typeset()
     qubit.el.children('.header').click(()=>qubit_clicked(n))
     qubits.push(qubit)
   };
@@ -77,10 +79,8 @@ $(function(){
   });
 
   const MATHJAX_URL = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-  let ket0;
   $.getScript(MATHJAX_URL, function(){
     setTimeout(function(){
-      ket0 = $('.ket0').html()
       $('html').addClass('mathjax-loaded')
       $('#btn-qubit-less').prop("disabled", false);
       $('#btn-qubit-more').prop("disabled", false);
@@ -134,7 +134,7 @@ $(function(){
     refreshSelector();
   })
 
-  const ORDS = [
+  const ORDINAL = [
     '1<sup>st</sup>',
     '2<sup>nd</sup>'
   ]
@@ -162,13 +162,13 @@ $(function(){
         }
         msg_qubit = (can_add_now ? "or s" : "S") + "elect the "
         if ( String(q.control_arities) != "0,1" ){
-          msg_qubit += `${ORDS[sel.cargs.length]} `
+          msg_qubit += `${ORDINAL[sel.cargs.length]} `
         }
         msg_qubit += "control qubit."
       } else {
         msg_qubit = "Select the "
         if( q.arity > 1 ){
-          msg_qubit += `${ORDS[sel.args.length]} `
+          msg_qubit += `${ORDINAL[sel.args.length]} `
         }
         msg_qubit += "qubit to act on."
       }
@@ -257,6 +257,7 @@ $(function(){
     }
     for (let g = 0; g < circuit_gates.length; g++) {
       const gate = circuit_gates[g];
+      let gateType = GATES[gate.gate]
       const g_min_q = Math.min.apply(0, gate.all_args)
       const g_max_q = Math.max.apply(0, gate.all_args)
 
@@ -267,14 +268,10 @@ $(function(){
           break;
         }
       }
-
       
       for (let q = g_min_q; q <= g_max_q; q++) {
-        const qubit = qubits[q];
-        let g = GATES[gate.gate]
-
         let ico = {
-          clsOuter: ["gate", g.kind],
+          clsOuter: ["gate", gateType.kind],
           clsInner: ["gate-icon"],
           symbol: ""
         }
@@ -283,8 +280,8 @@ $(function(){
         if( q != g_max_q ){ico.clsOuter.push('down')}
 
         if( gate.args.includes(q) ){
-          ico.symbol = g.kind == "swap"
-            ? "×" : `\\(${g.symbol}\\)`
+          ico.symbol = gateType.kind == "swap"
+            ? "×" : `\\(${gateType.symbol}\\)`
         } else if( gate.cargs.includes(q) ){
           ico.clsInner.push("control-dot")
         } else {
@@ -356,7 +353,6 @@ $(function(){
       })
     })
   }
-
 
 
   /* 
