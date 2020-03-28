@@ -267,7 +267,7 @@ $(function(){
       }
 
       
-      for (let q = 0; q < qubits.length; q++) {
+      for (let q = g_min_q; q <= g_max_q; q++) {
         const qubit = qubits[q];
         let g = GATES[gate.gate]
 
@@ -277,19 +277,18 @@ $(function(){
           symbol: ""
         }
 
-        if( g_min_q <= q && q <= g_max_q ){
-          if( q != g_min_q ){ico.clsOuter.push('up')}
-          if( q != g_max_q ){ico.clsOuter.push('down')}
-        }
+        if( q != g_min_q ){ico.clsOuter.push('up')}
+        if( q != g_max_q ){ico.clsOuter.push('down')}
 
         if( gate.args.includes(q) ){
           ico.symbol = g.kind == "swap"
             ? "×" : `\\(${g.symbol}\\)`
-          column[q] = ico
         } else if( gate.cargs.includes(q) ){
           ico.clsInner.push("control-dot")
-          column[q] = ico
+        } else {
+          ico.clsInner.push("empty")
         }
+        column[q] = ico
       }
     }
     colFinished()
