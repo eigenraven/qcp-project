@@ -51,7 +51,7 @@ $(function(){
     conf.noise ? fragments.push(percent(conf.noise, 0) +" decay") :0;
 
     $('.disp-summary').text(fragments.join(", "))
-    $('#btn-qubit-less')[0].disabled = qubits.length <3
+    $('#btn-qubit-less').prop("disabled", qubits.length <3)
   }
 
   let addQubit = function(){
@@ -81,8 +81,10 @@ $(function(){
   $.getScript(MATHJAX_URL, function(){
     setTimeout(function(){
       ket0 = $('.ket0').html()
-      addQubit(); addQubit()
       $('html').addClass('mathjax-loaded')
+      $('#btn-qubit-less').prop("disabled", false);
+      $('#btn-qubit-more').prop("disabled", false);
+      addQubit(); addQubit()
       refreshConf()
       refreshGates()
       refreshSelector();
