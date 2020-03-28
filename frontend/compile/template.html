@@ -33,118 +33,116 @@
   </div>
 </div>
 </header>
-<div class='content'>
-  <div class='builder'>
-    <div class='panels'>
-      <div class='panel panel-gates'>
-        {% for op in gate_items.values() %}
-          <div class='summoner gate-kind {{op.kind}}' id='{{op.id}}'>
-            <div class='summon-anchor gate-icon'>
-              {% if op.arity > 1 %}
-              <div class='gate-hint bottom right'>{{op.arity}}</div>
-              {% endif %}
-              {% if op.control_modes %}
-              <div class='gate-hint top left'>{{op.control_modes}}</div>
-              {% endif %}
-              <code class='no_mathjax'>{{op.id}}</code>
-              <span class='mathjax symbol'>\({{op.symbol}}\)</span>
-            </div>
-            <div class='summoned block gate-hint'>
-              <h2>{{op.name}}</h2>
-              <p>
-              \[
-                {{op.mathjax.factor}}
-                \begin{bmatrix}{{op.mathjax.matrix}}\end{bmatrix}
-              \]
-              </p>
-              {% for p in op.description %}
-                <p>{{p}}</p>
-              {% endfor %}
-            </div>
+<div class='content builder'>
+  <div class='panels'>
+    <div class='panel panel-gates'>
+      {% for op in gate_items.values() %}
+        <div class='summoner gate-kind {{op.kind}}' id='{{op.id}}'>
+          <div class='summon-anchor gate-icon'>
+            {% if op.arity > 1 %}
+            <div class='gate-hint bottom right'>{{op.arity}}</div>
+            {% endif %}
+            {% if op.control_modes %}
+            <div class='gate-hint top left'>{{op.control_modes}}</div>
+            {% endif %}
+            <code class='no_mathjax'>{{op.id}}</code>
+            <span class='mathjax symbol'>\({{op.symbol}}\)</span>
           </div>
-        {% endfor %}
-        <p class='status'>
-          <span id='status'>Loading...</span>
-          <span id='circuit-add-gate' class='hidden'>
-            <button>Add the gate</button>,
-          </span>
-          <span id='status-qubit'></span>
-        </p>
-      </div>
-      <div class='panel panel-control'>
-        <span class='panel-control-item summoner'>
-          <div class='summon-anchor block'>
+          <div class='summoned block gate-hint'>
+            <h2>{{op.name}}</h2>
             <p>
-              <strong>Config</strong>: <span class="disp-summary">1024 shots</span>
+            \[
+              {{op.mathjax.factor}}
+              \begin{bmatrix}{{op.mathjax.matrix}}\end{bmatrix}
+            \]
             </p>
+            {% for p in op.description %}
+              <p>{{p}}</p>
+            {% endfor %}
           </div>
-          <div class='summoned block'>
-            <p>
-              <strong>Qubits</strong>: <span class="disp-qubits">0</span>
-              <button id='btn-qubit-more' disabled>+</button>
-              <button id='btn-qubit-less' disabled>-</button>
-            </p>
-            <p>
-              The simulation will run <strong class="disp-shots">1024</strong> times
-              <input type="range" min="2" max="16" value="10" class="slider" id="slider-shots">
-            </p>
-            <p>
-              There is
-              <strong><span class="disp-noise-full">no</span> chance of decay</strong>
-              <input type="range" min="0" max="10000" value="0" class="slider" id="slider-noise">
-              per gate per qubit to \(\ket{0}\)</span>
-            </p>
-            <h2>Simulation flags</h2>
-            <p class='info'>
-              Generally, these flags will make simulation quicker.
-            </p>
-            <p>
-              <strong>Use sparse matrices</strong>
-              <input type="checkbox" id='check-sparse'>
-            </p>
-            <p>
-              <strong>Group gates</strong>
-              <input type="checkbox" id='check-group' checked>
-            </p>
-          </div>
+        </div>
+      {% endfor %}
+      <p class='status'>
+        <span id='status'>Loading...</span>
+        <span id='circuit-add-gate' class='hidden'>
+          <button>Add the gate</button>,
         </span>
-        <span class='panel-control-item summoner'>
-          <div class='summon-anchor block'>
-            <p>
-              <strong>File</strong>: <span class="disp-load-name">none loaded</span>
-            </p>
-          </div>
-          <div class='summoned block'>
-            <p class='info'>
-              A <code>.in</code> file contains a circuit and settings.
-              They may be saved and loaded for convenience.
-            </p>
-            <p>
-              <button id='btn-reset'>Reset...</button>
-              <button id='btn-save'>Save...</button>
-              <input id='btn-load' type="file" accept=".in">
-            </p>
-            <p class='disp-load-error error'></p>
-          </div>
-        </span>
-      </div>
+        <span id='status-qubit'></span>
+      </p>
     </div>
-    <div class='circuit' id='circuit'>
-      <table class='qubits' id='qubits'>
-      </table>
+    <div class='panel panel-control'>
+      <span class='panel-control-item summoner'>
+        <div class='summon-anchor block'>
+          <p>
+            <strong>Config</strong>: <span class="disp-summary">1024 shots</span>
+          </p>
+        </div>
+        <div class='summoned block'>
+          <p>
+            <strong>Qubits</strong>: <span class="disp-qubits">0</span>
+            <button id='btn-qubit-more' disabled>+</button>
+            <button id='btn-qubit-less' disabled>-</button>
+          </p>
+          <p>
+            The simulation will run <strong class="disp-shots">1024</strong> times
+            <input type="range" min="2" max="16" value="10" class="slider" id="slider-shots">
+          </p>
+          <p>
+            There is
+            <strong><span class="disp-noise-full">no</span> chance of decay</strong>
+            <input type="range" min="0" max="10000" value="0" class="slider" id="slider-noise">
+            per gate per qubit to \(\ket{0}\)</span>
+          </p>
+          <h2>Simulation flags</h2>
+          <p class='info'>
+            Generally, these flags will make simulation quicker.
+          </p>
+          <p>
+            <strong>Use sparse matrices</strong>
+            <input type="checkbox" id='check-sparse'>
+          </p>
+          <p>
+            <strong>Group gates</strong>
+            <input type="checkbox" id='check-group' checked>
+          </p>
+        </div>
+      </span>
+      <span class='panel-control-item summoner'>
+        <div class='summon-anchor block'>
+          <p>
+            <strong>File</strong>: <span class="disp-load-name">none loaded</span>
+          </p>
+        </div>
+        <div class='summoned block'>
+          <p class='info'>
+            A <code>.in</code> file contains a circuit and settings.
+            They may be saved and loaded for convenience.
+          </p>
+          <p>
+            <button id='btn-reset'>Reset...</button>
+            <button id='btn-save'>Save...</button>
+            <input id='btn-load' type="file" accept=".in">
+          </p>
+          <p class='disp-load-error error'></p>
+        </div>
+      </span>
     </div>
-    <p class='states-error info hidden'>
-      An error occured while attempting to contact the simulator.
-      Please ensure that it is running.
-    </p>
-    <div class='states hidden'>
-      <h2>Results
-        <span class='info'>
-          (<a href="#refresh" id='refresh'>refresh</a>)
-        </span></h2> 
-      <ul id='states'>
-      </ul>
-    </div>
+  </div>
+  <div class='circuit' id='circuit'>
+    <table class='qubits' id='qubits'>
+    </table>
+  </div>
+  <p class='states-error info hidden'>
+    An error occured while attempting to contact the simulator.
+    Please ensure that it is running.
+  </p>
+  <div class='states hidden'>
+    <h2>Results
+      <span class='info'>
+        (<a href="#refresh" id='refresh'>refresh</a>)
+      </span></h2> 
+    <ul id='states'>
+    </ul>
   </div>
 </div>
 </body>
