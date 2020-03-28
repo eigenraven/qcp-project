@@ -25,6 +25,8 @@ header {
 .title {
   font-size: 32px;
   font-style: italic;
+  position: relative;
+  top: 8px;
 }
 .ketpsi {
   color: hsl(80, 100%, 20%);
