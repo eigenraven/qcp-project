@@ -269,7 +269,7 @@ code {
   width: 100%;
 }
 
-.qubits tr{
+.qubit {
   background-image: linear-gradient(
     to bottom,
     transparent 48%,
@@ -278,7 +278,7 @@ code {
     transparent 52%
     );
 }
-.qubits .header {
+.qubit .header, .qubit .initial {
   background-color: white;
 }
 

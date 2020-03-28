@@ -64,7 +64,9 @@ $(function(){
         <td class='header'>
           q[${n}]<span class='plus'>+</span>
         </td>
-        <td>\\(\\ket{0}\\)</td>
+        <td class='initial'>
+          \\(\\ket{0}\\)
+        </td>
       </tr>`)
       .appendTo('#qubits')
     }
