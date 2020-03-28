@@ -1,9 +1,11 @@
 [
        {
-		"id": "id",
+        "id": "id",
+        "kind": "timing",
         "name": "Identity gate",
         "description": [
-            "This gate has no effect. It is sometimes used for timing."
+            "This gate has no theoretical effect.",
+            "However, it is useful in physical quantum computers (and as visual aid) to maintain timing."
         ],
         "matrix": [
             "1 & 0",

@@ -1,18 +1,22 @@
 qubits,3
 // 3 qubit Grover's Algorithm Demo
 
-// Initial Setup
+// Initial setup: Hadamard on all qubits
 h,0
 h,1
 h,2
 
-// Main Loop. Repeated order sqrt(N). For 3 qubits, repeated twice
+// Main Loop.
+// This is repeated ceil(sqrt(N)) times.
+// For 3 qubits, this is twice.
 
-//Loop 1
-
-// Oracle Operator, flips the state |111>, equivalent to searching for "7" in the "database"
+// Oracle Operator.  Flips the state |111>,
+// equivalent to searching for "7" in the "database"
 h,2
 ccnot,0,1,2
+// (id is used so that H and X gates are at the same time)
+id,0
+id,1
 h,2
 
 // Grover's operator, reflects the wavefunction
@@ -24,6 +28,8 @@ x,1
 x,2
 h,2
 ccnot,0,1,2
+id,0
+id,1
 h,2
 x,0
 x,1
@@ -37,6 +43,8 @@ h,2
 // Oracle Operator, flips the state |111>, equivalent to searching for "7" in the "database"
 h,2
 ccnot,0,1,2
+id,0
+id,1
 h,2
 
 // Grover's operator, reflects the wavefunction
@@ -48,6 +56,8 @@ x,1
 x,2
 h,2
 ccnot,0,1,2
+id,0
+id,1
 h,2
 x,0
 x,1

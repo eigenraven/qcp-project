@@ -143,6 +143,7 @@ code {
 .qubit .phase::after {
   background: pink;
 }
+
 .swap .gate-icon{
   background: lightskyblue;
 }
@@ -155,6 +156,14 @@ code {
   background: transparent;
   transform: scale(1.8) translateY(7px);
   color: lightskyblue;
+}
+
+
+.timing .gate-icon {
+  background: wheat;
+}
+.qubit .timing:not(:hover) .gate-icon {
+  background: transparent;
 }
 
 .qubit .gate-icon.control-dot {
