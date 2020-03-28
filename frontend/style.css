@@ -21,6 +21,7 @@ header {
   width: 100%;
   position: fixed;
   background: thistle;
+  z-index: 1000;
 }
 .title {
   font-size: 32px;
@@ -115,6 +116,9 @@ code {
   position: relative;
   top: 9px;
 }
+.gate-icon > {
+  z-index: 2;
+}
 
 .mathjax, 
 .mathjax-loaded .no_mathjax {
@@ -160,10 +164,12 @@ code {
 
 
 .timing .gate-icon {
-  background: wheat;
+  background: thistle;
 }
 .qubit .timing:not(:hover) .gate-icon {
   background: transparent;
+  opacity: 0.8;
+  color: thistle;
 }
 
 .qubit .gate-icon.control-dot {
