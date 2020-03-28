@@ -242,8 +242,14 @@ $(function(){
     $('.gate').remove()
     let column = []
     let colFinished = function(){
-      for (let q = 0; q < column.length; q++) {
-        $(column[q]).appendTo(qubits[q].el)
+      for (let q = 0; q < qubits.length; q++) {
+        const ico = column[q] || {
+          clsOuter: ["gate"], symbol: "",
+          clsInner: ["gate-icon", "empty"]
+        }
+        $(` <td class="${ico.clsOuter.join(' ')}">
+              <div class="${ico.clsInner.join(' ')}">${ico.symbol}</div>
+            </td>`).appendTo(qubits[q].el)
       }
       column = []
     }
@@ -256,27 +262,25 @@ $(function(){
         const qubit = qubits[q];
         let g = GATES[gate.gate]
 
-        let cls = ['gate', g.kind]
-        let clsIcon = ['gate-icon']
-        let symbol = ""
+        let ico = {
+          clsOuter: ["gate", g.kind],
+          clsInner: ["gate-icon"],
+          symbol: ""
+        }
 
         if( q >= top && q <= bottom ){
-          if( q != top ){cls.push('up')}
-          if( q != bottom){cls.push('down')}
+          if( q != top ){ico.clsOuter.push('up')}
+          if( q != bottom){ico.clsOuter.push('down')}
         }
 
         if( gate.args.includes(q) ){
-          symbol = g.kind == "swap"
+          ico.symbol = g.kind == "swap"
             ? "×" : `\\(${g.symbol}\\)`
+          column[q] = ico
         } else if( gate.cargs.includes(q) ){
-          clsIcon.push("control-dot")
-        } else {
-          clsIcon.push("empty")
+          ico.clsInner.push("control-dot")
+          column[q] = ico
         }
-        column[q] = `
-          <td class="${cls.join(' ')}">
-            <div class="${clsIcon.join(' ')}">${symbol}</div>
-          </td>`
       }
       colFinished()
     }
