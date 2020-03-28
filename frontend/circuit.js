@@ -240,6 +240,13 @@ $(function(){
 
   let refreshGates = function(){    
     $('.gate').remove()
+    let column = []
+    let colFinished = function(){
+      for (let q = 0; q < column.length; q++) {
+        $(column[q]).appendTo(qubits[q].el)
+      }
+      column = []
+    }
     for (let g = 0; g < circuit_gates.length; g++) {
       const gate = circuit_gates[g];
       const top    = Math.min.apply(0, gate.all_args)
@@ -266,12 +273,12 @@ $(function(){
         } else {
           clsIcon.push("empty")
         }
-        gate.elements.push($(`
+        column[q] = `
           <td class="${cls.join(' ')}">
             <div class="${clsIcon.join(' ')}">${symbol}</div>
-          </td>`)
-          .appendTo(qubit.el))
+          </td>`
       }
+      colFinished()
     }
     MathJax.typeset()
     
