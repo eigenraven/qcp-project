@@ -112,6 +112,8 @@ code {
   border: 3px solid transparent;
   position: relative;
   z-index: 2;
+  transition-property: color, opacity, background-color;
+  transition-duration: 0.15s;
 }
 .gate-icon .no_mathjax{
   position: relative;
