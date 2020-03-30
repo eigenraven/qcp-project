@@ -296,7 +296,7 @@ $(function(){
     MathJax.typeset()
     
     $('.state').remove()
-    simulate().then(function(states){
+    simulate(true).then(function(states){
       $('.states-error').addClass('hidden')
       $('.states').removeClass('hidden')
       for (let i = 0; i < states.length; i++) {
@@ -333,23 +333,46 @@ $(function(){
 
   const ENDPOINT = "http://localhost:12345"
 
-  simulate = function(){
+  simulate = function(bloch){
     const q = qubits.length
+    let file = as_file()
+    if (bloch) {
+      file += `\nbloch\n`
+    }
     return new Promise(function(fThen, fError){
-      $.post(ENDPOINT + "/simulate", {circuit: as_file()})
+      $.post(ENDPOINT + "/simulate", {circuit: file})
       .catch(fError)
       .done(function(data){
+        console.log(data)
         const lines = data.split("\n");
         let states = []
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i];
-          if( line && !isNaN(line) ){
+        let totalmagnitude = 0;
+        let deltai = bloch ? 2 : 1;
+        let start = bloch ? 2+q*2 : 0;
+        for (let i = start; i < lines.length; i += deltai) {
+          let re = lines[i];
+          let im, mag;
+          console.log(re)
+          if( re && !isNaN(re) ){
+            re = Number(re)
+            if( bloch ){
+              im = Number(lines[i+1])
+              mag = Math.sqrt(re**2 + im**2)
+            } else {
+              mag = re
+              re = undefined;
+            }
             let x = states.length
             states.push({
               state: ("0".repeat(q) + x.toString(2)).slice(-q),
-              likelihood: Number(line)
+              real: re, imag: im, likelihood: mag
             })
+            totalmagnitude += mag
+            console.log(states[states.length - 1])
           }
+        }
+        for (let i = 0; i < states.length; i++) {
+          states[i].likelihood /= totalmagnitude;
         }
         fThen(states)
       })
