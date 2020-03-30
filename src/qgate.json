@@ -31,7 +31,9 @@
             "Also known as the \"bit-flip\" or <strong>NOT</strong> gate, as it transforms \\(\\ket{0}\\) to \\(\\ket{1}\\) and vice versa.",
             "On the Bloch sphere, this is a rotation of \\(\\pi\\) in the X axis.",
             "If applied to \\(n\\) qubits, this can be expressed as transforming the qubit-string \\(\\ket{x}\\) to \\(\\ket{2^n-1-x}\\)",
-            "This may be given one or two control qubits. If given two control qubits, it is known as the <strong>Toffoli</strong> gate."
+            "This may be given one or two control qubits. The doubly-controlled X gate is also known as the <strong>Toffoli</strong> gate. ",
+            "If all control qubits are \\(\\ket{1}\\), the operation will be applied; if they are all \\(\\ket{0}\\) it will not. This causes entanglement if the control qubits are in superposition.",
+            "Like the controlled swap (aka Fredkin) gate, the Toffoli gate is universal: that is to say, any quantum circuit can be built entirely out of Toffoli gates."
         ],
         "matrix": [
             "0 & 1",
@@ -44,7 +46,8 @@
         "description": [
             "Maps \\(\\ket{0}\\) to \\(i\\ket{1}\\) and \\(\\ket{1}\\) to \\(-i\\ket{0}\\).",
             "On the Bloch sphere, this is a rotation of \\(\\pi\\) in the Y axis.",
-            "This may be given one control qubit."
+            "This may be given one control qubit.",
+            "If the control qubit is \\(\\ket{1}\\), the operation is applied; if \\(\\ket{0}\\) it is not. If the control qubit is a superposition, this causes entanglement."
         ],
         "matrix": [
             "0  & -1i",
@@ -57,7 +60,8 @@
         "description": [
             "The same as an \\(X\\) gate followed by a \\(Y\\), this maps \\(\\ket{0}\\) to itself and \\(\\ket{1}\\) to \\(-\\ket{1}\\).",
             "On the Bloch sphere, this is a rotation of \\(\\pi\\) in the Z axis.",
-            "This may be given one control qubit."
+            "This may be given one control qubit.",
+            "If the control qubit is \\(\\ket{1}\\), the operation is applied; if \\(\\ket{0}\\) it is not. If the control qubit is a superposition, this causes entanglement."
         ],
         "matrix": [
             "1 &  0",
@@ -119,7 +123,9 @@
         "name": "Qubit-swap gate",
         "description": [
             "Swaps two qubit values between registers.",
-            "This may be given one control qubit, where it is sometimes known as the <strong>Fredkin</strong> gate."
+            "This may be given one control qubit, where it is sometimes known as the <strong>Fredkin</strong> gate.",
+            "If the control qubit is \\(\\ket{1}\\), the operation is applied; if \\(\\ket{0}\\) it is not. If the control qubit is a superposition, this causes entanglement.",
+            "Like the doubly-controlled X (aka Toffoli) gate, the Fredkin gate is universal: that is to say, any quantum circuit can be built entirely from Fredkin gates."
         ],
         "matrix": [
             "1 &0 &0 &0",
