@@ -43,6 +43,6 @@ int main(int argc, char **argv) {
     grovers(circuit);
   }
   auto result = circuit->simulate(1024, false, 0, true);
-  std::cout << circuit->print(result, true);
+  std::cout << circuit->print(result, true, false);
   return 0;
 }

@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
     try {
       auto parsed = parseCircuit(circuitStream);
       auto simResult = parsed.circuit->simulate(parsed.shots, parsed.noGroup,
-                                                parsed.noise, parsed.states);
+                                                parsed.noise, parsed.states, parsed.bloch);
       std::ostringstream results;
       results << "OK\n";
       results << "entries " << simResult.size() << "\n";

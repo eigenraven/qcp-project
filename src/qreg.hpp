@@ -37,7 +37,7 @@ public:
   /// Performs a full simulation
   virtual std::vector<double>
   simulate(gsl::span<std::pair<int, QGate *>> operators, int shots,
-           bool disableGrouping, double noise, bool states) = 0;
+           bool disableGrouping, double noise, bool states, bool bloch) = 0;
 };
 
 /// Implementation of QRegister for a given matrix type
@@ -61,7 +61,7 @@ public:
 
   std::vector<double> simulate(gsl::span<std::pair<int, QGate *>> operators,
                                int shots, bool disableGrouping, double noise,
-                               bool states) final override;
+                               bool states, bool bloch) final override;
 };
 
 template <class M> void QRegisterImpl<M>::reset() {
@@ -171,27 +171,36 @@ template <class M>
 std::vector<double>
 QRegisterImpl<M>::simulate(gsl::span<std::pair<int, QGate *>> operators,
                            int shots, bool disableGrouping, double noise,
-                           bool states) {
+                           bool states, bool bloch) {
   std::vector<double> result;
-  if (states) {
+  if (bloch) {
+    result = std::vector<double>(2 * nqubits);
+  } else if (states) {
     result = std::vector<double>(1 << nqubits);
   } else {
     result = std::vector<double>(nqubits);
   }
-  if (!noise) {
+  if (bloch || !noise) {
     applyOperators(operators, disableGrouping, noise);
   }
-  for (int i = 0; i < shots; i++) {
-    if (noise) {
-      reset();
-      applyOperators(operators, disableGrouping, noise);
+  if (bloch) {
+    for (int row = 0; row < state.rows; row++) {
+      result.push_back(std::real((complex)state(row, 0)));
+      result.push_back(std::imag((complex)state(row, 0)));
     }
-    if (states) {
-      result[measureState()] += 1 / (double)shots;
-    } else {
-      std::vector<int> state = measureQubits();
-      for (int j = 0; j < state.size(); j++) {
-        result[j] += state[j] / (double)shots;
+  } else {
+    for (int i = 0; i < shots; i++) {
+      if (noise) {
+        reset();
+        applyOperators(operators, disableGrouping, noise);
+      }
+      if (states) {
+        result[measureState()] += 1 / (double)shots;
+      } else {
+        std::vector<int> state = measureQubits();
+        for (int j = 0; j < state.size(); j++) {
+          result[j] += state[j] / (double)shots;
+        }
       }
     }
   }

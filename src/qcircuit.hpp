@@ -167,19 +167,25 @@ public:
   /// Performs a circuit simulation, returning the determined probabilities of
   /// states
   inline std::vector<double> simulate(int shots, bool disableGrouping = false,
-                                      double noise = 0.0, bool states = false) {
+                                      double noise = 0.0, bool states = false, bool bloch = false) {
     return qreg->simulate(gsl::make_span(gates), shots, disableGrouping, noise,
-                          states);
+                          states, bloch);
   }
 
   /// Returns raw state probabilities
-  std::string print(std::vector<double> result, bool states) {
+  std::string print(std::vector<double> result, bool states, bool bloch) {
     std::ostringstream s;
-    for (int i = 0; i < result.size(); i++) {
-      if (states) {
-        s << "|" << binary(i, qreg->nqubits) << ">: " << result[i] << "\n";
-      } else {
-        s << "QBit " << i << ": " << result[i] << "\n";
+    if (bloch) {
+      for (int i = 0; i < result.size(); i+= 2) {
+        s << "qubit " << i << ": " << result[i] << "+" << result[i+1] << "i\n";
+      }
+    } else {
+      for (int i = 0; i < result.size(); i++) {
+        if (states) {
+          s << "|" << binary(i, qreg->nqubits) << ">: " << result[i] << "\n";
+        } else {
+          s << "qubit " << i << ": " << result[i] << "\n";
+        }
       }
     }
     return s.str();
