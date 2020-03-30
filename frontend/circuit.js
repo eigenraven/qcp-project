@@ -303,17 +303,27 @@ $(function(){
         const s = states[i];
         let li = percent(s.likelihood, 2)
         let col = fadeAt(s.likelihood, 0.05, 0.3) * 100
+        let state = ""
+        if (s.real !== undefined) {
+          let arg = Math.atan2(s.imag, s.real) * 180 / Math.PI
+          state = `
+            <td>${s.real < 0 ? "\\(-\\)" : ""}</td>
+            <td>\\(${Math.abs(s.real)}\\)</td>
+            <td>\\(${s.imag < 0 ? "-" : "+"} ${Math.abs(s.imag)}i\\)</td>
+            <td>\\(\\quad(\\phi = ${arg}°)\\)</td>`
+        }
         s.el = $(`
-          <li class='state'>
-            <span class='state-ket'>
-              \\(\\ket{${s.state}}\\):
-            </span>
-            <div class='bar'>
+          <tr class='state'>
+            <td class='state-ket'>
+              \\(\\ket{${s.state}}\\)
+            </td>
+            <td class='bar'>
               <div class='fill'
                   style="width: ${li}; color: rgba(0,0,0,${col}%)">
                 ${li}
               </div>
-            </div>
+            </td>
+            ${state}
           </li>`)
           .appendTo('#states')
       }

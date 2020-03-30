@@ -283,13 +283,13 @@ code {
 }
 
 .bar{
-  display: inline-block;
-  width: 30em;
-  max-width: calc(100% - 5em);
+  width: calc(100% - 5em);
+  width: 80%;
   background-color: honeydew;
   transform: translateY(0.333em);
 }
 .bar .fill {
+  height: 100%;
   position: relative;
   background-color: thistle;
 }
