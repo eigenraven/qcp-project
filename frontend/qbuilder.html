@@ -318,7 +318,7 @@ Quantum Builder
 <span class='panel-control-item summoner'>
 <div class='summon-anchor block'>
 <p>
-<strong>Config</strong>: <span class="disp-summary">1024 shots</span>
+<strong>Config</strong>: <span class="disp-summary">predicted</span>
 </p>
 </div>
 <div class='summoned block'>
@@ -326,16 +326,6 @@ Quantum Builder
 <strong>Qubits</strong>: <span class="disp-qubits">0</span>
 <button id='btn-qubit-more' disabled>+</button>
 <button id='btn-qubit-less' disabled>-</button>
-</p>
-<p>
-The simulation will run <strong class="disp-shots">1024</strong> times
-<input type="range" min="2" max="16" value="10" class="slider" id="slider-shots">
-</p>
-<p>
-There is
-<strong><span class="disp-noise-full">no</span> chance of decay</strong>
-<input type="range" min="0" max="10000" value="0" class="slider" id="slider-noise">
-per gate per qubit to \(\ket{0}\)</span>
 </p>
 <h2>Simulation flags</h2>
 <p class='info'>
@@ -348,6 +338,20 @@ Generally, these flags will make simulation quicker.
 <p>
 <strong>Group gates</strong>
 <input type="checkbox" id='check-group' checked>
+</p>
+<h2>Physical simulation</h2>
+<p class='info'>
+These options only occur if "Simulate physical measurement" is ticked.
+</p>
+<p>
+The simulation will run <strong class="disp-shots">1024</strong> times
+<input type="range" min="2" max="16" value="10" class="slider" id="slider-shots">
+</p>
+<p>
+There is
+<strong><span class="disp-noise-full">no</span> chance of decay</strong>
+<input type="range" min="0" max="10000" value="0" class="slider" id="slider-noise">
+per gate per qubit to \(\ket{0}\)</span>
 </p>
 </div>
 </span>
@@ -381,10 +385,14 @@ An error occured while attempting to contact the simulator.
 Please ensure that it is running.
 </p>
 <div class='states hidden'>
-<h2>Results
+<h2>
+Results
 <span class='info'>
-(<a href="#refresh" id='refresh'>refresh</a>)
-</span></h2> 
+<input type="checkbox" id="check-bloch">
+Simulate physical measurements
+(<a href="#refresh" id="refresh">Reload</a>)
+</span>
+</h2>
 <table id='states'>
 </table>
 </div>

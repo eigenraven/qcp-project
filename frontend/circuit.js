@@ -25,6 +25,7 @@ $(function(){
   let conf_default = function(){return {
     noise: 0,
     shots: 1024,
+    showBloch: true,
     isSparse: false,
     doGroup: true,
     emitStates: true,
@@ -39,19 +40,24 @@ $(function(){
     conf.noise = $('#slider-noise').val() / NOISE_SIZE
     conf.isSparse = $('#check-sparse').is(':checked')
     conf.doGroup = $('#check-group').is(':checked')
+    conf.showBloch = ! $('#check-bloch').is(':checked')
 
     $('.disp-qubits').text(qubits.length)
     $('.disp-shots').text(conf.shots)
-    let fragments = [
-      `${conf.shots} shots`
-    ]
-    $('.disp-noise-full').text(
-      conf.noise ? "a " + percent(conf.noise, 2)
-                 : "no") // chance for...
-    conf.noise ? fragments.push(percent(conf.noise, 0) +" decay") :0;
-
-    $('.disp-summary').text(fragments.join(", "))
+    let summary = "predicted"
+    if (!conf.showBloch){
+      let fragments = [
+        `${conf.shots} shots`
+      ]
+      $('.disp-noise-full').text(
+        conf.noise ? "a " + percent(conf.noise, 2)
+                  : "no") // chance for...
+      conf.noise ? fragments.push(percent(conf.noise, 0) +" decay") :0;
+      summary = fragments.join(", ")
+    }
+    $('.disp-summary').text(summary)
     $('#btn-qubit-less').prop("disabled", qubits.length <3)
+    refreshGates()
   }
 
   let addQubit = function(){
@@ -77,7 +83,6 @@ $(function(){
   $('#btn-qubit-more').click(function(){
     addQubit()
     refreshConf()
-    refreshGates()
   });
 
   const MATHJAX_URL = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
@@ -88,7 +93,6 @@ $(function(){
       $('#btn-qubit-more').prop("disabled", false);
       addQubit(); addQubit()
       refreshConf()
-      refreshGates()
       refreshSelector();
     }, 100)
   })
@@ -105,7 +109,6 @@ $(function(){
         qubits.push(line)
       }
       refreshConf()
-      refreshGates()
     }
   })
 
@@ -116,6 +119,7 @@ $(function(){
 
   $('#check-sparse').change(refreshConf)
   $('#check-group').change(refreshConf)
+  $('#check-bloch').change(refreshConf)
 
   /* GATES */
   circuit_gates = []
@@ -296,7 +300,7 @@ $(function(){
     MathJax.typeset()
     
     $('.state').remove()
-    simulate(true).then(function(states){
+    simulate().then(function(states){
       $('.states-error').addClass('hidden')
       $('.states').removeClass('hidden')
       for (let i = 0; i < states.length; i++) {
@@ -343,29 +347,26 @@ $(function(){
 
   const ENDPOINT = "http://localhost:12345"
 
-  simulate = function(bloch){
+  simulate = function(){
     const q = qubits.length
-    let file = as_file()
-    if (bloch) {
-      file += `\nbloch\n`
-    }
+    console.log(as_file())
     return new Promise(function(fThen, fError){
-      $.post(ENDPOINT + "/simulate", {circuit: file})
+      $.post(ENDPOINT + "/simulate", {circuit: as_file()})
       .catch(fError)
       .done(function(data){
         console.log(data)
         const lines = data.split("\n");
         let states = []
         let totalmagnitude = 0;
-        let deltai = bloch ? 2 : 1;
-        let start = bloch ? 2+q*2 : 0;
-        for (let i = start; i < lines.length; i += deltai) {
+        let delta = conf.showBloch ? 2 : 1;
+        let start = conf.showBloch ? 2+q*2 : 0;
+        for (let i = start; i < lines.length; i += delta) {
           let re = lines[i];
           let im, mag;
           console.log(re)
           if( re && !isNaN(re) ){
             re = Number(re)
-            if( bloch ){
+            if( conf.showBloch ){
               im = Number(lines[i+1])
               mag = Math.sqrt(re**2 + im**2)
             } else {
@@ -396,10 +397,8 @@ $(function(){
 
 
   as_file = function(){
-    // TODO: implement form & gathering
-    emitStates = true;
-
     str = `qubits,${qubits.length}\n`
+    if(conf.showBloch) str += `bloch\n`
     if(conf.shots != 1024) str += `shots,${conf.shots}\n`
     if(conf.noise) str += `noise,${conf.noise}\n`
     if(conf.isSparse) str += `sparse\n`
