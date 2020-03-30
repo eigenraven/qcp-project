@@ -185,8 +185,9 @@ QRegisterImpl<M>::simulate(gsl::span<std::pair<int, QGate *>> operators,
   }
   if (bloch) {
     for (int row = 0; row < state.rows; row++) {
-      result.push_back(std::real((complex)state(row, 0)));
-      result.push_back(std::imag((complex)state(row, 0)));
+      complex z = state(row, 0);
+      result.push_back(std::real(z));
+      result.push_back(std::imag(z));
     }
   } else {
     for (int i = 0; i < shots; i++) {
