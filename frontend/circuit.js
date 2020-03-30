@@ -25,7 +25,7 @@ $(function(){
   let conf_default = function(){return {
     noise: 0,
     shots: 1024,
-    showBloch: true,
+    showPhase: true,
     isSparse: false,
     doGroup: true,
     emitStates: true,
@@ -40,12 +40,12 @@ $(function(){
     conf.noise = $('#slider-noise').val() / NOISE_SIZE
     conf.isSparse = $('#check-sparse').is(':checked')
     conf.doGroup = $('#check-group').is(':checked')
-    conf.showBloch = ! $('#check-phase').is(':checked')
+    conf.showPhase = $('#check-phase').is(':checked')
 
     $('.disp-qubits').text(qubits.length)
     $('.disp-shots').text(conf.shots)
     let summary = "predicted"
-    if (!conf.showBloch){
+    if (!conf.showPhase){
       let fragments = [
         `${conf.shots} shots`
       ]
@@ -357,14 +357,14 @@ $(function(){
         const lines = data.split("\n");
         let states = []
         let totalmagnitude = 0;
-        let delta = conf.showBloch ? 2 : 1;
-        let start = conf.showBloch ? 2+q*2 : 0;
+        let delta = conf.showPhase ? 2 : 1;
+        let start = conf.showPhase ? 2+q*2 : 0;
         for (let i = start; i < lines.length; i += delta) {
           let re = lines[i];
           let im, mag;
           if( re && !isNaN(re) ){
             re = Number(re)
-            if( conf.showBloch ){
+            if( conf.showPhase ){
               im = Number(lines[i+1])
               mag = Math.sqrt(re**2 + im**2)
             } else {
@@ -395,7 +395,7 @@ $(function(){
 
   as_file = function(){
     str = `qubits,${qubits.length}\n`
-    if(conf.showBloch) str += `phase\n`
+    if(conf.showPhase) str += `phase\n`
     if(conf.shots != 1024) str += `shots,${conf.shots}\n`
     if(conf.noise) str += `noise,${conf.noise}\n`
     if(conf.isSparse) str += `sparse\n`
