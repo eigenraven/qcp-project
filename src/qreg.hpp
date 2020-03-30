@@ -37,7 +37,7 @@ public:
   /// Performs a full simulation
   virtual std::vector<double>
   simulate(gsl::span<std::pair<int, QGate *>> operators, int shots,
-           bool disableGrouping, double noise, bool states, bool bloch) = 0;
+           bool disableGrouping, double noise, bool states, bool phase) = 0;
 };
 
 /// Implementation of QRegister for a given matrix type
@@ -61,7 +61,7 @@ public:
 
   std::vector<double> simulate(gsl::span<std::pair<int, QGate *>> operators,
                                int shots, bool disableGrouping, double noise,
-                               bool states, bool bloch) final override;
+                               bool states, bool phase) final override;
 };
 
 template <class M> void QRegisterImpl<M>::reset() {
@@ -171,19 +171,19 @@ template <class M>
 std::vector<double>
 QRegisterImpl<M>::simulate(gsl::span<std::pair<int, QGate *>> operators,
                            int shots, bool disableGrouping, double noise,
-                           bool states, bool bloch) {
+                           bool states, bool phase) {
   std::vector<double> result;
-  if (bloch) {
+  if (phase) {
     result = std::vector<double>(2 * nqubits);
   } else if (states) {
     result = std::vector<double>(1 << nqubits);
   } else {
     result = std::vector<double>(nqubits);
   }
-  if (bloch || !noise) {
+  if (phase || !noise) {
     applyOperators(operators, disableGrouping, noise);
   }
-  if (bloch) {
+  if (phase) {
     for (int row = 0; row < state.rows; row++) {
       complex z = state(row, 0);
       result.push_back(std::real(z));

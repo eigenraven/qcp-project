@@ -40,7 +40,7 @@ $(function(){
     conf.noise = $('#slider-noise').val() / NOISE_SIZE
     conf.isSparse = $('#check-sparse').is(':checked')
     conf.doGroup = $('#check-group').is(':checked')
-    conf.showBloch = ! $('#check-bloch').is(':checked')
+    conf.showBloch = ! $('#check-phase').is(':checked')
 
     $('.disp-qubits').text(qubits.length)
     $('.disp-shots').text(conf.shots)
@@ -119,7 +119,7 @@ $(function(){
 
   $('#check-sparse').change(refreshConf)
   $('#check-group').change(refreshConf)
-  $('#check-bloch').change(refreshConf)
+  $('#check-phase').change(refreshConf)
 
   /* GATES */
   circuit_gates = []
@@ -349,7 +349,6 @@ $(function(){
 
   simulate = function(){
     const q = qubits.length
-    console.log(as_file())
     return new Promise(function(fThen, fError){
       $.post(ENDPOINT + "/simulate", {circuit: as_file()})
       .catch(fError)
@@ -363,7 +362,6 @@ $(function(){
         for (let i = start; i < lines.length; i += delta) {
           let re = lines[i];
           let im, mag;
-          console.log(re)
           if( re && !isNaN(re) ){
             re = Number(re)
             if( conf.showBloch ){
@@ -379,7 +377,6 @@ $(function(){
               real: re, imag: im, likelihood: mag
             })
             totalmagnitude += mag
-            console.log(states[states.length - 1])
           }
         }
         for (let i = 0; i < states.length; i++) {
@@ -398,7 +395,7 @@ $(function(){
 
   as_file = function(){
     str = `qubits,${qubits.length}\n`
-    if(conf.showBloch) str += `bloch\n`
+    if(conf.showBloch) str += `phase\n`
     if(conf.shots != 1024) str += `shots,${conf.shots}\n`
     if(conf.noise) str += `noise,${conf.noise}\n`
     if(conf.isSparse) str += `sparse\n`

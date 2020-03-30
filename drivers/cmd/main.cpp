@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
   if (argc < 2 || inputFilePath.size() == 0) {
     std::cerr << "Usage: " << argv[0]
               << " <input file> [--noise,0.5] [--sparse] [--nogroup] "
-                 "[--states] [--bloch] [--benchmark,64]"
+                 "[--states] [--phase] [--benchmark,64]"
               << std::endl;
     return 1;
   }
@@ -51,9 +51,9 @@ int main(int argc, char **argv) {
     auto tParsed = hrclock::now();
     if (parsed.benchmark <= 0) {
       auto result = parsed.circuit->simulate(parsed.shots, parsed.noGroup,
-                                             parsed.noise, parsed.states, parsed.bloch);
+                                             parsed.noise, parsed.states, parsed.phase);
       auto tSimulated = hrclock::now();
-      std::cout << parsed.circuit->print(result, parsed.states, parsed.bloch);
+      std::cout << parsed.circuit->print(result, parsed.states, parsed.phase);
       int64_t nsParse =
           std::chrono::duration_cast<std::chrono::nanoseconds>(tParsed - tStart)
               .count();
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
         auto tIterStart = hrclock::now();
         parsed.circuit->reset();
         parsed.circuit->simulate(parsed.shots, parsed.noGroup, parsed.noise,
-                                 parsed.states, parsed.bloch);
+                                 parsed.states, parsed.phase);
         auto tIterEnd = hrclock::now();
         int64_t nsIter = std::chrono::duration_cast<std::chrono::nanoseconds>(
                              tIterEnd - tIterStart)
