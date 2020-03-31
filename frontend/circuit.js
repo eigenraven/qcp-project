@@ -190,9 +190,10 @@ $(function(){
     })
   })
 
-  /* Selecting a qubit (for now) adds the gate to the end of that qubit. */
-  /* This is naturally temporary to bootstrap the rest of functionality. */
   let select_qubit = function(q, index){
+    /* Select a qubit to place the gate.
+     * This may also have an index to insert before another gate.
+     */
     if( !sel.gate ){ return; }
     if( sel.args.includes(q) || sel.cargs.includes(q) ){
       if( !tryAddGate() ){
@@ -203,8 +204,7 @@ $(function(){
     let gate = GATES[sel.gate]
     let c = gate.control_arities
 
-    if( sel.args.length == 0 && index !== undefined){
-      console.log("index", index)
+    if( !isNaN(index) ){
       sel.index = index
     }
 
@@ -226,7 +226,9 @@ $(function(){
   }
 
   let tryAddGate = function(){
-    /* Try to add the working gate. Will fail gracefully if not complete. */
+    /* Try to add the working gate.
+     * Will fail gracefully if not complete.
+     */
     if( sel.gate ){
       let q = GATES[sel.gate]
       if (sel.args.length == q.arity && sel.cargs.length in q.control_arities){
@@ -266,7 +268,7 @@ $(function(){
         let control = hasControl ? `
             <div class='gate-control'>
               <div class='delete'>×</div>
-              <div class='add'>+</div>
+              <div class='add'>←</div>
             </div>` : ""
         let el = $(`
           <td class="${ico.clsOuter.join(' ')}">

@@ -212,7 +212,7 @@ code {
   padding: 3px;
   padding-left: 9px;
   border-radius: 4px;
-  transform: translate(40px, -46px);
+  transform: translate(-23px, -46px);
   z-index: 200;
 }
 .qubit td:hover .gate-control {
@@ -221,9 +221,15 @@ code {
 }
 .gate-control .delete {
   color: coral;
+  cursor: pointer;
 }
 .gate-control .add {
   color: greenyellow;
+  cursor: pointer;
+  display: none;
+}
+.selection .gate-control .add {
+  display: inherit;
 }
 
 .gate-icon .MathJax {
