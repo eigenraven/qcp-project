@@ -270,8 +270,7 @@ $(function(){
           clsMiddle: ["placed-gate"],
           clsInner: ["gate-icon", "empty"]
         }
-        let is = x => ico.clsInner.includes(x);
-        let hasControl = !is("empty") && !is("control-dot")
+        let hasControl = !ico.clsInner.includes("empty");
         let control = hasControl ? `
             <div class='gate-control'>
               <div class='delete'>×</div>
