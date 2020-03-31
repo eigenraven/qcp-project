@@ -249,23 +249,30 @@ $(function(){
           clsMiddle: ["placed-gate"],
           clsInner: ["gate-icon", "empty"]
         }
-        let control = ""
         let is = x => ico.clsInner.includes(x);
-        if ( !is("empty") && !is("control-dot") ){
-          control = `
+        let hasControl = !is("empty") && !is("control-dot")
+        let control = hasControl ? `
             <div class='gate-control'>
               <div class='delete'>×</div>
               <div class='add'>+</div>
-            </div>`
-        }
-        $(` <td class="${ico.clsOuter.join(' ')}">
-              <div class="${ico.clsMiddle.join(' ')}">
-                <div class="${ico.clsInner.join(' ')}">
-                  ${ico.symbol}
-                </div>
-                ${control}
+            </div>` : ""
+        let el = $(`
+          <td class="${ico.clsOuter.join(' ')}">
+            <div class="${ico.clsMiddle.join(' ')}">
+              <div class="${ico.clsInner.join(' ')}">
+                ${ico.symbol}
               </div>
-            </td>`).appendTo(qubits[q].el)
+              ${control}
+            </div>
+          </td>`).appendTo(qubits[q].el)
+        if (hasControl) {
+          el.find('.delete').click(function(){
+            let a = circuit_gates[ico.g]
+            console.log(a)
+            circuit_gates.splice(ico.g, 1)
+            refreshGates()
+          })
+        }
       }
       column = []
     }
@@ -285,6 +292,7 @@ $(function(){
       
       for (let q = g_min_q; q <= g_max_q; q++) {
         let ico = {
+          g: g,
           clsOuter: ["gate", gateType.kind],
           clsMiddle: ["placed-gate"],
           clsInner: ["gate-icon"],
