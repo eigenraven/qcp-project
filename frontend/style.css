@@ -136,18 +136,18 @@ code {
 }
 
 .general .gate-icon,
-.qubit .general::before,
-.qubit .general::after {
+.general .down::before,
+.general .up::after {
   background: thistle;
 }
 .rotation .gate-icon,
-.rotation::before,
-.rotation::after {
+.rotation .up::before,
+.rotation .down::after {
   background: wheat;
 }
 .phase .gate-icon,
-.qubit .phase::before,
-.qubit .phase::after {
+.phase .up::before,
+.phase .down::after {
   background: pink;
 }
 
@@ -155,8 +155,8 @@ code {
   background: lightskyblue;
 }
 .qubit .swap .gate-icon,
-.qubit .swap::before,
-.qubit .swap::after {
+.swap .up::before,
+.swap .down::after {
   background: lightskyblue;
 }
 .qubit .swap .gate-icon:not(.control-dot) {
@@ -183,8 +183,8 @@ code {
   background: transparent;
 }
 /* up and down indicate connections in a gate*/
-.gate.up::before,
-.gate.down::after{
+.placed-gate.up::before,
+.placed-gate.down::after{
   content: "";
   width: 2px;
   display: inline-block;
@@ -192,11 +192,30 @@ code {
   height: 42px;
   z-index: 0;
 }
-.gate.down::after {
+.placed-gate.up::before {
+  transform: translate(22px, -18px);
+}
+.placed-gate.down::after {
   transform: translate(-24px, 23px);
 }
-.gate.up::before {
-  transform: translate(22px, -18px);
+
+.qubit td:hover .gate-icon {
+  z-index: 201;
+}
+.gate-control {
+  display: none;
+  background: silver;
+  width: 15px;
+  height: 40px;
+  padding: 3px;
+  padding-left: 9px;
+  border-radius: 4px;
+  transform: translate(40px, -46px);
+  z-index: 200;
+}
+.qubit td:hover .gate-control {
+  display: inherit;
+  position: fixed;
 }
 
 .gate-icon .MathJax {

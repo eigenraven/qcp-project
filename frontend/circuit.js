@@ -249,10 +249,25 @@ $(function(){
       for (let q = 0; q < qubits.length; q++) {
         const ico = column[q] || {
           clsOuter: ["gate"], symbol: "",
+          clsMiddle: ["placed-gate"],
           clsInner: ["gate-icon", "empty"]
         }
+        let control = ""
+        let is = x => ico.clsInner.includes(x);
+        if ( !is("empty") && !is("control-dot") ){
+          control = `
+            <div class='gate-control'>
+              <div class='delete'>X</div>
+              <div class='add'>+</div>
+            </div>`
+        }
         $(` <td class="${ico.clsOuter.join(' ')}">
-              <div class="${ico.clsInner.join(' ')}">${ico.symbol}</div>
+              <div class="${ico.clsMiddle.join(' ')}">
+                <div class="${ico.clsInner.join(' ')}">
+                  ${ico.symbol}
+                </div>
+                ${control}
+              </div>
             </td>`).appendTo(qubits[q].el)
       }
       column = []
@@ -274,12 +289,13 @@ $(function(){
       for (let q = g_min_q; q <= g_max_q; q++) {
         let ico = {
           clsOuter: ["gate", gateType.kind],
+          clsMiddle: ["placed-gate"],
           clsInner: ["gate-icon"],
           symbol: ""
         }
 
-        if( q != g_min_q ){ico.clsOuter.push('up')}
-        if( q != g_max_q ){ico.clsOuter.push('down')}
+        if( q != g_min_q ){ico.clsMiddle.push('up')}
+        if( q != g_max_q ){ico.clsMiddle.push('down')}
 
         if( gate.args.includes(q) ){
           ico.symbol = gateType.kind == "swap"
