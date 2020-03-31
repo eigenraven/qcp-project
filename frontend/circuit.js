@@ -254,7 +254,7 @@ $(function(){
         if ( !is("empty") && !is("control-dot") ){
           control = `
             <div class='gate-control'>
-              <div class='delete'>X</div>
+              <div class='delete'>×</div>
               <div class='add'>+</div>
             </div>`
         }
