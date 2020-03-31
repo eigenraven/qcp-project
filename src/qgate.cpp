@@ -107,7 +107,7 @@ cos(theta*0.5)*complex{cos(0.5*(phi+lambda)),sin(0.5*(phi+lambda))}}));
 std::optional<QGate *> getGate(std::string gate) {
   if (gate == "id" || gate == "nop") {
     return &ID;
-  } else if (gate == "not" || gate == "x") {
+  } else if (gate == "x" || gate == "not") {
     return &X;
   } else if (gate == "y") {
     return &Y;
@@ -125,7 +125,7 @@ std::optional<QGate *> getGate(std::string gate) {
     return &V;
   } else if (gate == "vinv" || gate == "vdg") {
     return &Vinv;
-  } else if (gate == "cnot" || gate == "cx" ) {
+  } else if (gate == "cx" || gate == "cnot" ) {
     return &CNOT;
   } else if (gate == "cy") {
     return &CY;
@@ -133,9 +133,9 @@ std::optional<QGate *> getGate(std::string gate) {
     return &CZ;
   } else if (gate == "swap") {
     return &SWAP;
-  } else if (gate == "cswap") {
+  } else if (gate == "cswap" || gate == "fredkin" ) {
     return &CSWAP;
-  } else if (gate == "ccnot" || gate == "ccx" || gate == "toffoli") {
+  } else if (gate == "ccx" || gate == "ccnot" || gate == "toffoli") {
     return &CCNOT;
   } else
     return std::nullopt;

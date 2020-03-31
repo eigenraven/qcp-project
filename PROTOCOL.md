@@ -51,5 +51,5 @@ All gate arguments are integers, starting from 0, representing the qubit index(e
 For controlled gates, the target qubit is the final argument.
 
   - **Controlled unary gates**: `cx`/`cnot`, `cy`, `cz`
-  - **Controlled binary gates**: `cswap`
+  - **Controlled binary gates**: `cswap`/`fredkin`
   - **Doubly-controlled unary gates**: `ccx`/`ccnot`/`toffoli`
