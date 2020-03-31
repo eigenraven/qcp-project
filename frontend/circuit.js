@@ -56,7 +56,6 @@ $(function(){
 
   let addQubit = function(){
     let n = qubits.length
-    console.log(`qubits +> ${n+1}`)
     let qubit = {
       gates_used: [],
       el: $(`
@@ -96,7 +95,6 @@ $(function(){
 
   $('#btn-qubit-less').click(function(){
     if (qubits.length > 2) {
-      console.log(`qubits -> ${qubits.length - 1}`)
       let line = qubits.pop()
       let lineIsEmpty = true
       if (lineIsEmpty) {
@@ -231,7 +229,6 @@ $(function(){
           const qindex = sel.all_args[i];
           qubits[qindex].gates_used.push(sel)
         }
-        console.log('Gate added:', sel.gate, sel.all_args)
         sel = newSel()
         refreshSelector()
         refreshGates()
@@ -379,7 +376,6 @@ $(function(){
 
 
   as_file = function(){
-    // TODO: implement form & gathering
     emitStates = true;
 
     str = `qubits,${qubits.length}\n`
@@ -438,7 +434,6 @@ $(function(){
     fr.readAsText(file)
     loadingError = false
 
-    console.log(`Loading file ${filename}...`)
     $('.disp-load-name').removeClass('error')
     $('.disp-load-error').text("")
 
@@ -458,7 +453,6 @@ $(function(){
       lines = fr.result.split(/\r\n|\r|\n/)
       for (let l = 0; l < lines.length; l++) {
         const line = lines[l];
-        console.log(line)
         if( !line || line.startsWith(`//`)){
           continue; // strip comments
         }
@@ -473,7 +467,6 @@ $(function(){
           }
           let numval = Number(token)
           if( cond(numval) ){
-            console.log(name, "obtained", numval)
             f_conf[name] = numval
           } else {
             error(l, `'${name}' cannot be ${token}`)
@@ -511,11 +504,9 @@ $(function(){
             if( !gate ){
               return error(l, `unknown operation "${name}"`)
             }
-            console.log(name, args, gate)
             if( args.length < gate.arity ){
               return error(l, `not enough args to ${name} (need ${gate.arity})`)
             } else {
-              // TODO: assert stuff with indices here
               f_gates.push({
                 gate: name,
                 args: args,
@@ -544,15 +535,10 @@ $(function(){
         $('#slider-noise').val(conf.noise * NOISE_SIZE)
   
         $('.disp-load-name').html(`<code>${file.name}</code>`)
-        console.log('loaded successfully!')
-        console.log(conf)
-        console.log(f_gates)
+
         refreshConf()
         refreshSelector()
         refreshGates()
-        // TODO: actually load
-      } else {
-        console.log('loaded abysmally!')
       }
     }, FILE_LOAD_TIMEOUT)
   })
