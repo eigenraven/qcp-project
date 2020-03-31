@@ -62,7 +62,6 @@ $(function(){
 
   let addQubit = function(){
     let n = qubits.length
-    console.log(`qubits +> ${n+1}`)
     let qubit = {
       gates_used: [],
       el: $(`
@@ -77,7 +76,7 @@ $(function(){
       .appendTo('#qubits')
     }
     MathJax.typeset()
-    qubit.el.children('.header').click(()=>qubit_clicked(n))
+    qubit.el.children('.header').click(()=>select_qubit(n))
     qubits.push(qubit)
   };
   $('#btn-qubit-more').click(function(){
@@ -100,7 +99,6 @@ $(function(){
 
   $('#btn-qubit-less').click(function(){
     if (qubits.length > 2) {
-      console.log(`qubits -> ${qubits.length - 1}`)
       let line = qubits.pop()
       let lineIsEmpty = true
       if (lineIsEmpty) {
@@ -177,6 +175,9 @@ $(function(){
           msg_qubit += `${ORDINAL[sel.args.length]} `
         }
         msg_qubit += "qubit to act on."
+        if (circuit_gates.length) {
+          msg_qubit += " Mouse over a gate to insert before it."
+        }
       }
     }
     $('#status').html(msg)
@@ -196,27 +197,34 @@ $(function(){
     })
   })
 
-  /* Selecting a qubit (for now) adds the gate to the end of that qubit. */
-  /* This is naturally temporary to bootstrap the rest of functionality. */
-  let qubit_clicked = function(index){
+  let select_qubit = function(q, index){
+    /* Select a qubit to place the gate.
+     * This may also have an index to insert before another gate.
+     */
     if( !sel.gate ){ return; }
-    if( sel.args.includes(index) || sel.cargs.includes(index) ){
+    if( sel.args.includes(q) || sel.cargs.includes(q) ){
       if( !tryAddGate() ){
-        console.log(`Attempted to add index ${index} (already added)`)
+        console.log(`Attempted to select qubit ${q} (already added)`)
       }
       return;
     }
-    let q = GATES[sel.gate]
-    let c = q.control_arities
+    let gate = GATES[sel.gate]
+    let c = gate.control_arities
 
-    if( sel.args.length < q.arity ){
-      sel.args.push(index)
-    } else {
-      sel.cargs.push(index)
+    if( !isNaN(index) ){
+      sel.index = index
     }
 
+    if( sel.args.length < gate.arity ){
+      sel.args.push(q)
+    } else {
+      sel.cargs.push(q)
+    }
+
+    console.log("gate", gate)
+
     /* allow optional extra control qubits */
-    if( sel.cargs.length == c[c.length - 1] ){
+    if( c && sel.cargs.length == c[c.length - 1] ){
       tryAddGate()
     } else if( sel.args.length + sel.cargs.length == qubits.length ){
       tryAddGate()
@@ -225,17 +233,23 @@ $(function(){
   }
 
   let tryAddGate = function(){
-    /* Try to add the working gate. Will fail gracefully if not complete. */
+    /* Try to add the working gate.
+     * Will fail gracefully if not complete.
+     */
     if( sel.gate ){
       let q = GATES[sel.gate]
       if (sel.args.length == q.arity && sel.cargs.length in q.control_arities){
-        circuit_gates.push(sel)
+        if ( !isNaN(sel.index) ){
+          circuit_gates.splice(sel.index, 0, sel)
+        } else {
+          circuit_gates.push(sel)
+        }
+        console.log(sel)
         sel.all_args = sel.cargs.concat(sel.args)
         for (let i = 0; i < sel.all_args.length; i++) {
           const qindex = sel.all_args[i];
           qubits[qindex].gates_used.push(sel)
         }
-        console.log('Gate added:', sel.gate, sel.all_args)
         sel = newSel()
         refreshSelector()
         refreshGates()
@@ -253,11 +267,36 @@ $(function(){
       for (let q = 0; q < qubits.length; q++) {
         const ico = column[q] || {
           clsOuter: ["gate"], symbol: "",
+          clsMiddle: ["placed-gate"],
           clsInner: ["gate-icon", "empty"]
         }
-        $(` <td class="${ico.clsOuter.join(' ')}">
-              <div class="${ico.clsInner.join(' ')}">${ico.symbol}</div>
-            </td>`).appendTo(qubits[q].el)
+        let is = x => ico.clsInner.includes(x);
+        let hasControl = !is("empty") && !is("control-dot")
+        let control = hasControl ? `
+            <div class='gate-control'>
+              <div class='delete'>×</div>
+              <div class='add'>←</div>
+            </div>` : ""
+        let el = $(`
+          <td class="${ico.clsOuter.join(' ')}">
+            <div class="${ico.clsMiddle.join(' ')}">
+              <div class="${ico.clsInner.join(' ')}">
+                ${ico.symbol}
+              </div>
+              ${control}
+            </div>
+          </td>`).appendTo(qubits[q].el)
+        if (hasControl) {
+          el.find('.delete').click(function(){
+            let a = circuit_gates[ico.g]
+            console.log(a)
+            circuit_gates.splice(ico.g, 1)
+            refreshGates()
+          })
+          el.find('.add').click(function(){
+            select_qubit(q, ico.g)
+          })
+        }
       }
       column = []
     }
@@ -277,13 +316,15 @@ $(function(){
       
       for (let q = g_min_q; q <= g_max_q; q++) {
         let ico = {
+          g: g,
           clsOuter: ["gate", gateType.kind],
+          clsMiddle: ["placed-gate"],
           clsInner: ["gate-icon"],
           symbol: ""
         }
 
-        if( q != g_min_q ){ico.clsOuter.push('up')}
-        if( q != g_max_q ){ico.clsOuter.push('down')}
+        if( q != g_min_q ){ico.clsMiddle.push('up')}
+        if( q != g_max_q ){ico.clsMiddle.push('down')}
 
         if( gate.args.includes(q) ){
           ico.symbol = gateType.kind == "swap"
@@ -451,7 +492,6 @@ $(function(){
     fr.readAsText(file)
     loadingError = false
 
-    console.log(`Loading file ${filename}...`)
     $('.disp-load-name').removeClass('error')
     $('.disp-load-error').text("")
 
@@ -471,7 +511,6 @@ $(function(){
       lines = fr.result.split(/\r\n|\r|\n/)
       for (let l = 0; l < lines.length; l++) {
         const line = lines[l];
-        console.log(line)
         if( !line || line.startsWith(`//`)){
           continue; // strip comments
         }
@@ -486,7 +525,6 @@ $(function(){
           }
           let numval = Number(token)
           if( cond(numval) ){
-            console.log(name, "obtained", numval)
             f_conf[name] = numval
           } else {
             error(l, `'${name}' cannot be ${token}`)
@@ -524,11 +562,9 @@ $(function(){
             if( !gate ){
               return error(l, `unknown operation "${name}"`)
             }
-            console.log(name, args, gate)
             if( args.length < gate.arity ){
               return error(l, `not enough args to ${name} (need ${gate.arity})`)
             } else {
-              // TODO: assert stuff with indices here
               f_gates.push({
                 gate: name,
                 args: args,
@@ -557,15 +593,10 @@ $(function(){
         $('#slider-noise').val(conf.noise * NOISE_SIZE)
   
         $('.disp-load-name').html(`<code>${file.name}</code>`)
-        console.log('loaded successfully!')
-        console.log(conf)
-        console.log(f_gates)
+
         refreshConf()
         refreshSelector()
         refreshGates()
-        // TODO: actually load
-      } else {
-        console.log('loaded abysmally!')
       }
     }, FILE_LOAD_TIMEOUT)
   })
