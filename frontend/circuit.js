@@ -70,7 +70,7 @@ $(function(){
       .appendTo('#qubits')
     }
     MathJax.typeset()
-    qubit.el.children('.header').click(()=>qubit_clicked(n))
+    qubit.el.children('.header').click(()=>select_qubit(n))
     qubits.push(qubit)
   };
   $('#btn-qubit-more').click(function(){
@@ -192,25 +192,32 @@ $(function(){
 
   /* Selecting a qubit (for now) adds the gate to the end of that qubit. */
   /* This is naturally temporary to bootstrap the rest of functionality. */
-  let qubit_clicked = function(index){
+  let select_qubit = function(q, index){
     if( !sel.gate ){ return; }
-    if( sel.args.includes(index) || sel.cargs.includes(index) ){
+    if( sel.args.includes(q) || sel.cargs.includes(q) ){
       if( !tryAddGate() ){
-        console.log(`Attempted to add index ${index} (already added)`)
+        console.log(`Attempted to select qubit ${q} (already added)`)
       }
       return;
     }
-    let q = GATES[sel.gate]
-    let c = q.control_arities
+    let gate = GATES[sel.gate]
+    let c = gate.control_arities
 
-    if( sel.args.length < q.arity ){
-      sel.args.push(index)
-    } else {
-      sel.cargs.push(index)
+    if( sel.args.length == 0 && index !== undefined){
+      console.log("index", index)
+      sel.index = index
     }
 
+    if( sel.args.length < gate.arity ){
+      sel.args.push(q)
+    } else {
+      sel.cargs.push(q)
+    }
+
+    console.log("gate", gate)
+
     /* allow optional extra control qubits */
-    if( sel.cargs.length == c[c.length - 1] ){
+    if( c && sel.cargs.length == c[c.length - 1] ){
       tryAddGate()
     } else if( sel.args.length + sel.cargs.length == qubits.length ){
       tryAddGate()
@@ -223,7 +230,12 @@ $(function(){
     if( sel.gate ){
       let q = GATES[sel.gate]
       if (sel.args.length == q.arity && sel.cargs.length in q.control_arities){
-        circuit_gates.push(sel)
+        if ( !isNaN(sel.index) ){
+          circuit_gates.splice(sel.index, 0, sel)
+        } else {
+          circuit_gates.push(sel)
+        }
+        console.log(sel)
         sel.all_args = sel.cargs.concat(sel.args)
         for (let i = 0; i < sel.all_args.length; i++) {
           const qindex = sel.all_args[i];
@@ -271,6 +283,9 @@ $(function(){
             console.log(a)
             circuit_gates.splice(ico.g, 1)
             refreshGates()
+          })
+          el.find('.add').click(function(){
+            select_qubit(q, ico.g)
           })
         }
       }
