@@ -27,17 +27,35 @@ The circuit MUST begin with the instruction:
 
   - **Mandatory header**: `qubits`. One argument: the number of qubits.
 
-### Headers and gates
+#### Headers defining output mode
 
-The following headers may be applied; some change state, whereas some change simulation behaviour. Headers MAY be defined any where but SHOULD be defined before gates.
+Whether in command-line or HTTP output the simulation will return a list of floating-point numbers. Depending on if the headers `phase` and `states` are provided, the simulation may show the internal state with qubit phase, or measure the result to classical bits and return rational numbers (where `shots` is the denominator) corresponding to the probability of qubits or states.
+ 
+The behaviour is as follows, where *n* is the amount of `qubits` and *x* is the amount of `shots`:
+
+| header      | lines returned | times simulated | returns...                  |  of...
+|:----------- | --------------:| ---------------:| --------------------------- | -------------------------
+| `phase`     |         *2×2ⁿ* |             *1* | internal state (Re, Im)     | states \|0⋯00>, \|0⋯01>, ⋯
+| `states`    |           *2ⁿ* |             *x* | expected prob. ∝ √(Re²+Im²) | states \|0⋯00>, \|0⋯01>, ⋯
+| \[default\] |            *n* |             *x* | expected overall prob.      | individual qubits (no entanglement)
+
+#### Optional performance headers
+
+These headers, if present, will change the internal mechanisms, usually to be more performant.
+
+  - **Optional header**: `sparse`. Switches the simulator over to sparse matrix types (faster for most cases).
+  - **Optional header**: `nogroup`. Applies the gates one-by-one instead of grouping non-overlapping ones into fewer kronecker products
+  
+#### Optional simulation headers
+
+These headers have a default value. They are only considered when physically measuring the circuit: if `phase` is set, these will not apply.
 
   - **Optional header**: `shots`. One argument, default `1024`: the number of times the circuit is evaluated.
   - **Optional header (float)**: `noise`. One argument, default `0`: the probability per operation per qubit of decay to |0>. Significantly decreases performance if `0`.
-  - **Optional header**: `sparse`. Switches the simulator over to sparse matrix types (faster for most cases).
-  - **Optional header**: `nogroup`. Applies the gates one-by-one instead of grouping non-overlapping ones into fewer kronecker products
-  - **Optional header**: `states`. Makes the simulator output the final probabilities of each qubit state instead of evaluating them with random sampling.
+  
+#### Gates
 
-Gates MUST be defined in execution order. (Some gates have multiple aliases.)Information on their use in circuitry can be found in the front-end.
+Gates MUST be defined in execution order. (Some gates have multiple aliases.) Information on their use in circuitry can be found in the front-end.
 
 Unless specified, gate arguments are integers, starting from 0, representing the qubit index(es) they act on.
 
@@ -49,18 +67,8 @@ For controlled gates, the target qubit is the final argument.
   - **Binary controlled gates**: `cx`/`cnot`, `cy`, `cz`
   - **Ternary controlled gates**: `cswap`, `ccx`/`ccnot`/`toffoli`
 
-### Simulation output
-
-At the moment, the simulation will definably measure the result of each simulation to a classical bit. Unless `shots` is set to 1, the output therefore represents a probability over the amount of simulations – that is to say, there is no flag set to return a predicted result. 
-
-The result from the simulation may format the output in varying formats. For *q* qubits, we will receive the following:
-
- - If `states` is set, *2^q* lines are returned corresponding to the individual probabilities of each state: |0⋯00>, |0⋯01>, |0⋯10>, and so on.
- - If `states` is **not** set, *q* lines are returned corresponding to the overall probability of each qubit being measured as zero or one. This is useful for individual tests, but will not capture entanglement of qubits. 
-
-
-### Demo programs
-Two demo programs are written and located in `PROJECT_DIR/demo`
+## Demo programs
+Two demo programs are written and located in `PROJECT_DIR/demo`:
 
 - _entangle.in_: Simple entanglement demo
 - _grovers.in_: 3-qubit Grover's Algorithm
