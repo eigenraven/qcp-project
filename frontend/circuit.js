@@ -171,6 +171,9 @@ $(function(){
           msg_qubit += `${ORDINAL[sel.args.length]} `
         }
         msg_qubit += "qubit to act on."
+        if (circuit_gates.length) {
+          msg_qubit += " Mouse over a gate to insert before it."
+        }
       }
     }
     $('#status').html(msg)
